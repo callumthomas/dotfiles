@@ -1,6 +1,29 @@
 export ZSH="$HOME/.oh-my-zsh"
-ssh-add -k "$HOME/.ssh/id_ed25519"
-eval $(ssh-agent -s)
+
+SSH_ENV="$HOME/.ssh/agent-environment"
+
+function start_agent {
+    echo "Initializing new SSH agent..."
+    /usr/bin/ssh-agent > "${SSH_ENV}"
+    chmod 600 "${SSH_ENV}"
+    source "${SSH_ENV}" > /dev/null
+    /usr/bin/ssh-add
+}
+
+# Source SSH settings, if applicable
+if [ -f "${SSH_ENV}" ]; then
+    source "${SSH_ENV}" > /dev/null
+    # Check if the socket actually exists and is a socket
+    if [ ! -S "$SSH_AUTH_SOCK" ]; then
+        start_agent
+    fi
+    # Check if agent is still running
+    ps -p ${SSH_AGENT_PID} > /dev/null 2>&1 || {
+        start_agent
+    }
+else
+    start_agent
+fi
 
 ZSH_THEME="agnoster"
 
@@ -15,4 +38,3 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-export SSH_AUTH_SOCK="$XDG_RNTIME_DIR/ssh-agent.socket"

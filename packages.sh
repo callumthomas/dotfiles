@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo pacman -S --noconfirm zsh git ghostty firefox nvim
+sudo pacman -S --noconfirm zsh git ghostty firefox nvim hyprlock less
 
 prompt_confirm() {
   while true; do
@@ -17,6 +17,10 @@ prompt_confirm() {
     esac
   done
 }
+
+if prompt_confirm "Install lazyvim?"; then
+  git clone https://github.com/LazyVim/starter ~/.config/nvim
+fi
 
 if prompt_confirm "Install oh-my-zsh?"; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"

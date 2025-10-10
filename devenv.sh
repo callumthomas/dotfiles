@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo pacman -S --noconfirm docker docker-compose nodejs npm nvm aws-cli composer openssh
+sudo pacman -S --noconfirm docker docker-compose nodejs npm nvm aws-cli-v2 composer openssh kubectl mysql-clients postgresql-libs
 sudo npm i -g yarn
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 

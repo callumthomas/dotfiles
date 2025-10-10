@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo pacman -S --noconfirm zsh git ghostty firefox nvim hyprlock less
+sudo pacman -S --noconfirm zsh git ghostty firefox nvim hyprlock less xclip tmux waybar
 
 prompt_confirm() {
   while true; do

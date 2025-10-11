@@ -1,0 +1,46 @@
+{
+    "hyprland/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": true,
+        "warp-on-scroll": false,
+        "format": "{name}",
+    },
+    "pulseaudio": {
+        "format": "{icon}  {volume}%",
+        "format-bluetooth": "{icon} {volume}%  {format_source}",
+        "format-bluetooth-muted": " {icon} {format_source}",
+        "format-muted": " {format_source}",
+        "format-source": " {volume}%",
+        "format-source-muted": "",
+        "format-icons": {
+            "headphone": "",
+            "default": ["", "", ""]
+        },
+        "on-click": "pavucontrol"
+    },
+    "network": {
+        "format-ethernet": "{bandwidthUpBytes:>7} ⇅ {bandwidthDownBytes:>7}",
+        "tooltip-format": "{ifname} via {gwaddr} ",
+        "format-linked": "{ifname} (No IP) ",
+        "format-disconnected": "Disconnected ⚠",
+        "on-click": "sh ~/scripts/rofi-wifi-menu/rofi-wifi-menu.sh",
+	      "interval": 2 
+    },
+    "cpu": {
+        "format": "  {usage}%",
+        "tooltip": true,
+	      "interval": 2
+    },
+    "memory": {
+        "format": "  {}%",
+        "tooltip": true,
+	      "interval": 2
+    },
+    "clock": {
+        "format": "{:%H:%M | %e %B} ",
+        "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+        "format-alt": "{:%H:%M}"
+    }
+
+}
+

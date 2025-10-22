@@ -40,5 +40,4 @@ export NVM_DIR="$HOME/.nvm"
 
 export PATH=$HOME/.local/bin:$PATH
 
-export AWS_PROFILE=delio-eks
 alias devenv="cd ~/dev/delio/denv"

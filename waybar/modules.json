@@ -40,7 +40,15 @@
         "format": "{:%H:%M | %e %B} ",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         "format-alt": "{:%H:%M}"
-    }
+    },
+    "custom/memory-usage": {
+        "exec": "~/.config/waybar/scripts/memory_details.sh",
+        "return-type": "json",
+        "format": "  {}%",
+        "format-alt": " {alt}",
+        "interval": 5,
+        "tooltip": true,
+    },
 
 }
 

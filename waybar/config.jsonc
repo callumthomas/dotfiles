@@ -14,7 +14,8 @@
   "modules-right": [
       "network",
       "cpu",
-      "memory",
+      "custom/memory-usage",
+
       "pulseaudio",
       "clock"
   ],

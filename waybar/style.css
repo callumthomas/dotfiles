@@ -63,3 +63,37 @@ window#waybar {
 #network {
   min-width: 200px;
 }
+
+
+#custom-memory-details {
+    background-color: #1a1b26;
+    color: #a9b1d6;
+    padding: 0 10px;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+#custom-memory-details.warning {
+    background-color: #e0af68;
+    color: #1a1b26;
+}
+
+#custom-memory-details.critical {
+    background-color: #f7768e;
+    color: #1a1b26;
+    animation: blink 1s linear infinite;
+}
+
+/* Tooltip styling */
+tooltip {
+    background: rgba(26, 27, 38, 0.95);
+    border: 1px solid #565f89;
+    border-radius: 5px;
+}
+
+tooltip label {
+    color: #c0caf5;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    padding: 5px;
+}

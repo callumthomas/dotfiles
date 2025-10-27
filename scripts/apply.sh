@@ -10,3 +10,9 @@ ln -s $(pwd)/nvim ~/.config/nvim
 
 rm ~/.zshrc
 ln -s $(pwd)/.zshrc ~/.zshrc
+
+rm ~/.tmux.conf
+ln -s $(pwd)/tmux/.tmux.conf ~/.tmux.conf
+
+rm -rf ~/.config/sessions
+ln -s $(pwd)/tmux/sessions ~/.config/sessions

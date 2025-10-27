@@ -40,4 +40,15 @@ export NVM_DIR="$HOME/.nvm"
 
 export PATH=$HOME/.local/bin:$PATH
 
-alias devenv="cd ~/dev/delio/denv"
+awslogin() {
+    aws sso login --profile "$AWS_PROFILE"
+}
+
+if [[ -n "$TMUX" && -n "$(tmux display-message -p '#S' 2>/dev/null)" ]]; then
+    SESSION_NAME=$(tmux display-message -p '#S')
+    SESSION_CONFIG="$HOME/.config/sessions/${SESSION_NAME}.zsh"
+    
+    if [[ -f "$SESSION_CONFIG" ]]; then
+        source "$SESSION_CONFIG"
+    fi
+fi

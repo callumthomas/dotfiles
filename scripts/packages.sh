@@ -25,3 +25,7 @@ fi
 if prompt_confirm "Install oh-my-zsh?"; then
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 fi
+
+git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -si
+
+yay -S hyprcap

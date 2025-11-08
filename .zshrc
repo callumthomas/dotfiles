@@ -1,5 +1,7 @@
 export ZSH="$HOME/.oh-my-zsh"
 
+source ~/dev/dotfiles/.env
+
 SSH_ENV="$HOME/.ssh/agent-environment"
 
 function start_agent {

@@ -46,6 +46,19 @@ awslogin() {
     aws sso login --profile "$AWS_PROFILE"
 }
 
+dclose() {
+  sudo umount -f /mnt/storage
+  sudo cryptsetup close storage
+}
+
+dopen() {
+  if ! [ -z ${1+x} ]; then
+    disk=$1
+  fi
+  sudo cryptsetup open $disk storage
+  sudo mount /dev/mapper/storage /mnt/storage
+}
+
 if [[ -n "$TMUX" && -n "$(tmux display-message -p '#S' 2>/dev/null)" ]]; then
     SESSION_NAME=$(tmux display-message -p '#S')
     SESSION_CONFIG="$HOME/.config/sessions/${SESSION_NAME}.zsh"

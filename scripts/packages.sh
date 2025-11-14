@@ -1,5 +1,6 @@
 #!/bin/bash
-sudo pacman -S --noconfirm zsh git ghostty firefox nvim hyprlock less wl-clipboard tmux waybar tipp10 hyprpaper ttf-font-awesome otf-font-awesome
+sudo pacman -S --noconfirm zsh git ghostty firefox nvim hyprlock less wl-clipboard tmux waybar hyprpaper ttf-font-awesome otf-font-awesome thunar
+sudo pacman -Rns dolphin kitty
 
 prompt_confirm() {
   while true; do

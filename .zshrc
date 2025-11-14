@@ -57,6 +57,7 @@ dopen() {
   fi
   sudo cryptsetup open $disk storage
   sudo mount /dev/mapper/storage /mnt/storage
+  cd /mnt/storage
 }
 
 if [[ -n "$TMUX" && -n "$(tmux display-message -p '#S' 2>/dev/null)" ]]; then

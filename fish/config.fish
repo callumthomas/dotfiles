@@ -1,6 +1,4 @@
 if status is-interactive
-    set FLINE_PATH $HOME/.config/fish/fishline
-    source $FLINE_PATH/init.fish
 end
 
 # Source environment variables
@@ -56,28 +54,6 @@ function awslogin
     aws sso login --profile $AWS_PROFILE
 end
 
-# Disk Close Function
-function dclose
-    sudo umount -f /mnt/storage
-    sudo cryptsetup close storage
-end
-
-# Disk Open Function
-function dopen
-    set disk $argv[1]
-    
-    if test -n "$disk"
-        sudo cryptsetup open $disk storage
-    else
-        # You might want to set a default disk here
-        # sudo cryptsetup open /dev/sdX storage
-        echo "Error: No disk specified"
-        return 1
-    end
-    
-    sudo mount /dev/mapper/storage /mnt/storage
-    cd /mnt/storage
-end
 
 # Tmux session-specific configuration
 if set -q TMUX

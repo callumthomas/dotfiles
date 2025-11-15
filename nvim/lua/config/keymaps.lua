@@ -19,3 +19,5 @@ keymap("n", "N", "Nzzzv")
 
 -- paste without replacing buffer
 keymap({ "x", "v" }, "<leader>p", '"_dP', { desc = "_Paste" })
+
+keymap({ "n", "v", "x" }, "<leader>e", "<cmd>Ex<cr>", { desc = "Explorer" })

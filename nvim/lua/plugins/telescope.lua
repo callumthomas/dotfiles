@@ -16,17 +16,18 @@ return {
 			)
 
 			vim.keymap.set("n", "<leader>fg", function()
-				require("telescope.builtin").live_grep()
+				builtin.live_grep()
 			end, { desc = "Grep" })
 
 			vim.keymap.set("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Command History" })
+			vim.keymap.set("n", "<leader>fh", "<cmd>noh<cr>", { desc = "Clear Highlight" })
 
 			vim.keymap.set("n", "<leader><space>", function()
-				require("telescope.builtin").find_files()
+				builtin.find_files()
 			end, { desc = "Find Project Files" })
 
 			vim.keymap.set("n", "<leader>ff", function()
-				require("telescope.builtin").find_files({
+				builtin.find_files({
 					hidden = true,
 					no_ignore = true,
 				})

@@ -1,16 +1,18 @@
 return {
 	"folke/which-key.nvim",
 	event = "VeryLazy",
+	dependencies = {
+		"nvim-tree/nvim-web-devicons",
+	},
 	opts = {
 		icons = {
 			breadcrumb = "»",
 			separator = "➜",
 			group = "+",
 		},
-		window = {
+		win = {
 			border = "rounded",
 			position = "bottom",
-			margin = { 1, 0, 1, 0 },
 			padding = { 1, 2, 1, 2 },
 		},
 	},

@@ -21,11 +21,11 @@ return {
 
 			vim.keymap.set("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Command History" })
 
-			vim.keymap.set("n", "<leader>ff", function()
+			vim.keymap.set("n", "<leader><space>", function()
 				require("telescope.builtin").find_files()
 			end, { desc = "Find Project Files" })
 
-			vim.keymap.set("n", "<leader>fF", function()
+			vim.keymap.set("n", "<leader>ff", function()
 				require("telescope.builtin").find_files({
 					hidden = true,
 					no_ignore = true,

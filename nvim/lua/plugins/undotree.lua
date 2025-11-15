@@ -4,6 +4,6 @@ return {
 	---@type UndoTreeCollector.Opts
 	opts = {},
 	keys = {
-		{ "<leader>u", "<cmd>lua require('undotree').toggle()<cr>" },
+		{ "<leader>u", "<cmd>lua require('undotree').toggle()<cr>", desc = "Toggle Undotree" },
 	},
 }

@@ -11,6 +11,12 @@ ln -s $(pwd)/nvim ~/.config/nvim
 rm ~/.zshrc
 ln -s $(pwd)/.zshrc ~/.zshrc
 
+rm ~/.config/fish
+ln -s $(pwd)/fish ~/.config/fish
+
+rm ~/.config/ghostty
+ln -s $(pwd)/ghostty ~/.config/ghostty
+
 rm -f ~/.tmux.conf
 ln -s $(pwd)/tmux/.tmux.conf ~/.tmux.conf
 

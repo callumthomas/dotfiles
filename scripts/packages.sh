@@ -1,5 +1,21 @@
 #!/bin/bash
-sudo pacman -S --noconfirm zsh git ghostty firefox nvim hyprlock less wl-clipboard tmux waybar hyprpaper ttf-font-awesome otf-font-awesome thunar
+sudo pacman -S --noconfirm \
+        zsh \
+        git \
+        ghostty \
+        firefox \
+        nvim \
+        hyprlock \
+        less \
+        wl-clipboard \
+        tmux \
+        waybar \
+        hyprpaper \
+        ttf-font-awesome \
+        otf-font-awesome \
+        thunar \
+        ripgrep
+
 sudo pacman -Rns dolphin kitty
 
 prompt_confirm() {

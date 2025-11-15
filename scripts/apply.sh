@@ -8,8 +8,8 @@ ln -s $(pwd)/waybar ~/.config/waybar
 rm -rf ~/.config/nvim
 ln -s $(pwd)/nvim ~/.config/nvim
 
-rm ~/.zshrc
-ln -s $(pwd)/.zshrc ~/.zshrc
+# rm ~/.zshrc
+# ln -s $(pwd)/.zshrc ~/.zshrc
 
 rm ~/.config/fish
 ln -s $(pwd)/fish ~/.config/fish

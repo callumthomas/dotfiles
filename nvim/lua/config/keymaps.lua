@@ -9,7 +9,7 @@ keymap({ "n", "v", "x" }, "<leader>y", '"+y')
 keymap({ "n", "v", "x" }, "<leader>Y", '"+y')
 
 -- delete without buffer
-keymap({ "n", "v", "x" }, "<leader>d", '"_d')
+keymap({ "n", "v", "x" }, "<leader>d", '"_d', { desc = "Delete" })
 
 -- auto center motions
 keymap("n", "<C-d>", "<C-d>zz")
@@ -18,4 +18,6 @@ keymap("n", "n", "nzzzv")
 keymap("n", "N", "Nzzzv")
 
 -- paste without replacing buffer
-keymap({ "x", "v" }, "<leader>p", '"_dP')
+keymap({ "x", "v" }, "<leader>p", '"_dP', { desc = "_Paste" })
+
+keymap({ "n", "v", "x" }, "<leader>e", "<cmd>Ex<cr>", { desc = "Explorer" })

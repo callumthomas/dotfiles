@@ -8,10 +8,10 @@ ln -s $(pwd)/waybar ~/.config/waybar
 rm -rf ~/.config/nvim
 ln -s $(pwd)/nvim ~/.config/nvim
 
-rm ~/.config/fish
+rm -rf ~/.config/fish
 ln -s $(pwd)/fish ~/.config/fish
 
-rm ~/.config/ghostty
+rm -rf ~/.config/ghostty
 ln -s $(pwd)/ghostty ~/.config/ghostty
 
 rm -f ~/.tmux.conf

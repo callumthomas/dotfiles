@@ -1,4 +1,4 @@
-function dev
+function ddev
 	echo $argv
     if not set -q argv[1]
         tmux new -c ~/dev/denv

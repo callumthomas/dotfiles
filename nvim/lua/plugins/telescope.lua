@@ -15,7 +15,7 @@ return {
 				{ desc = "Find Buffer" }
 			)
 
-			vim.keymap.set("n", "<leader>fg", function()
+			vim.keymap.set("n", "<leader>/", function()
 				builtin.live_grep()
 			end, { desc = "Grep" })
 

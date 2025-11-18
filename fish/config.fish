@@ -35,12 +35,6 @@ else
     start_agent
 end
 
-# Aliases
-alias hbinds="cat ~/.config/hypr/hyprland.conf | grep 'bind = '"
-alias n="nvim"
-alias ll="ls -alh"
-alias febuild="tmux new -A -s fe-build"
-
 # Add to PATH
 fish_add_path $HOME/.local/bin
 
@@ -48,12 +42,6 @@ fish_add_path $HOME/.local/bin
 # Note: You'll need to install fisher and then: fisher install jorgebucaran/nvm.fish
 # For now, here's a basic setup if you have nvm installed traditionally
 set -gx NVM_DIR "$HOME/.nvm"
-
-# AWS Login Function
-function awslogin
-    aws sso login --profile $AWS_PROFILE
-end
-
 
 # Tmux session-specific configuration
 if set -q TMUX
@@ -67,3 +55,14 @@ if set -q TMUX
         end
     end
 end
+
+# AWS Login Function
+function awslogin
+    aws sso login --profile $AWS_PROFILE
+end
+
+# Aliases
+alias hbinds="cat ~/.config/hypr/hyprland.conf | grep 'bind = '"
+alias n="nvim"
+alias ll="ls -alh"
+alias febuild="tmux new -A -s fe-build"

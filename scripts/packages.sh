@@ -1,20 +1,20 @@
 #!/bin/bash
 sudo pacman -S --noconfirm \
-        git \
-        ghostty \
-		fish \
-        firefox \
-        nvim \
-        hyprlock \
-        hyprpaper \
-        less \
-        wl-clipboard \
-        tmux \
-        waybar \
-        ttf-font-awesome \
-        otf-font-awesome \
-        thunar \
-        ripgrep
+	git \
+	ghostty \
+	fish \
+	firefox \
+	nvim \
+	hyprlock \
+	hyprpaper \
+	less \
+	wl-clipboard \
+	tmux \
+	waybar \
+	ttf-font-awesome \
+	otf-font-awesome \
+	thunar \
+	ripgrep
 
 sudo pacman -Rns dolphin kitty
 

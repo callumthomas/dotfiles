@@ -49,9 +49,27 @@ function M.setup()
 
 	local highlights = {
 		-- Editor
-		Normal = { fg = colors.foreground, bg = colors.background },
-		NormalFloat = { fg = colors.foreground, bg = colors.light_bg },
-		NormalNC = { fg = colors.foreground, bg = colors.background },
+		Normal = { fg = colors.foreground, bg = "none" },  -- Changed from colors.background
+		NormalFloat = { fg = colors.foreground, bg = "none" },  -- Changed from colors.light_bg
+		NormalNC = { fg = colors.foreground, bg = "none" },  -- Changed from colors.background
+
+		-- Line numbers
+		LineNr = { fg = colors.line_number },
+		SignColumn = { fg = colors.line_number, bg = "none" },  -- Changed from colors.background
+
+		-- Statusline (optional - you might want to keep these opaque)
+		StatusLine = { fg = colors.foreground, bg = "none" },  -- Changed from colors.light_bg
+		StatusLineNC = { fg = colors.comment, bg = "none" },  -- Changed from colors.light_bg
+
+		-- Tabline (optional)
+		TabLine = { fg = colors.comment, bg = "none" },
+		TabLineFill = { bg = "none" },
+		TabLineSel = { fg = colors.foreground, bg = "none", bold = true },
+
+		-- Editor
+		-- Normal = { fg = colors.foreground, bg = colors.background },
+		-- NormalFloat = { fg = colors.foreground, bg = colors.light_bg },
+		-- NormalNC = { fg = colors.foreground, bg = colors.background },
 
 		-- Cursor
 		Cursor = { fg = colors.cursor_text, bg = colors.cursor },
@@ -60,8 +78,8 @@ function M.setup()
 		CursorLineNr = { fg = colors.bright_yellow, bold = true },
 
 		-- Line numbers
-		LineNr = { fg = colors.line_number },
-		SignColumn = { fg = colors.line_number, bg = colors.background },
+		-- LineNr = { fg = colors.line_number },
+		-- SignColumn = { fg = colors.line_number, bg = colors.background },
 
 		-- Visual mode
 		Visual = { fg = colors.selection_fg, bg = colors.selection_bg },
@@ -76,8 +94,8 @@ function M.setup()
 		WinSeparator = { fg = colors.comment },
 
 		-- Statusline
-		StatusLine = { fg = colors.foreground, bg = colors.light_bg },
-		StatusLineNC = { fg = colors.comment, bg = colors.light_bg },
+		-- StatusLine = { fg = colors.foreground, bg = colors.light_bg },
+		-- StatusLineNC = { fg = colors.comment, bg = colors.light_bg },
 
 		-- Tabline
 		TabLine = { fg = colors.comment, bg = colors.light_bg },

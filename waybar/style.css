@@ -1,5 +1,8 @@
 @define-color component-bg rgba(15,27,53,0.7);
-/* 全局设置 */
+@define-color component-bg-hover rgba(70, 75, 90, 0.9);
+@define-color workspace-active-bg #61afef;
+@define-color workspace-hover-bg rgba(97, 175, 239, 0.2);
+
 * {
 	font-family: "JetBrains Mono", "CaskaydiaCove Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Free Solid";
 	font-weight: bold;
@@ -7,51 +10,49 @@
 	color: #dcdfe1;
 }
 
-/* 透明 Waybar 背景 */
 #waybar {
 	background-color: rgba(0, 0, 0, 0);
 	border: none;
 	box-shadow: none;
 }
 
-/* 所有模块统一风格 */
+.modules-left {
+	margin: 8px 0 4px 16px;
+	/* padding: 0.25em; */
+	border: 2px solid transparent;
+	background-clip: padding-box;
+	outline: 1px solid rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
+	border-radius: 10px;
+}
+
+.modules-center {
+	margin: 8px 0 4px 0;
+	/* padding: 0.25em; */
+	border: 2px solid transparent;
+	background-clip: padding-box;
+	outline: 1px solid rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
+	border-radius: 10px;
+}
+
+.modules-right {
+	margin: 8px 16px 4px 0;
+	/* padding: 0.25em; */
+	border: 2px solid transparent;
+	background-clip: padding-box;
+	outline: 1px solid rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
+	border-radius: 10px;
+}
+
 #workspaces,
 #window,
-#tray{
-	/*background-color: rgba(29,31,46, 0.95);*/
-	background-color: @component-bg;
-	padding: 4px 6px; /* 保持内部间距 */
-	margin-top: 8px; /* 外部间距增加 */
-	margin-left: 16px; /* 外部间距增加 */
-	margin-right: 16px; /* 外部间距增加 */
-	border-radius: 10px;
-	/* border-width: 0px; */
-	border: 1px solid rgba(0, 0, 0, 0);
-
-}
-
+#tray,
 #clock,
-#custom-power{
-	background-color: @component-bg;
-	margin-top: 8px; /* 与屏幕顶部留出距离 */
-	margin-right: 16px;
-	/*margin-bottom: 4px;*/
-	padding: 4px 2px; /* 保持内部间距 */
-	border-radius: 0 10px 10px 0;
-	border-width: 0px;
-}
-
+#custom-power,
 #network,
-#custom-lock{
-	background-color: @component-bg;
-	margin-top: 8px; /* 与屏幕顶部留出距离 */
-	margin-left: 6px;
-	/*margin-bottom: 4px;*/
-	padding: 4px 2px; /* 保持内部间距 */
-	border-radius: 10px 0 0 10px;
-	border-width: 0px;
-}
-
+#custom-lock,
 #custom-reboot,
 #bluetooth,
 #battery,
@@ -59,12 +60,50 @@
 #backlight,
 #custom-temperature,
 #memory,
-#cpu{
+#cpu {
 	background-color: @component-bg;
-	margin-top: 8px; /* 与屏幕顶部留出距离 */
-	/*margin-bottom: 4px;*/
-	padding: 4px 2px; /* 保持内部间距 */
+	/* margin-top: 4px; */
 	border-width: 0px;
+	/* margin-bottom: 8px; */
+	/* background: your-bg-color; */
+	/* box-sizing: border-box; */
+}
+
+#workspaces,
+#window,
+#tray {
+	padding: 4px 6px;
+	border-radius: 10px;
+	/* box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6); */
+}
+
+#clock,
+#custom-power {
+	padding: 4px 2px;
+	margin-right: 0px;
+	border-radius: 0 10px 10px 0;
+	border-left-style: none;
+}
+
+#network,
+#custom-lock {
+	padding: 4px 2px;
+	margin-left: 0px;
+	border-radius: 10px 0 0 10px;
+	border-right-style: none;
+}
+
+#custom-rebot,
+#bluetooth,
+#battery,
+#pulseaudio,
+#backlight,
+#custom-temperature,
+#memory,
+#cpu {
+	padding: 4px 2px;
+	border-right-style: none;
+	border-left-style: none;
 }
 
 #custom-temperature.critical,
@@ -73,10 +112,8 @@
 	padding-top: 0;
 }
 
-/* 鼠标悬停变亮一点 */
 #bluetooth:hover,
 #network:hover,
-/*#tray:hover,*/
 #backlight:hover,
 #battery:hover,
 #pulseaudio:hover,
@@ -87,38 +124,29 @@
 #custom-lock:hover,
 #custom-reboot:hover,
 #custom-power:hover,
-/*#workspaces:hover,*/
 #window:hover {
-	background-color: rgba(70, 75, 90, 0.9);
+	background-color: @component-bg-hover;
 }
 
-/* 工作区激活状态高亮 */
-#workspaces button:hover{
-	background-color: rgba(97, 175, 239, 0.2);
-	padding: 2px 8px;
-	margin: 0 2px;
-	border-radius: 10px;
-}
-
-#workspaces button.active {
-	background-color: #61afef; /* 蓝色高亮 */
-	color: #ffffff;
-	padding: 2px 8px;
-	margin: 0 2px;
-	border-radius: 10px;
-}
-
-/* 未激活工作区按钮 */
 #workspaces button {
 	background: transparent;
 	border: none;
 	color: #888888;
 	padding: 2px 8px;
 	margin: 0 2px;
+	border-radius: 10px;
 	font-weight: bold;
+}
+
+#workspaces button:hover {
+	background-color: @workspace-hover-bg;
+}
+
+#workspaces button.active {
+	background-color: @workspace-active-bg;
+	color: #ffffff;
 }
 
 #window {
 	font-weight: 500;
-	/* font-style: italic; */
 }

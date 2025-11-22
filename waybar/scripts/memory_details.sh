@@ -66,15 +66,20 @@ tooltip=$(ps aux | awk '
 tooltip="${tooltip}Total: ${mem_used_h} / ${mem_total_h}"
 
 # Determine urgency class based on usage (using integer comparison)
-class="memory"
 if [ "$mem_percent_int" -gt 90 ]; then
   class="critical"
-elif [ "$mem_percent_int" -gt 70 ]; then
+elif [ "$mem_percent_int" -gt 75 ]; then
   class="warning"
+elif [ "$mem_percent_int" -gt 60 ]; then
+  class="high"
+elif [ "$mem_percent_int" -gt 45 ]; then
+  class="moderate"
+else
+  class="normal"
 fi
 
-# Output JSON for Waybar - proper escaping is critical here
-printf '{"text":"%s","alt":"%s%%","tooltip":"%s","class":"%s","percentage":%s}\n' \
+# Output JSON for Waybar
+printf '{"text":"%s%%","alt":"%s%%","tooltip":"%s","class":"memory-%s","percentage":%s}\n' \
   "$mem_percent" \
   "$mem_percent" \
   "$tooltip" \

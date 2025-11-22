@@ -58,7 +58,8 @@
 #custom-temperature,
 #memory,
 #custom-memory-usage,
-#cpu {
+#cpu,
+#custom-cpu {
 	background-color: @component-bg;
 	/* margin-top: 4px; */
 	border-width: 0px;
@@ -99,13 +100,34 @@
 #custom-temperature,
 #memory,
 #custom-memory-usage,
-#cpu {
+#cpu,
+#custom-cpu {
 	padding: 4px 2px;
 	border-right-style: none;
 	border-left-style: none;
 }
 
-#custom-temperature.critical,
+/* Temperature colors */
+#custom-temperature.temperature-normal { color: #00FF7F; }
+#custom-temperature.temperature-moderate { color: #FFFF00; }
+#custom-temperature.temperature-high { color: #FFA500; }
+#custom-temperature.temperature-warning { color: #FF9F0A; }
+#custom-temperature.temperature-critical { color: #FF4040; }
+
+/* Memory colors */
+#custom-memory-usage.memory-normal { color: #00FF7F; }
+#custom-memory-usage.memory-moderate { color: #FFFF00; }
+#custom-memory-usage.memory-high { color: #FFA500; }
+#custom-memory-usage.memory-warning { color: #FF9F0A; }
+#custom-memory-usage.memory-critical { color: #FF4040; }
+
+/* CPU colors */
+#custom-cpu.cpu-normal { color: #00FF7F; }
+#custom-cpu.cpu-moderate { color: #FFFF00; }
+#custom-cpu.cpu-high { color: #FFA500; }
+#custom-cpu.cpu-warning { color: #FF9F0A; }
+#custom-cpu.cpu-critical { color: #FF4040; }
+
 #pulseaudio.muted {
 	color: #FF0000;
 	/* padding-top: 0; */

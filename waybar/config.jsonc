@@ -20,7 +20,7 @@
 		"custom/temperature",
 		// "memory",
 		"custom/memory-usage",
-		"cpu",
+		"custom/cpu",
 		"clock"
 	],
 	"include": [

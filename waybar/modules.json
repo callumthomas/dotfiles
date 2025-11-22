@@ -49,8 +49,7 @@
 	"custom/temperature": {
 		"exec": "~/.config/waybar/scripts/temperature_details.sh",
 		"return-type": "json",
-		"format": "<span color='#FFA500'>  </span>",
-		"format-alt": "<span color='#FFA500'>  </span>{}°C ",
+		"format": " ",
 		"interval": 5,
 		"tooltip": true
 	},
@@ -62,14 +61,15 @@
 	"custom/memory-usage": {
         "exec": "~/.config/waybar/scripts/memory_details.sh",
         "return-type": "json",
-        "format-alt": "<span color='#8A2BE2'> </span>{}%",
-        "format": "<span color='#8A2BE2'> </span>",
+        "format": "  ",
         "interval": 5,
-        "tooltip": true,
+        "tooltip": true
     },
-	"cpu": {
-		"format": "<span color='#FF9F0A'>  </span>",
-		"format-alt": "<span color='#FF9F0A'>  </span>{usage}% ",
+	"custom/cpu": {
+		"exec": "~/.config/waybar/scripts/cpu_details.sh",
+		"return-type": "json",
+		"format": " ",
+		"interval": 5,
 		"tooltip": true
 	},
 	"clock": {

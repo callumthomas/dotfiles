@@ -90,15 +90,20 @@ tooltip=$(sensors | awk '
 ')
 
 # Determine urgency class based on CPU temperature
-class="temperature"
 if [ "$cpu_temp" -gt 85 ]; then
   class="critical"
-elif [ "$cpu_temp" -gt 75 ]; then
+elif [ "$cpu_temp" -gt 70 ]; then
   class="warning"
+elif [ "$cpu_temp" -gt 60 ]; then
+  class="high"
+elif [ "$cpu_temp" -gt 50 ]; then
+  class="moderate"
+else
+  class="normal"
 fi
 
 # Output JSON for Waybar
-printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' \
+printf '{"text":"%s°C","tooltip":"%s","class":"temperature-%s"}\n' \
   "$cpu_temp" \
   "$tooltip" \
   "$class"

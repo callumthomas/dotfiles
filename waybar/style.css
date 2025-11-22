@@ -1,6 +1,5 @@
 @define-color component-bg rgba(15,27,53,0.7);
 @define-color component-bg-hover rgba(70, 75, 90, 0.9);
-@define-color workspace-active-bg #61afef;
 @define-color workspace-hover-bg rgba(97, 175, 239, 0.2);
 
 * {
@@ -15,34 +14,26 @@
 	box-shadow: none;
 }
 
-.modules-left {
-	margin: 8px 0 4px 16px;
+.modules-left, .modules-right, .modules-center {
+	margin-top: 5px;
+	margin-bottom: 7px;
 	border: 2px solid transparent;
 	background-clip: padding-box;
 	outline: 1px solid rgba(0, 0, 0, 0.5);
 	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
 	border-radius: 10px;
 	color: #dcdfe1;
+}
+
+.modules-left {
+	margin-left: 10px;
 }
 
 .modules-center {
-	margin: 8px 0 4px 0;
-	border: 2px solid transparent;
-	background-clip: padding-box;
-	outline: 1px solid rgba(0, 0, 0, 0.5);
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
-	border-radius: 10px;
-	color: #dcdfe1;
 }
 
 .modules-right {
-	margin: 8px 16px 4px 0;
-	border: 2px solid transparent;
-	background-clip: padding-box;
-	outline: 1px solid rgba(0, 0, 0, 0.5);
-	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
-	border-radius: 10px;
-	color: #dcdfe1;
+	margin-right: 10px;
 }
 
 #workspaces,

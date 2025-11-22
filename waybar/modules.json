@@ -47,11 +47,11 @@
 		"tooltip-format": "{volume}%"
 	},
 	"custom/temperature": {
-		"exec": "sensors | awk '/^Package id 0:/ {print int($4)}'",
+		"exec": "~/.config/waybar/scripts/temperature_details.sh",
+		"return-type": "json",
 		"format": "<span color='#FFA500'> </span>{}°C ",
 		"interval": 5,
-		"tooltip": true,
-		"tooltip-format": "{}°C"
+		"tooltip": true
 	},
 	"memory": {
 		"format": "<span color='#8A2BE2'>  </span>{used:0.1f}G/{total:0.1f}G ",

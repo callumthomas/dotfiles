@@ -59,7 +59,8 @@
 #memory,
 #custom-memory-usage,
 #cpu,
-#custom-cpu {
+#custom-cpu,
+#custom-cpu-usage {
 	background-color: @component-bg;
 	/* margin-top: 4px; */
 	border-width: 0px;
@@ -101,7 +102,8 @@
 #memory,
 #custom-memory-usage,
 #cpu,
-#custom-cpu {
+#custom-cpu,
+#custom-cpu-usage {
 	padding: 4px 2px;
 	border-right-style: none;
 	border-left-style: none;
@@ -122,11 +124,16 @@
 #custom-memory-usage.memory-critical { color: #FF4040; }
 
 /* CPU colors */
-#custom-cpu.cpu-normal { color: #00FF7F; }
-#custom-cpu.cpu-moderate { color: #FFFF00; }
-#custom-cpu.cpu-high { color: #FFA500; }
-#custom-cpu.cpu-warning { color: #FF9F0A; }
-#custom-cpu.cpu-critical { color: #FF4040; }
+#custom-cpu.cpu-normal,
+#custom-cpu-usage.cpu-normal { color: #00FF7F; }
+#custom-cpu.cpu-moderate,
+#custom-cpu-usage.cpu-moderate { color: #FFFF00; }
+#custom-cpu.cpu-high,
+#custom-cpu-usage.cpu-high { color: #FFA500; }
+#custom-cpu.cpu-warning,
+#custom-cpu-usage.cpu-warning { color: #FF9F0A; }
+#custom-cpu.cpu-critical,
+#custom-cpu-usage.cpu-critical { color: #FF4040; }
 
 #pulseaudio.muted {
 	color: #FF0000;

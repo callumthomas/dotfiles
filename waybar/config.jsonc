@@ -1,25 +1,31 @@
-// -*- mode: jsonc -*-
 {
-  "layer": "top",
-  "position": "top",
-  "height": 42, 
-  "spacing": 4, 
-  "margin-top": 7,
-  "margin-bottom": 0,
-  "margin-left": 15,
-  "margin-right": 15,
-  "modules-left": [
-      "hyprland/workspaces"
-  ],
-  "modules-right": [
-      "network",
-      "cpu",
-      "custom/memory-usage",
-
-      "pulseaudio",
-      "clock"
-  ],
-  "include": [
-    "~/.config/waybar/modules.json"
-  ]
+	"layer": "top",
+	"position": "top",
+	"height": 32,
+	"spacing": 0,
+	"modules-left": [
+		"hyprland/workspaces",
+		"tray"
+		// "custom/lock",
+		// "custom/reboot",
+		// "custom/power"
+	],
+	"modules-center": ["hyprland/window"],
+	"modules-right": [
+		"network",
+		"battery",
+		"bluetooth",
+		"pulseaudio",
+		"backlight",
+		"custom/temperature",
+		// "memory",
+		"custom/memory-usage",
+		"custom/cpu-usage",
+		"clock"
+	],
+	"include": [
+		"~/.config/waybar/modules.json"
+	],
 }
+
+

@@ -7,7 +7,7 @@
 	},
 	"network": {
 		"format-wifi": "<span color='#00FFFF'> 󰤨 </span>{essid} ",
-		"format-ethernet": "<span color='#7FFF00'> </span>Wired ",
+		"format-ethernet": "<span color='#7FFF00'> </span>",
 		"tooltip-format": "<span color='#FF1493'> 󰅧 </span>{bandwidthUpBytes}  <span color='#00BFFF'> 󰅢 </span>{bandwidthDownBytes}",
 		"format-linked": "<span color='#FFA500'> 󱘖 </span>{ifname} (No IP) ",
 		"format-disconnected": "<span color='#FF4040'>  </span>Disconnected ",
@@ -26,8 +26,8 @@
 		"tooltip": true
 	},
 	"pulseaudio": {
-		"format": "<span color='#00FF7F'>{icon}</span>{volume}% ",
-		"format-muted": "<span color='#FF4040'> 󰖁 </span>0% ",
+		"format": "<span color='#00FF7F'>{icon}</span>",
+		"format-muted": "<span color='#FF4040'> 󰖁 </span>",
 		"format-icons": {
 			"headphone": "<span color='#BF00FF'>  </span>",
 			"hands-free": "<span color='#BF00FF'>  </span>",
@@ -49,7 +49,8 @@
 	"custom/temperature": {
 		"exec": "~/.config/waybar/scripts/temperature_details.sh",
 		"return-type": "json",
-		"format": "<span color='#FFA500'> </span>{}°C ",
+		"format": "<span color='#FFA500'>  </span>",
+		"format-alt": "<span color='#FFA500'>  </span>{}°C ",
 		"interval": 5,
 		"tooltip": true
 	},
@@ -61,13 +62,14 @@
 	"custom/memory-usage": {
         "exec": "~/.config/waybar/scripts/memory_details.sh",
         "return-type": "json",
-        "format": "<span color='#8A2BE2'> </span>{}%",
-        "format-alt": " {alt}",
+        "format-alt": "<span color='#8A2BE2'> </span>{}%",
+        "format": "<span color='#8A2BE2'> </span>",
         "interval": 5,
         "tooltip": true,
     },
 	"cpu": {
-		"format": "<span color='#FF9F0A'>  </span>{usage}% ",
+		"format": "<span color='#FF9F0A'>  </span>",
+		"format-alt": "<span color='#FF9F0A'>  </span>{usage}% ",
 		"tooltip": true
 	},
 	"clock": {
@@ -109,8 +111,8 @@
 		]
 	},
 	"bluetooth": {
-		"format": "<span color='#00BFFF'>  </span>{status} ",
-		"format-connected": "<span color='#00BFFF'>  </span>{device_alias} ",
+		"format": "<span color='#00BFFF'>  </span>",
+		"format-connected": "<span color='#00BFFF'>  </span>} ",
 		"format-connected-battery": "<span color='#00BFFF'>  </span>{device_alias}{device_battery_percentage}% ",
 		"tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
 		"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",

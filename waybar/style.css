@@ -98,6 +98,7 @@
 #backlight,
 #custom-temperature,
 #memory,
+#custom-memory-usage,
 #cpu {
 	padding: 4px 2px;
 	border-right-style: none;
@@ -107,24 +108,24 @@
 #custom-temperature.critical,
 #pulseaudio.muted {
 	color: #FF0000;
-	padding-top: 0;
+	/* padding-top: 0; */
 }
 
-#bluetooth:hover,
-#network:hover,
-#backlight:hover,
-#battery:hover,
-#pulseaudio:hover,
-#custom-temperature:hover,
-#memory:hover,
-#cpu:hover,
-#clock:hover,
-#custom-lock:hover,
-#custom-reboot:hover,
-#custom-power:hover,
-#window:hover {
-	background-color: @component-bg-hover;
-}
+/* #bluetooth:hover, */
+/* #network:hover, */
+/* #backlight:hover, */
+/* #battery:hover, */
+/* #pulseaudio:hover, */
+/* #custom-temperature:hover, */
+/* #memory:hover, */
+/* #cpu:hover, */
+/* #clock:hover, */
+/* #custom-lock:hover, */
+/* #custom-reboot:hover, */
+/* #custom-power:hover, */
+/* #window:hover { */
+/* 	background-color: @component-bg-hover; */
+/* } */
 
 #workspaces button {
 	background: transparent;

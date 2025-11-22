@@ -1,99 +1,124 @@
-@define-color main #33CCFE;
-
+@define-color component-bg rgba(15,27,53,0.7);
+/* 全局设置 */
 * {
-    /* `otf-font-awesome` and SpaceMono Nerd Font are required to be installed for icons */
-    font-family: "Fira Sans Semibold", FontAwesome, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 15px;
-    font-weight: 900;
-  
-    transition: background-color .3s ease-out;
+	font-family: "JetBrains Mono", "CaskaydiaCove Nerd Font", "Font Awesome 6 Free", "Font Awesome 6 Free Solid";
+	font-weight: bold;
+	font-size: 16px;
+	color: #dcdfe1;
 }
 
-
-window#waybar {
-    background: rgba(0, 0, 0, 0);
-    color: @main; 
-    font-family: 
-        SpaceMono Nerd Font,
-        feather;
-    border: 2px solid @main;
-    border-radius: 5px;
+/* 透明 Waybar 背景 */
+#waybar {
+	background-color: rgba(0, 0, 0, 0);
+	border: none;
+	box-shadow: none;
 }
 
-.modules-left,
-.modules-right
-{
-    margin: 2px 10px;
-}
-.modules-left {
+/* 所有模块统一风格 */
+#workspaces,
+#window,
+#tray{
+	/*background-color: rgba(29,31,46, 0.95);*/
+	background-color: @component-bg;
+	padding: 4px 6px; /* 保持内部间距 */
+	margin-top: 8px; /* 外部间距增加 */
+	margin-left: 16px; /* 外部间距增加 */
+	margin-right: 16px; /* 外部间距增加 */
+	border-radius: 10px;
+	/* border-width: 0px; */
+	border: 1px solid rgba(0, 0, 0, 0);
+
 }
 
 #clock,
-#cpu,
-#memory,
+#custom-power{
+	background-color: @component-bg;
+	margin-top: 8px; /* 与屏幕顶部留出距离 */
+	margin-right: 16px;
+	/*margin-bottom: 4px;*/
+	padding: 4px 2px; /* 保持内部间距 */
+	border-radius: 0 10px 10px 0;
+	border-width: 0px;
+}
+
 #network,
+#custom-lock{
+	background-color: @component-bg;
+	margin-top: 8px; /* 与屏幕顶部留出距离 */
+	margin-left: 6px;
+	/*margin-bottom: 4px;*/
+	padding: 4px 2px; /* 保持内部间距 */
+	border-radius: 10px 0 0 10px;
+	border-width: 0px;
+}
+
+#custom-reboot,
+#bluetooth,
+#battery,
 #pulseaudio,
-#wireplumber {
-    padding: 0 10px;
+#backlight,
+#custom-temperature,
+#memory,
+#cpu{
+	background-color: @component-bg;
+	margin-top: 8px; /* 与屏幕顶部留出距离 */
+	/*margin-bottom: 4px;*/
+	padding: 4px 2px; /* 保持内部间距 */
+	border-width: 0px;
 }
 
-#workspaces {
-  margin: 5px 0 5px 5px;
+#custom-temperature.critical,
+#pulseaudio.muted {
+	color: #FF0000;
+	padding-top: 0;
 }
 
-#workspaces button {
-  background: transparent;
-  font-family:
-    SpaceMono Nerd Font,
-    feather;
-  font-weight: 900;
-  font-size: 10pt;
-  color: @main;
-  border: 2px solid @main;
-  border-radius: 5px;
-  padding: 0px 2px;
-  margin-right: 5px;
+/* 鼠标悬停变亮一点 */
+#bluetooth:hover,
+#network:hover,
+/*#tray:hover,*/
+#backlight:hover,
+#battery:hover,
+#pulseaudio:hover,
+#custom-temperature:hover,
+#memory:hover,
+#cpu:hover,
+#clock:hover,
+#custom-lock:hover,
+#custom-reboot:hover,
+#custom-power:hover,
+/*#workspaces:hover,*/
+#window:hover {
+	background-color: rgba(70, 75, 90, 0.9);
+}
+
+/* 工作区激活状态高亮 */
+#workspaces button:hover{
+	background-color: rgba(97, 175, 239, 0.2);
+	padding: 2px 8px;
+	margin: 0 2px;
+	border-radius: 10px;
 }
 
 #workspaces button.active {
-  background-color: @main;
-  color: #000;
+	background-color: #61afef; /* 蓝色高亮 */
+	color: #ffffff;
+	padding: 2px 8px;
+	margin: 0 2px;
+	border-radius: 10px;
 }
 
-#network {
-  min-width: 200px;
+/* 未激活工作区按钮 */
+#workspaces button {
+	background: transparent;
+	border: none;
+	color: #888888;
+	padding: 2px 8px;
+	margin: 0 2px;
+	font-weight: bold;
 }
 
-
-#custom-memory-details {
-    background-color: #1a1b26;
-    color: #a9b1d6;
-    padding: 0 10px;
-    border-radius: 5px;
-    margin: 0 5px;
-}
-
-#custom-memory-details.warning {
-    background-color: #e0af68;
-    color: #1a1b26;
-}
-
-#custom-memory-details.critical {
-    background-color: #f7768e;
-    color: #1a1b26;
-    animation: blink 1s linear infinite;
-}
-
-/* Tooltip styling */
-tooltip {
-    background: rgba(26, 27, 38, 0.95);
-    border: 1px solid #565f89;
-    border-radius: 5px;
-}
-
-tooltip label {
-    color: #c0caf5;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 12px;
-    padding: 5px;
+#window {
+	font-weight: 500;
+	/* font-style: italic; */
 }

@@ -18,7 +18,8 @@
 		"pulseaudio",
 		"backlight",
 		"custom/temperature",
-		"memory",
+		// "memory",
+		"custom/memory-usage",
 		"cpu",
 		"clock"
 	],

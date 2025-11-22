@@ -57,6 +57,7 @@
 #backlight,
 #custom-temperature,
 #memory,
+#custom-memory-usage,
 #cpu {
 	background-color: @component-bg;
 	/* margin-top: 4px; */

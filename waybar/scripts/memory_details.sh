@@ -15,8 +15,8 @@ mem_total_h=$(echo $mem_total | awk '{printf "%.1fG", $1/1024/1024/1024}')
 # Note: We need to escape backslashes and quotes for JSON
 tooltip=$(ps aux --sort=-%mem | head -n 16 | awk '
     BEGIN {
-        printf "Memory Usage by Application\\n"
-        printf "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n"
+        printf "Memory Usage\\n"
+        printf "━━━━━━━━━━━━━━━━━━━━━━━━━\\n"
     }
     NR==1 {next}  # Skip header
     {
@@ -55,15 +55,15 @@ tooltip=$(ps aux --sort=-%mem | head -n 16 | awk '
             bar = bar "░"
         }
         
-        printf "%-25s %7s\\n", cmd, mem_str
+        printf "%-15s %7s\\n", cmd, mem_str
     }
     END {
-        printf "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\\n"
+        printf "━━━━━━━━━━━━━━━━━━━━━━━━━\\n"
     }
 ')
 
 # Add summary to tooltip
-tooltip="${tooltip}Total: ${mem_used_h} / ${mem_total_h} (${mem_percent}%)"
+tooltip="${tooltip}Total: ${mem_used_h} / ${mem_total_h}"
 
 # Determine urgency class based on usage (using integer comparison)
 class="memory"

@@ -58,6 +58,14 @@
 		"tooltip": true,
 		"tooltip-format": "{used:0.2f}G/{total:0.2f}G"
 	},
+	"custom/memory-usage": {
+        "exec": "~/.config/waybar/scripts/memory_details.sh",
+        "return-type": "json",
+        "format": "<span color='#8A2BE2'> </span>{}%",
+        "format-alt": " {alt}",
+        "interval": 5,
+        "tooltip": true,
+    },
 	"cpu": {
 		"format": "<span color='#FF9F0A'>  </span>{usage}% ",
 		"tooltip": true
@@ -67,7 +75,22 @@
 		"timezone": "Europe/London",
 		"format": "<span color='#BF00FF'>  </span>{:%H:%M} ",
 		"tooltip": true,
-		"tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+		"tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+		"calendar": {
+			"mode": "month",
+			"mode-mon-col": 3,
+			"weeks-pos": "right",
+			"on-scroll": 1,
+			"on-click-right": "mode",
+			"format": {
+				"months": "<span color='#ffead3'><b>{}</b></span>",
+				"days": "<span color='#ecc6d9'><b>{}</b></span>",
+				"weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+				"weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+				"today": "<span color='#ff6699'><b>{}</b></span>"
+
+			}
+		}
 	},
 	"tray": {
 		"icon-size": 17,

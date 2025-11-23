@@ -76,9 +76,13 @@
 #custom-temperature,
 #custom-memory-usage,
 #custom-cpu-usage {
-	padding: 4px 2px;
 	border-right-style: none;
 	border-left-style: none;
+}
+
+#custom-memory-usage {
+	padding-left: 6px;
+	padding-right: 4px;
 }
 
 /* Temperature colors */

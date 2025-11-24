@@ -59,14 +59,14 @@
 	"custom/memory-usage": {
         "exec": "~/.config/waybar/scripts/memory_details.sh",
         "return-type": "json",
-        "format": " ",
+        "format": "   ",
         "interval": 5,
         "tooltip": true
     },
 	"custom/cpu-usage": {
 		"exec": "~/.config/waybar/scripts/cpu_details.sh",
 		"return-type": "json",
-		"format": " ",
+		"format": "  ",
 		"interval": 5,
 		"tooltip": true
 	},

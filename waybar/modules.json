@@ -5,12 +5,21 @@
 		"format": "{icon}",
 		"on-click": "activate",
 	},
+	"hyprland/window": {
+		"format": {},
+		"max-length": 50,
+		"rewrite": {
+			"(.*) - Mozilla Firefox": "🌎 $1",
+			"(.*) - Delio - Slack": "💬 $1",
+			"^\\s*$": "  ...  "
+		}
+	},
 	"network": {
-		"format-wifi": "<span color='#00FFFF'> 󰤨 </span>",
+		"format-wifi": "<span color='#00FFFF'>󰤨 </span>",
 		"format-ethernet": "<span color='#7FFF00'> </span>",
-		"tooltip-format": "<span color='#FF1493'> 󰅧 </span>{bandwidthUpBytes}  <span color='#00BFFF'> 󰅢 </span>{bandwidthDownBytes}",
-		"format-linked": "<span color='#FFA500'> 󱘖 </span>",
-		"format-disconnected": "<span color='#FF4040'>  </span>",
+		"tooltip-format": "<span color='#FF1493'>󰅧 </span>{bandwidthUpBytes}  <span color='#00BFFF'> 󰅢 </span>{bandwidthDownBytes}",
+		"format-linked": "<span color='#FFA500'>󱘖 </span>",
+		"format-disconnected": "<span color='#FF4040'> </span>",
 		"interval": 1
 	},
 	"battery": {
@@ -18,8 +27,8 @@
 			"warning": 30,
 			"critical": 15
 		},
-		"format": "<span color='#28CD41'> {icon} </span>",
-		"format-alt": "<span color='#28CD41'> {icon} </span>{capacity}% ",
+		"format": "<span color='#28CD41'>{icon} </span>",
+		"format-alt": "<span color='#28CD41'>{icon} </span>{capacity}% ",
 		"format-charging": " 󱐋{capacity}%",
 		"interval": 1,
 		"format-icons": ["󰂎", "󰁼", "󰁿", "󰂁", "󰁹"],
@@ -27,12 +36,12 @@
 	},
 	"pulseaudio": {
 		"format": "<span color='#00FF7F'>{icon}</span>",
-		"format-muted": "<span color='#FF4040'> 󰖁 </span>",
+		"format-muted": "<span color='#FF4040'>󰖁 </span>",
 		"format-icons": {
 			"default": [
-				"<span color='#808080'>  </span>",
-				"<span color='#FFFF66'>  </span>",
-				"<span color='#00FF7F'>  </span>"
+				"<span color='#808080'> </span>",
+				"<span color='#FFFF66'> </span>",
+				"<span color='#00FF7F'> </span>"
 			]
 		},
 		"on-click-right": "pavucontrol -t 3",
@@ -43,7 +52,7 @@
 	"custom/temperature": {
 		"exec": "~/.config/waybar/scripts/temperature_details.sh",
 		"return-type": "json",
-		"format": "  ",
+		"format": "",
 		"interval": 5,
 		"tooltip": true
 	},
@@ -57,14 +66,14 @@
 	"custom/cpu-usage": {
 		"exec": "~/.config/waybar/scripts/cpu_details.sh",
 		"return-type": "json",
-		"format": "  ",
+		"format": " ",
 		"interval": 5,
 		"tooltip": true
 	},
 	"clock": {
 		"interval": 1,
 		"timezone": "Europe/London",
-		"format": "<span color='#BF00FF'> </span>{:%H:%M} ",
+		"format": " {:%H:%M} ",
 		"tooltip": true,
 		"tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
 		"calendar": {

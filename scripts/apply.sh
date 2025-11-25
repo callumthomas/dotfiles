@@ -15,3 +15,6 @@ rm -f ~/.tmux.conf
 ln -s "$SCRIPT_DIR/tmux/.tmux.conf" ~/.tmux.conf
 rm -rf ~/.config/sessions
 ln -s "$SCRIPT_DIR/tmux/sessions" ~/.config/sessions
+mv ~/.ssh/config ~/.ssh/config_old
+ln -s "$SCRIPT_DIR/ssh/config" ~/.ssh/config
+

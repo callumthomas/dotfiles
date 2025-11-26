@@ -40,8 +40,8 @@
 		"format-muted": "<span color='#FF4040'>󰖁 </span>",
 		"format-icons": {
 			"default": [
-				"<span color='#808080'> </span>",
-				"<span color='#FFFF66'> </span>",
+				"<span color='#808080'></span>",
+				"<span color='#FFFF66'></span>",
 				"<span color='#00FF7F'> </span>"
 			]
 		},

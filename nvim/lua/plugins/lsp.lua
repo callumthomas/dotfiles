@@ -23,7 +23,6 @@ return {
 			-- Setup Mason LSP
 			require("mason-lspconfig").setup({
 				ensure_installed = {
-					"ts_ls", -- TypeScript/JavaScript
 					"eslint", -- ESLint
 					"intelephense", -- PHP
 					"bashls", -- Bash
@@ -107,26 +106,26 @@ return {
 				on_attach = on_attach,
 			}
 
-			-- TypeScript/JavaScript/React
-			vim.lsp.config(
-				"ts_ls",
-				vim.tbl_extend("force", default_config, {
-					settings = {
-						typescript = {
-							inlayHints = {
-								includeInlayParameterNameHints = "all",
-								includeInlayFunctionParameterTypeHints = true,
-							},
-						},
-						javascript = {
-							inlayHints = {
-								includeInlayParameterNameHints = "all",
-								includeInlayFunctionParameterTypeHints = true,
-							},
-						},
-					},
-				})
-			)
+			-- -- TypeScript/JavaScript/React
+			-- vim.lsp.config(
+			-- 	"ts_ls",
+			-- 	vim.tbl_extend("force", default_config, {
+			-- 		settings = {
+			-- 			typescript = {
+			-- 				inlayHints = {
+			-- 					includeInlayParameterNameHints = "all",
+			-- 					includeInlayFunctionParameterTypeHints = true,
+			-- 				},
+			-- 			},
+			-- 			javascript = {
+			-- 				inlayHints = {
+			-- 					includeInlayParameterNameHints = "all",
+			-- 					includeInlayFunctionParameterTypeHints = true,
+			-- 				},
+			-- 			},
+			-- 		},
+			-- 	})
+			-- )
 
 			-- ESLint
 			vim.lsp.config(

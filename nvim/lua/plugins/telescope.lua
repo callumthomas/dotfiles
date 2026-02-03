@@ -23,7 +23,13 @@ return {
 			vim.keymap.set("n", "<leader>fh", "<cmd>noh<cr>", { desc = "Clear Highlight" })
 
 			vim.keymap.set("n", "<leader><space>", function()
-				builtin.find_files()
+				builtin.find_files({
+					attach_mappings = function(_, map)
+						map("i", "<C-p>", require("telescope.actions.layout").toggle_preview)
+						map("n", "<C-p>", require("telescope.actions.layout").toggle_preview)
+						return true
+					end,
+				})
 			end, { desc = "Find Project Files" })
 
 			vim.keymap.set("n", "<leader>ff", function()

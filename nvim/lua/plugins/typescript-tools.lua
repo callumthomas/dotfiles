@@ -4,7 +4,7 @@ return {
 		"nvim-lua/plenary.nvim",
 		"neovim/nvim-lspconfig",
 	},
-	ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
+	ft = { "typescript", "typescriptreact", },
 	opts = {
 		on_attach = function(client, bufnr)
 			local opts = { buffer = bufnr, silent = true }

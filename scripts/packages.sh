@@ -15,7 +15,8 @@ sudo pacman -S --noconfirm \
 	otf-font-awesome \
 	thunar \
 	ripgrep \
-	lazygit
+	lazygit \
+	socat
 
 sudo pacman -Rns dolphin kitty
 

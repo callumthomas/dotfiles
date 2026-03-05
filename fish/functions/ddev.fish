@@ -1,12 +1,14 @@
 function ddev
-	echo $argv
-    if not set -q argv[1]
-        tmux new -c ~/dev/denv
-        return
+    set -l project
+    set -l project_path
+
+    if set -q argv[1]
+        set project $argv[1]
+        set project_path ~/dev/denv/services/$argv[1]
+    else
+        set project (basename (pwd))
+        set project_path (pwd)
     end
-        
-    set -l project $argv[1]
-    set -l project_path ~/dev/denv/services/$project
     
     function ensure_window
         set -l session $argv[1]

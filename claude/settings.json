@@ -43,6 +43,8 @@
       "Bash(rustup:*)",
       "Bash(clippy:*)",
       "Bash(rustfmt:*)",
+	  "Bash(npm:*)",
+	  "Bash(yarn:*)",
 
       "Bash(git:*)",
 

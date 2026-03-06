@@ -1,4 +1,10 @@
 {
+  "model": "opus",
+  "enabledPlugins": {
+    "pr-review@delio-plugins": true
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high",
   "permissions": {
     "allow": [
       "Read(*)",
@@ -30,7 +36,6 @@
       "Bash(mkdir:*)",
       "Bash(mv:*)",
       "Bash(cp:*)",
-      "Bash(chmod:*)",
       "Bash(stat:*)",
 
       "Bash(cargo:*)",
@@ -40,7 +45,31 @@
       "Bash(rustfmt:*)",
 
       "Bash(git:*)",
-      "Bash(gh:*)",
+
+      "Bash(gh pr list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr status *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh issue list *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue status *)",
+      "Bash(gh repo list *)",
+      "Bash(gh repo view *)",
+      "Bash(gh repo clone *)",
+      "Bash(gh release list *)",
+      "Bash(gh release view *)",
+      "Bash(gh run list *)",
+      "Bash(gh run view *)",
+      "Bash(gh search *)",
+      "Bash(gh status *)",
+      "Bash(gh browse *)",
+      "Bash(gh gist list *)",
+      "Bash(gh gist view *)",
+      "Bash(gh label list *)",
+      "Bash(gh project list *)",
+      "Bash(gh project view *)",
+      "Bash(gh api *)",
 
       "Bash(make:*)",
       "Bash(just:*)",
@@ -52,16 +81,20 @@
       "Bash(lsof:*)",
       "Bash(ps:*)",
       "Bash(kill:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+
+      "Read(.env.example)",
+      "Read(.env.**.example)",
     ],
     "deny": [
-      "Read(.env)",
-      "Read(.env.*)",
-      "Read(**/secrets/**)",
       "Bash(rm:*)",
       "Bash(sudo:*)",
       "Bash(curl:*)",
       "Bash(wget:*)"
-    ]
+    ],
+	"ask": [
+      "Read(.env)",
+      "Read(.env.*)",
+	],
   }
 }

@@ -1,3 +1,4 @@
+font-family = CaskaydiaCove Nerd Font
 background-opacity = 0.9
 theme = Monokai Remastered
 keybind = shift+enter=text:\x1b\r

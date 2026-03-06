@@ -66,3 +66,7 @@ alias hbinds="cat ~/.config/hypr/hyprland.conf | grep 'bind = '"
 alias n="nvim"
 alias ll="ls -alh"
 alias febuild="tmux new -A -s fe-build"
+
+# nvm-fish integration - added automatically
+# You must call it on initialization or directory switching won't work
+load_nvm > /dev/stderr

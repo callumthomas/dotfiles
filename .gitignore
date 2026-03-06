@@ -3,3 +3,4 @@
 
 claude/*
 !claude/settings.json
+!claude/statusline.sh

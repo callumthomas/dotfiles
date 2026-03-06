@@ -84,7 +84,7 @@
       "Bash(pkill:*)",
 
       "Read(.env.example)",
-      "Read(.env.**.example)",
+      "Read(.env.**.example)"
     ],
     "deny": [
       "Bash(rm:*)",
@@ -94,7 +94,7 @@
     ],
 	"ask": [
       "Read(.env)",
-      "Read(.env.*)",
-	],
+      "Read(.env.*)"
+	]
   }
 }

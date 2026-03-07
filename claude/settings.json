@@ -1,107 +1,121 @@
 {
-	"model": "opus",
-	"alwaysThinkingEnabled": true,
-	"effortLevel": "high",
-	"statusLine": {
-		"type": "command",
-		"command": "~/.claude/statusline.sh"
-	},
-	"env": {
-		"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-	},
-	"enabledPlugins": {
-		"pr-review@delio-plugins": true,
-		"skill-creator@claude-plugins-official": true
-	},
-	"permissions": {
-		"allow": [
-			"Read(*)",
-			"Write(*)",
-			"Edit(*)",
-			"MultiEdit(*)",
-
-			"Bash(ls:*)",
-			"Bash(find:*)",
-			"Bash(fd:*)",
-			"Bash(rg:*)",
-			"Bash(grep:*)",
-			"Bash(echo:*)",
-			"Bash(cat:*)",
-			"Bash(head:*)",
-			"Bash(tail:*)",
-			"Bash(wc:*)",
-			"Bash(awk:*)",
-			"Bash(sed:*)",
-			"Bash(sort:*)",
-			"Bash(uniq:*)",
-			"Bash(cut:*)",
-			"Bash(tr:*)",
-			"Bash(jq:*)",
-			"Bash(printf:*)",
-			"Bash(pwd:*)",
-			"Bash(which:*)",
-			"Bash(env:*)",
-			"Bash(touch:*)",
-			"Bash(mkdir:*)",
-			"Bash(mv:*)",
-			"Bash(cp:*)",
-			"Bash(stat:*)",
-			"Bash(cargo:*)",
-			"Bash(rustc:*)",
-			"Bash(rustup:*)",
-			"Bash(clippy:*)",
-			"Bash(rustfmt:*)",
-
-			"Bash(npm:*)",
-			"Bash(yarn:*)",
-			"Bash(git:*)",
-
-			"Bash(gh pr list *)",
-			"Bash(gh pr view *)",
-			"Bash(gh pr status *)",
-			"Bash(gh pr checks *)",
-			"Bash(gh pr diff *)",
-			"Bash(gh issue list *)",
-			"Bash(gh issue view *)",
-			"Bash(gh issue status *)",
-			"Bash(gh repo list *)",
-			"Bash(gh repo view *)",
-			"Bash(gh repo clone *)",
-			"Bash(gh release list *)",
-			"Bash(gh release view *)",
-			"Bash(gh run list *)",
-			"Bash(gh run view *)",
-			"Bash(gh search *)",
-			"Bash(gh status *)",
-			"Bash(gh browse *)",
-			"Bash(gh gist list *)",
-			"Bash(gh gist view *)",
-			"Bash(gh label list *)",
-			"Bash(gh project list *)",
-			"Bash(gh project view *)",
-			"Bash(gh api *)",
-
-			"Bash(make:*)",
-			"Bash(just:*)",
-			"Bash(pacman:*)",
-			"Bash(paru:*)",
-			"Bash(yay:*)",
-			"Bash(lsof:*)",
-			"Bash(ps:*)",
-			"Bash(kill:*)",
-			"Bash(pkill:*)",
-			"Read(.env.example)",
-			"Read(.env.**.example)"
-		],
-		"deny": [
-			"Bash(sudo:*)",
-			"Bash(curl:*)",
-			"Bash(wget:*)"
-		],
-		"ask": [
-			"Bash(rm:*)",
-			"Read(.env)",
-			"Read(.env.*)"
-		]
-	}
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)",
+      "MultiEdit(*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(fd:*)",
+      "Bash(rg:*)",
+      "Bash(grep:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(awk:*)",
+      "Bash(sed:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(cut:*)",
+      "Bash(tr:*)",
+      "Bash(jq:*)",
+      "Bash(printf:*)",
+      "Bash(pwd:*)",
+      "Bash(which:*)",
+      "Bash(env:*)",
+      "Bash(touch:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)",
+      "Bash(stat:*)",
+      "Bash(cargo:*)",
+      "Bash(rustc:*)",
+      "Bash(rustup:*)",
+      "Bash(clippy:*)",
+      "Bash(rustfmt:*)",
+      "Bash(npm:*)",
+      "Bash(yarn:*)",
+      "Bash(git:*)",
+      "Bash(npx tsc *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr status *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh issue list *)",
+      "Bash(gh issue view *)",
+      "Bash(gh issue status *)",
+      "Bash(gh repo list *)",
+      "Bash(gh repo view *)",
+      "Bash(gh repo clone *)",
+      "Bash(gh release list *)",
+      "Bash(gh release view *)",
+      "Bash(gh run list *)",
+      "Bash(gh run view *)",
+      "Bash(gh search *)",
+      "Bash(gh status *)",
+      "Bash(gh browse *)",
+      "Bash(gh gist list *)",
+      "Bash(gh gist view *)",
+      "Bash(gh label list *)",
+      "Bash(gh project list *)",
+      "Bash(gh project view *)",
+      "Bash(gh api *)",
+      "Bash(docker logs *)",
+      "Bash(docker restart *)",
+      "Bash(docker start *)",
+      "Bash(docker stop *)",
+      "Bash(docker exec *)",
+      "Bash(make:*)",
+      "Bash(just:*)",
+      "Bash(pacman:*)",
+      "Bash(paru:*)",
+      "Bash(yay:*)",
+      "Bash(lsof:*)",
+      "Bash(ps:*)",
+      "Bash(kill:*)",
+      "Bash(pkill:*)"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)"
+    ],
+    "ask": [
+      "Bash(rm:*)"
+    ]
+  },
+  "model": "opus",
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
+  "enabledPlugins": {
+    "pr-review@delio-plugins": true,
+    "skill-creator@claude-plugins-official": true,
+    "superpowers@claude-plugins-official": true,
+    "skill-profiler@claude-tools": true
+  },
+  "extraKnownMarketplaces": {
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    },
+    "claude-tools": {
+      "source": {
+        "source": "github",
+        "repo": "callumthomas/claude-tools"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high"
 }

@@ -35,6 +35,8 @@ else
     start_agent
 end
 
+set -gx EDITOR nvim
+
 # Add to PATH
 fish_add_path $HOME/.local/bin
 

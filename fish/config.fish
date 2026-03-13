@@ -71,4 +71,6 @@ alias febuild="tmux new -A -s fe-build"
 
 # nvm-fish integration - added automatically
 # You must call it on initialization or directory switching won't work
-load_nvm > /dev/stderr
+if type -q load_nvm
+    load_nvm > /dev/stderr
+end

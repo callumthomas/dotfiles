@@ -91,7 +91,6 @@
       "Bash(rm:*)"
     ]
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -99,15 +98,21 @@
   "enabledPlugins": {
     "pr-review@delio-plugins": true,
     "skill-creator@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true,
     "skill-profiler@claude-tools": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "superpowers@superpowers-dev": true
   },
   "extraKnownMarketplaces": {
     "claude-tools": {
       "source": {
         "source": "github",
         "repo": "callumthomas/claude-tools"
+      }
+    },
+    "superpowers-dev": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/obra/superpowers.git"
       }
     }
   },

@@ -16,10 +16,12 @@ sudo pacman -S --noconfirm \
 	thunar \
 	ripgrep \
 	lazygit \
-	socat
+	socat \
+	glow \
+	ttf-cascadia-code-nerd 
 
 sudo pacman -Rns dolphin kitty
 
 git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -si
 
-yay -S hyprcap
+yay -S hyprcap claude-code

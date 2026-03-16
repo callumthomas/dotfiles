@@ -100,7 +100,8 @@
     "skill-creator@claude-plugins-official": true,
     "skill-profiler@claude-tools": true,
     "frontend-design@claude-plugins-official": true,
-    "superpowers@superpowers-dev": true
+    "superpowers@superpowers-dev": true,
+    "pdf-simplifier@claude-tools": true
   },
   "extraKnownMarketplaces": {
     "claude-tools": {

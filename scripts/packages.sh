@@ -18,7 +18,8 @@ sudo pacman -S --noconfirm \
 	lazygit \
 	socat \
 	glow \
-	ttf-cascadia-code-nerd 
+	ttf-cascadia-code-nerd \
+	lsof
 
 sudo pacman -Rns dolphin kitty
 

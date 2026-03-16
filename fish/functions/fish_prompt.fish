@@ -8,9 +8,21 @@ function fish_prompt
     set -l color_git_dirty fd971f  # orange/yellow
     set -l color_git_branch 9d65ff # purple/blue
     
-    # Username@hostname
-    set_color $color_host
-    echo -n $USER #@(prompt_hostname)
+    # Username@hostname with gradient
+    set -l userhost $USER@(prompt_hostname)
+    set -l text_len (string length $userhost)
+    set -l r_start 0x00; set -l g_start 0x11; set -l b_start 0xff
+    set -l r_end 0xff; set -l g_end 0x00; set -l b_end 0xff
+    for i in (seq 1 $text_len)
+        set -l char (string sub -s $i -l 1 $userhost)
+        set -l t (math "($i - 1) / ($text_len - 1)" 2>/dev/null; or echo 0)
+        set -l r (math -s0 "$r_start + ($r_end - $r_start) * $t")
+        set -l g (math -s0 "$g_start + ($g_end - $g_start) * $t")
+        set -l b (math -s0 "$b_start + ($b_end - $b_start) * $t")
+        set_color --bold (printf '%02x%02x%02x' $r $g $b)
+        echo -n $char
+    end
+    set_color normal
 
 	set_color normal
 	echo -n ':'

@@ -40,11 +40,6 @@ set -gx EDITOR nvim
 # Add to PATH
 fish_add_path $HOME/.local/bin
 
-# NVM (Node Version Manager) for Fish
-# Note: You'll need to install fisher and then: fisher install jorgebucaran/nvm.fish
-# For now, here's a basic setup if you have nvm installed traditionally
-set -gx NVM_DIR "$HOME/.nvm"
-
 # Tmux session-specific configuration
 if set -q TMUX
     set SESSION_NAME (tmux display-message -p '#S' 2>/dev/null)
@@ -69,8 +64,4 @@ alias n="nvim"
 alias ll="ls -alh"
 alias febuild="tmux new -A -s fe-build"
 
-# nvm-fish integration - added automatically
-# You must call it on initialization or directory switching won't work
-if type -q load_nvm
-    load_nvm > /dev/stderr
-end
+alias nvm="fnm"

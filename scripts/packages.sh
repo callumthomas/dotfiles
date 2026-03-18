@@ -19,7 +19,8 @@ sudo pacman -S --noconfirm \
 	socat \
 	glow \
 	ttf-cascadia-code-nerd \
-	lsof
+	lsof \
+	gammastep
 
 sudo pacman -Rns dolphin kitty
 

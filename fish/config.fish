@@ -63,5 +63,8 @@ alias hbinds="cat ~/.config/hypr/hyprland.conf | grep 'bind = '"
 alias n="nvim"
 alias ll="ls -alh"
 alias febuild="tmux new -A -s fe-build"
+alias k="kubectl"
+alias de="docker exec -it"
+
 
 alias nvm="fnm"

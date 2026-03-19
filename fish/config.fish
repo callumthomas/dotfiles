@@ -65,6 +65,7 @@ alias ll="ls -alh"
 alias febuild="tmux new -A -s fe-build"
 alias k="kubectl"
 alias de="docker exec -it"
-
+alias lg="lazygit"
+alias ld="lazydocker"
 
 alias nvm="fnm"

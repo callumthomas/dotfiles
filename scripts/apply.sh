@@ -25,5 +25,7 @@ ln -s "$SCRIPT_DIR/tmux/sessions" ~/.config/sessions
 mv ~/.ssh/config ~/.ssh/config_old
 ln -s "$SCRIPT_DIR/ssh/config" ~/.ssh/config
 
+ln -sf "$SCRIPT_DIR/ssh/aws-ssm-ec2-proxy-command.sh" ~/.ssh/aws-ssm-ec2-proxy-command.sh
+
 mv ~/.claude ~/.claude_old
 ln -s "$SCRIPT_DIR/claude" ~/.claude 

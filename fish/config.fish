@@ -37,7 +37,6 @@ end
 
 set -gx EDITOR nvim
 
-# Add to PATH
 fish_add_path $HOME/.local/bin
 
 # Tmux session-specific configuration
@@ -57,6 +56,10 @@ end
 function awslogin
     aws sso login --profile $AWS_PROFILE
 end
+
+# phpenv config
+set -gx PATH $HOME/.phpenv/bin $PATH
+status is-interactive; and phpenv init - | source
 
 # Aliases
 alias hbinds="cat ~/.config/hypr/hyprland.conf | grep 'bind = '"

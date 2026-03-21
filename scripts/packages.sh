@@ -28,4 +28,5 @@ git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -
 
 yay -S --noconfirm \
 	hyprcap \
-	claude-code
+	claude-code \
+	clipse

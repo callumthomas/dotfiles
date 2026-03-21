@@ -15,7 +15,7 @@ return {
         yaml = { "prettier" },
         markdown = { "prettier" },
         php = { "pint" },
-        go = { "gofmt", "goimports" },
+        go = { "gofumpt", "goimports" },
         rust = { "rustfmt" },
         bash = { "shfmt" },
         sh = { "shfmt" },
@@ -23,14 +23,14 @@ return {
       },
       format_on_save = {
         timeout_ms = 500,
-        lsp_fallback = true,
+        lsp_format = "fallback",
       },
     })
 
     -- Manual format keymap
     vim.keymap.set({ "n", "v" }, "<leader>f", function()
       require("conform").format({
-        lsp_fallback = true,
+        lsp_format = "fallback",
         async = false,
         timeout_ms = 500,
       })

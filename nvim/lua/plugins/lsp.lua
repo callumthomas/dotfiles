@@ -5,7 +5,7 @@ return {
 		dependencies = {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
-			"hrsh7th/cmp-nvim-lsp",
+			"saghen/blink.cmp",
 		},
 		config = function()
 			-- Setup Mason
@@ -23,16 +23,17 @@ return {
 			-- Setup Mason LSP
 			require("mason-lspconfig").setup({
 				ensure_installed = {
-					"eslint", -- ESLint
-					"intelephense", -- PHP
-					"bashls", -- Bash
-					"rust_analyzer", -- Rust
+					"eslint",
+					"intelephense",
+					"bashls",
+					"rust_analyzer",
+					"vtsls",
 				},
 				automatic_installation = true,
 			})
 
 			-- Capabilities for autocompletion
-			local capabilities = require("cmp_nvim_lsp").default_capabilities()
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 			-- On attach function for keymaps
 			local on_attach = function(client, bufnr)
@@ -106,27 +107,6 @@ return {
 				on_attach = on_attach,
 			}
 
-			-- -- TypeScript/JavaScript/React
-			-- vim.lsp.config(
-			-- 	"ts_ls",
-			-- 	vim.tbl_extend("force", default_config, {
-			-- 		settings = {
-			-- 			typescript = {
-			-- 				inlayHints = {
-			-- 					includeInlayParameterNameHints = "all",
-			-- 					includeInlayFunctionParameterTypeHints = true,
-			-- 				},
-			-- 			},
-			-- 			javascript = {
-			-- 				inlayHints = {
-			-- 					includeInlayParameterNameHints = "all",
-			-- 					includeInlayFunctionParameterTypeHints = true,
-			-- 				},
-			-- 			},
-			-- 		},
-			-- 	})
-			-- )
-
 			-- ESLint
 			vim.lsp.config(
 				"eslint",
@@ -149,6 +129,27 @@ return {
 							end,
 						})
 					end,
+				})
+			)
+
+			-- TypeScript/JavaScript (vtsls)
+			vim.lsp.config(
+				"vtsls",
+				vim.tbl_extend("force", default_config, {
+					settings = {
+						typescript = {
+							inlayHints = {
+								parameterNames = { enabled = "all" },
+								parameterTypes = { enabled = true },
+							},
+						},
+						javascript = {
+							inlayHints = {
+								parameterNames = { enabled = "all" },
+								parameterTypes = { enabled = true },
+							},
+						},
+					},
 				})
 			)
 
@@ -180,6 +181,8 @@ return {
 							},
 							staticcheck = true,
 							gofumpt = true,
+							completeUnimported = true,
+							usePlaceholders = true,
 						},
 					},
 				})
@@ -191,7 +194,8 @@ return {
 				vim.tbl_extend("force", default_config, {
 					settings = {
 						["rust-analyzer"] = {
-							checkOnSave = {
+							checkOnSave = true,
+							check = {
 								command = "clippy",
 							},
 							cargo = {
@@ -208,19 +212,6 @@ return {
 				vim.tbl_extend("force", default_config, {
 					settings = {
 						Lua = {
-							runtime = {
-								version = "LuaJIT",
-							},
-							diagnostics = {
-								globals = { "vim" }, -- Recognize 'vim' global
-							},
-							workspace = {
-								library = {
-									vim.env.VIRTUAL_RUNTIME,
-									"${3rd}/luv/library",
-								},
-								checkThirdParty = false,
-							},
 							telemetry = {
 								enable = false,
 							},
@@ -233,7 +224,7 @@ return {
 			vim.api.nvim_create_autocmd("FileType", {
 				pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 				callback = function()
-					vim.lsp.enable("ts_ls")
+					vim.lsp.enable("vtsls")
 					vim.lsp.enable("eslint")
 				end,
 			})
@@ -263,6 +254,13 @@ return {
 				pattern = "rust",
 				callback = function()
 					vim.lsp.enable("rust_analyzer")
+				end,
+			})
+
+			vim.api.nvim_create_autocmd("FileType", {
+				pattern = "lua",
+				callback = function()
+					vim.lsp.enable("lua_ls")
 				end,
 			})
 

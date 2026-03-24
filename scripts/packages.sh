@@ -23,7 +23,9 @@ sudo pacman -S --noconfirm \
 	ttf-cascadia-code-nerd \
 	lsof \
 	gammastep \
-	btop 
+	btop \
+	tlp \
+	tlp-rdw
 
 sudo pacman -Rns dolphin kitty
 

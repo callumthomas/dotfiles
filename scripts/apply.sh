@@ -28,4 +28,9 @@ ln -s "$SCRIPT_DIR/ssh/config" ~/.ssh/config
 ln -sf "$SCRIPT_DIR/ssh/aws-ssm-ec2-proxy-command.sh" ~/.ssh/aws-ssm-ec2-proxy-command.sh
 
 mv ~/.claude ~/.claude_old
-ln -s "$SCRIPT_DIR/claude" ~/.claude 
+ln -s "$SCRIPT_DIR/claude" ~/.claude
+
+sudo ln -sf "$SCRIPT_DIR/tlp/tlp.conf" /etc/tlp.conf
+sudo systemctl enable --now tlp.service
+sudo systemctl enable --now NetworkManager-dispatcher.service
+sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket

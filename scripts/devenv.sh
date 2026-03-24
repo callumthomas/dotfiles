@@ -19,7 +19,7 @@ sudo usermod -aG docker $USER
 newgrp docker
 
 sudo pacman -S php-gd php-igbinary php-redis php-grpc php-pgsql
-yay -S php-pear php-protobuf
+yay -S php-pear php-protobuf phpenv
 sudo pecl install decimal
 
 echo "PHP extensions installed"

@@ -8,6 +8,7 @@ sudo pacman -S --noconfirm \
 	nvim \
 	hyprlock \
 	hyprpaper \
+	hypridle \
 	less \
 	wl-clipboard \
 	tmux \

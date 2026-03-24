@@ -12,7 +12,7 @@
 		"battery",
 		"bluetooth",
 		"pulseaudio",
-		"backlight",
+		// "backlight",
 		"custom/temperature",
 		"custom/memory-usage",
 		"custom/cpu-usage",

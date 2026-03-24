@@ -1,5 +1,6 @@
 #!/bin/bash
 sudo pacman -S --noconfirm \
+	base-devel \
 	git \
 	ghostty \
 	fish \
@@ -20,7 +21,8 @@ sudo pacman -S --noconfirm \
 	glow \
 	ttf-cascadia-code-nerd \
 	lsof \
-	gammastep
+	gammastep \
+	btop 
 
 sudo pacman -Rns dolphin kitty
 

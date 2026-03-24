@@ -24,8 +24,6 @@ sudo pacman -S --noconfirm \
 	lsof \
 	gammastep \
 	btop \
-	tlp \
-	tlp-rdw \
 	xdg-desktop-portal-gtk
 
 sudo pacman -Rns dolphin kitty

@@ -83,9 +83,7 @@
       "Bash(pkill:*)"
     ],
     "deny": [
-      "Bash(sudo:*)",
-      "Bash(curl:*)",
-      "Bash(wget:*)"
+      "Bash(sudo:*)"
     ],
     "ask": [
       "Bash(rm:*)"

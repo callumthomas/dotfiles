@@ -2,6 +2,7 @@ import Astal from "gi://Astal?version=4.0";
 import { Gdk } from "ags/gtk4";
 import Workspaces from "../widgets/workspaces";
 import WindowTitle from "../widgets/window-title";
+import { ClockButton } from "../widgets/clock";
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return (
@@ -20,7 +21,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <WindowTitle />
         </box>
         <box $type="end" cssClasses={["modules-right"]}>
-          <label label="right modules" />
+          <ClockButton />
         </box>
       </centerbox>
     </window>

@@ -5,14 +5,14 @@ import GLib from "gi://GLib?version=2.0"
 import { togglePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
 
+const londonTz = GLib.TimeZone["new"]("Europe/London")
+
 const time = createPoll("", 1000, () =>
-  GLib.DateTime.new_now(GLib.TimeZone.new("Europe/London"))!.format("%H:%M")!
+  GLib.DateTime.new_now(londonTz)!.format("%H:%M")!
 )
 
 const date = createPoll("", 60000, () =>
-  GLib.DateTime.new_now(GLib.TimeZone.new("Europe/London"))!.format(
-    "%A, %e %B %Y"
-  )!
+  GLib.DateTime.new_now(londonTz)!.format("%A, %e %B %Y")!
 )
 
 export function ClockButton() {

@@ -1,4 +1,250 @@
-// Placeholder — will be filled in Task 3
-window {
+// === Variables ===
+$component-bg: rgba(15, 27, 53, 0.7);
+$component-bg-hover: rgba(70, 75, 90, 0.9);
+$popup-bg: rgba(15, 27, 53, 0.95);
+$text-primary: #dcdfe1;
+$text-secondary: #888;
+$text-dim: #555;
+$border-subtle: rgba(255, 255, 255, 0.08);
+$border-radius: 10px;
+$font-family: "Liberation Mono", "CaskaydiaCove Nerd Font", "Font Awesome 6 Free";
+
+// Color palette
+$green: #00FF7F;
+$yellow: #FFFF00;
+$orange: #FFA500;
+$warning: #FF9F0A;
+$red: #FF4040;
+$cyan: #00BFFF;
+$mint: #28CD41;
+$pink: #FF1493;
+
+// === Bar ===
+.bar {
   background-color: transparent;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  margin-top: 5px;
+  margin-bottom: 7px;
+  border-radius: $border-radius;
+  background-color: $component-bg;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
+  color: $text-primary;
+}
+
+.modules-left {
+  margin-left: 10px;
+}
+
+.modules-right {
+  margin-right: 10px;
+}
+
+// === Module buttons ===
+.module-button {
+  padding: 4px 8px;
+  min-width: 35px;
+  font-family: $font-family;
+  font-weight: bold;
+  font-size: 16px;
+  background-color: transparent;
+  border: none;
+  color: $text-primary;
+
+  &:hover {
+    background-color: $component-bg-hover;
+  }
+}
+
+.module-first {
+  border-radius: $border-radius 0 0 $border-radius;
+  padding-left: 10px;
+}
+
+.module-last {
+  border-radius: 0 $border-radius $border-radius 0;
+  padding-right: 10px;
+}
+
+// === Workspaces ===
+.workspaces {
+  padding: 4px 6px;
+  border-radius: $border-radius;
+}
+
+.workspace-button {
+  background: transparent;
+  border: none;
+  color: #919BA1;
+  padding: 2px 8px;
+  margin: 0 2px;
+  border-radius: $border-radius;
+  font-weight: bold;
+
+  &.active {
+    color: $text-primary;
+  }
+}
+
+// === Window title ===
+.window-title {
+  padding: 4px 6px;
+  border-radius: $border-radius;
+  font-weight: 500;
+}
+
+// === Popup windows ===
+.popup-window {
+  background-color: transparent;
+}
+
+.popup-panel {
+  background-color: $popup-bg;
+  border-radius: $border-radius;
+  padding: 16px;
+  margin-top: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  min-width: 300px;
+}
+
+.popup-section-label {
+  color: $text-secondary;
+  font-size: 13px;
+}
+
+.popup-item {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 6px;
+}
+
+.popup-item-active {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.popup-divider {
+  background-color: $border-subtle;
+  min-height: 1px;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+// === Sliders ===
+scale {
+  padding: 0;
+  margin: 4px 0;
+
+  trough {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    min-height: 6px;
+  }
+
+  highlight {
+    background-color: $green;
+    border-radius: 6px;
+    min-height: 6px;
+  }
+
+  slider {
+    background-color: $text-primary;
+    border-radius: 50%;
+    min-width: 14px;
+    min-height: 14px;
+    margin: -4px;
+  }
+}
+
+// === Toggle rows ===
+.toggle-row {
+  padding: 8px 0;
+}
+
+.toggle-switch {
+  border-radius: 12px;
+  min-width: 40px;
+  min-height: 22px;
+  padding: 2px;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 200ms;
+
+  &.active {
+    background-color: $green;
+  }
+}
+
+// === Color classes ===
+.color-normal { color: $green; }
+.color-moderate { color: $yellow; }
+.color-high { color: $orange; }
+.color-warning { color: $warning; }
+.color-critical { color: $red; }
+.cyan { color: $cyan; }
+.pink { color: $pink; }
+.text-secondary { color: $text-secondary; }
+.text-dim { color: $text-dim; }
+
+// === Media player ===
+.media-widget {
+  padding: 4px 8px;
+}
+
+.media-title {
+  font-size: 12px;
+  color: $text-primary;
+}
+
+.media-button {
+  background: transparent;
+  border: none;
+  color: $text-secondary;
+  padding: 2px 4px;
+
+  &.playing {
+    color: $green;
+  }
+}
+
+// === Notification center ===
+.notification-item {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 6px;
+}
+
+// === Power menu ===
+.power-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: $text-primary;
+  font-size: 13px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  &.danger {
+    color: $red;
+  }
+}
+
+// === Popup animation ===
+@keyframes popup-reveal {
+  from {
+    opacity: 0;
+    margin-top: -5px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 5px;
+  }
+}
+
+.popup-panel {
+  animation: popup-reveal 200ms ease-out;
 }

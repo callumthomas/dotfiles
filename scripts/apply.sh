@@ -4,8 +4,8 @@ SCRIPT_DIR="$(dirname "$(readlink -f "$0")")/.."
 rm -rf ~/.config/hypr
 ln -s "$SCRIPT_DIR/hypr" ~/.config/hypr
 
-rm -rf ~/.config/waybar
-ln -s "$SCRIPT_DIR/waybar" ~/.config/waybar
+rm -rf ~/.config/ags
+ln -s "$SCRIPT_DIR/ags" ~/.config/ags
 
 rm -rf ~/.config/nvim
 ln -s "$SCRIPT_DIR/nvim" ~/.config/nvim

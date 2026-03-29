@@ -35,11 +35,11 @@ yay -S --noconfirm \
 	claude-code \
 	clipse \
 	aylurs-gtk-shell-git \
-	astal-hyprland-git \
-	astal-wireplumber-git \
-	astal-network-git \
-	astal-bluetooth-git \
-	astal-battery-git \
-	astal-mpris-git \
-	astal-notifd-git \
-	astal-tray-git
+	libastal-hyprland-git \
+	libastal-wireplumber-git \
+	libastal-network-git \
+	libastal-bluetooth-git \
+	libastal-battery-git \
+	libastal-mpris-git \
+	libastal-notifd-git \
+	libastal-tray-git

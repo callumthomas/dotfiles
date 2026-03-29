@@ -1,5 +1,6 @@
 import Astal from "gi://Astal?version=4.0";
 import { Gdk } from "ags/gtk4";
+import Workspaces from "../widgets/workspaces";
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return (
@@ -12,7 +13,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
     >
       <centerbox cssClasses={["bar-inner"]}>
         <box $type="start" cssClasses={["modules-left"]}>
-          <label label="workspaces" />
+          <Workspaces />
         </box>
         <box $type="center" cssClasses={["modules-center"]}>
           <label label="window title" />

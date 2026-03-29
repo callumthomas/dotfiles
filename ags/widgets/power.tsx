@@ -14,7 +14,7 @@ const actions = [
 export function PowerButton() {
   return (
     <button
-      cssClasses={["module-button"]}
+      cssClasses={["module-button", "module-last"]}
       onClicked={() => togglePopup("power-popup")}
     >
       <label label="⏻" />

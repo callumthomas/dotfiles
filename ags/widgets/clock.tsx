@@ -18,7 +18,7 @@ const date = createPoll("", 60000, () =>
 export function ClockButton() {
   return (
     <button
-      cssClasses={["module-button", "module-last"]}
+      cssClasses={["module-button"]}
       onClicked={() => togglePopup("clock-popup")}
     >
       <label label={time} />

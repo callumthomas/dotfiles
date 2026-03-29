@@ -81,9 +81,9 @@ export function NetworkButton() {
   })
 
   const cssClass = primary.as((p) => {
-    if (p === AstalNetwork.Primary.WIRED) return ["module-button", "net-wired"]
-    if (p === AstalNetwork.Primary.WIFI) return ["module-button", "net-wifi"]
-    return ["module-button", "net-disconnected"]
+    if (p === AstalNetwork.Primary.WIRED) return ["module-button", "module-first", "net-wired"]
+    if (p === AstalNetwork.Primary.WIFI) return ["module-button", "module-first", "net-wifi"]
+    return ["module-button", "module-first", "net-disconnected"]
   })
 
   return (

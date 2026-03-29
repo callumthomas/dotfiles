@@ -2,6 +2,13 @@ import Astal from "gi://Astal?version=4.0";
 import { Gdk } from "ags/gtk4";
 import Workspaces from "../widgets/workspaces";
 import WindowTitle from "../widgets/window-title";
+import { NetworkButton } from "../widgets/network";
+import { BatteryButton } from "../widgets/battery";
+import { BluetoothButton } from "../widgets/bluetooth";
+import { AudioButton } from "../widgets/audio";
+import { TempButton, MemButton, CpuButton } from "../widgets/system-stats";
+import Media from "../widgets/media";
+import { NotificationsButton } from "../widgets/notifications";
 import { ClockButton } from "../widgets/clock";
 import { PowerButton } from "../widgets/power";
 
@@ -22,6 +29,15 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <WindowTitle />
         </box>
         <box $type="end" cssClasses={["modules-right"]}>
+          <NetworkButton />
+          <BatteryButton />
+          <BluetoothButton />
+          <AudioButton />
+          <TempButton />
+          <MemButton />
+          <CpuButton />
+          <Media />
+          <NotificationsButton />
           <ClockButton />
           <PowerButton />
         </box>

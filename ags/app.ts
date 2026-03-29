@@ -1,11 +1,11 @@
-import { App } from "ags/gtk4";
+import app from "ags/gtk4/app";
 import style from "./style.scss";
 import Bar from "./bar/Bar";
 
-App.start({
+app.start({
   css: style,
   main() {
-    for (const monitor of App.get_monitors()) {
+    for (const monitor of app.get_monitors()) {
       Bar(monitor);
     }
   },

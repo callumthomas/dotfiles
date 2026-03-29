@@ -3,6 +3,7 @@ import { Gdk } from "ags/gtk4";
 import Workspaces from "../widgets/workspaces";
 import WindowTitle from "../widgets/window-title";
 import { ClockButton } from "../widgets/clock";
+import { PowerButton } from "../widgets/power";
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   return (
@@ -22,6 +23,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         </box>
         <box $type="end" cssClasses={["modules-right"]}>
           <ClockButton />
+          <PowerButton />
         </box>
       </centerbox>
     </window>

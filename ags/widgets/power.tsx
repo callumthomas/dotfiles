@@ -1,5 +1,6 @@
 import { execAsync } from "ags/process"
 import { Gdk } from "ags/gtk4"
+import Gtk from "gi://Gtk?version=4.0"
 import { togglePopup, closePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
 
@@ -25,7 +26,7 @@ export function PowerButton() {
 export function PowerPopup(gdkmonitor: Gdk.Monitor) {
   return (
     <PopupWindow name="power-popup" gdkmonitor={gdkmonitor}>
-      <box vertical>
+      <box orientation={Gtk.Orientation.VERTICAL}>
         {actions.map((action) => (
           <button
             cssClasses={

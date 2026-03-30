@@ -2,6 +2,7 @@ import { createBinding, createComputed, For } from "gnim"
 import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 import { Gdk } from "ags/gtk4"
+import Gtk from "gi://Gtk?version=4.0"
 import AstalNetwork from "gi://AstalNetwork?version=0.1"
 import { togglePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
@@ -111,7 +112,7 @@ function WifiSection() {
   )
 
   return (
-    <box vertical cssClasses={["net-section"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["net-section"]}>
       <label label="Wi-Fi" cssClasses={["section-header"]} xalign={0} />
 
       {/* Current connection info */}
@@ -167,7 +168,7 @@ function WiredSection() {
   const speed = createBinding(wired, "speed")
 
   return (
-    <box vertical cssClasses={["net-section"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["net-section"]}>
       <label label="Ethernet" cssClasses={["section-header"]} xalign={0} />
       <box cssClasses={["net-info-row"]}>
         <label label="" cssClasses={["net-icon"]} />
@@ -194,7 +195,7 @@ export function NetworkPopup(gdkmonitor: Gdk.Monitor) {
 
   return (
     <PopupWindow name="network-popup" gdkmonitor={gdkmonitor}>
-      <box vertical cssClasses={["network-popup"]}>
+      <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["network-popup"]}>
         <box visible={showWifi}>
           <WifiSection />
         </box>

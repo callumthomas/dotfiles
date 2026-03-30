@@ -2,6 +2,7 @@ import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 import { createBinding, createComputed, For, type Accessor } from "gnim"
 import { Gdk } from "ags/gtk4"
+import Gtk from "gi://Gtk?version=4.0"
 import { togglePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
 
@@ -197,7 +198,7 @@ function TopProcesses({ procs }: { procs: Accessor<ProcEntry[]> }) {
 
 function CpuPanel() {
   return (
-    <box vertical cssClasses={["stat-panel"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["stat-panel"]}>
       <box>
         <label label="CPU" cssClasses={["section-header"]} hexpand xalign={0} />
         <label
@@ -206,7 +207,7 @@ function CpuPanel() {
         />
       </box>
       <UsageBar pct={cpuStat.as((c) => c.usage)} thresholds={CPU_THRESHOLDS} />
-      <box vertical>
+      <box orientation={Gtk.Orientation.VERTICAL}>
         <TopProcesses procs={cpuStat.as((c) => c.top)} />
       </box>
     </box>
@@ -215,7 +216,7 @@ function CpuPanel() {
 
 function MemPanel() {
   return (
-    <box vertical cssClasses={["stat-panel"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["stat-panel"]}>
       <box>
         <label label="Memory" cssClasses={["section-header"]} hexpand xalign={0} />
         <label
@@ -224,7 +225,7 @@ function MemPanel() {
         />
       </box>
       <UsageBar pct={memStat.as((m) => m.pct)} thresholds={MEM_THRESHOLDS} />
-      <box vertical>
+      <box orientation={Gtk.Orientation.VERTICAL}>
         <TopProcesses procs={memStat.as((m) => m.top)} />
       </box>
     </box>
@@ -233,7 +234,7 @@ function MemPanel() {
 
 function TempPanel() {
   return (
-    <box vertical cssClasses={["stat-panel"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["stat-panel"]}>
       <label label="Temperatures" cssClasses={["section-header"]} xalign={0} />
       <box cssClasses={["stat-temp-grid"]}>
         <For each={tempStat} id={(e) => e.name}>
@@ -260,7 +261,7 @@ function TempPanel() {
 export function SystemStatsPopup(gdkmonitor: Gdk.Monitor) {
   return (
     <PopupWindow name="system-stats-popup" gdkmonitor={gdkmonitor}>
-      <box vertical cssClasses={["system-stats-popup"]}>
+      <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["system-stats-popup"]}>
         <CpuPanel />
         <box cssClasses={["popup-divider"]} />
         <MemPanel />

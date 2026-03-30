@@ -1,5 +1,6 @@
 import { createBinding, createComputed, For } from "gnim"
 import { Gdk } from "ags/gtk4"
+import Gtk from "gi://Gtk?version=4.0"
 import AstalNotifd from "gi://AstalNotifd?version=0.1"
 import { togglePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
@@ -60,7 +61,7 @@ function NotificationItem({ notif }: { notif: AstalNotifd.Notification }) {
 
   return (
     <box cssClasses={["notif-item"]}>
-      <box vertical hexpand>
+      <box orientation={Gtk.Orientation.VERTICAL} hexpand>
         {/* Header row */}
         <box cssClasses={["notif-header"]}>
           <label
@@ -115,7 +116,7 @@ export function NotificationsPopup(gdkmonitor: Gdk.Monitor) {
 
   return (
     <PopupWindow name="notifications-popup" gdkmonitor={gdkmonitor}>
-      <box vertical cssClasses={["notifications-popup"]}>
+      <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["notifications-popup"]}>
         {/* Header row */}
         <box cssClasses={["notif-popup-header"]}>
           <label label="Notifications" cssClasses={["notif-title"]} hexpand xalign={0} />
@@ -145,7 +146,7 @@ export function NotificationsPopup(gdkmonitor: Gdk.Monitor) {
 
         {/* Notification list */}
         <box
-          vertical
+          orientation={Gtk.Orientation.VERTICAL}
           cssClasses={["notif-list"]}
           visible={hasNotifs}
         >

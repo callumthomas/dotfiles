@@ -1,5 +1,6 @@
 import { createBinding, createComputed } from "gnim"
 import { Gdk } from "ags/gtk4"
+import Gtk from "gi://Gtk?version=4.0"
 import AstalBattery from "gi://AstalBattery?version=0.1"
 import { togglePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
@@ -99,13 +100,13 @@ function BatteryInfo() {
   })
 
   return (
-    <box vertical cssClasses={["bat-info"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["bat-info"]}>
       <box cssClasses={["bat-header-row"]}>
         <label
           label={createComputed(() => battIcon(pct(), charging()))}
           cssClasses={["bat-big-icon"]}
         />
-        <box vertical>
+        <box orientation={Gtk.Orientation.VERTICAL}>
           <label label={pct.as((p) => `${p}%`)} cssClasses={["bat-big-pct"]} xalign={0} />
           <label label={stateLabel} cssClasses={["bat-state"]} xalign={0} />
         </box>
@@ -130,7 +131,7 @@ function TlpInfo() {
   const isFullCharge = tlp.as((t) => t.chargeStop >= 95)
 
   return (
-    <box vertical cssClasses={["bat-tlp"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["bat-tlp"]}>
       <label label="Power Profile" cssClasses={["section-header"]} xalign={0} />
 
       {/* TLP mode */}
@@ -181,7 +182,7 @@ function TlpInfo() {
 export function BatteryPopup(gdkmonitor: Gdk.Monitor) {
   return (
     <PopupWindow name="battery-popup" gdkmonitor={gdkmonitor}>
-      <box vertical cssClasses={["battery-popup"]}>
+      <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["battery-popup"]}>
         <BatteryInfo />
         <box cssClasses={["popup-divider"]} />
         <TlpInfo />

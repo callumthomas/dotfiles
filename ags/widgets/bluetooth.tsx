@@ -1,5 +1,6 @@
 import { createBinding, createComputed, For } from "gnim"
 import { Gdk } from "ags/gtk4"
+import Gtk from "gi://Gtk?version=4.0"
 import AstalBluetooth from "gi://AstalBluetooth?version=0.1"
 import { togglePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
@@ -74,7 +75,7 @@ function ConnectedDevices() {
   const hasConnected = connected.as((ds) => ds.length > 0)
 
   return (
-    <box vertical visible={hasConnected}>
+    <box orientation={Gtk.Orientation.VERTICAL} visible={hasConnected}>
       <label label="Connected" cssClasses={["section-header"]} xalign={0} />
       <For each={connected} id={(d) => d.address}>
         {(device) => <DeviceRow device={device} />}
@@ -89,7 +90,7 @@ function PairedDevices() {
   const hasPaired = paired.as((ds) => ds.length > 0)
 
   return (
-    <box vertical visible={hasPaired}>
+    <box orientation={Gtk.Orientation.VERTICAL} visible={hasPaired}>
       <label label="Paired" cssClasses={["section-header"]} xalign={0} />
       <For each={paired} id={(d) => d.address}>
         {(device) => <DeviceRow device={device} />}
@@ -103,14 +104,14 @@ export function BluetoothPopup(gdkmonitor: Gdk.Monitor) {
 
   return (
     <PopupWindow name="bluetooth-popup" gdkmonitor={gdkmonitor}>
-      <box vertical cssClasses={["bluetooth-popup"]}>
+      <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["bluetooth-popup"]}>
         <ToggleRow
           label="Bluetooth"
           active={isPowered}
           onToggled={() => bt.toggle()}
         />
         <box
-          vertical
+          orientation={Gtk.Orientation.VERTICAL}
           visible={isPowered}
           cssClasses={["bt-devices"]}
         >

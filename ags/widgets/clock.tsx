@@ -29,7 +29,7 @@ export function ClockButton() {
 export function ClockPopup(gdkmonitor: Gdk.Monitor) {
   return (
     <PopupWindow name="clock-popup" gdkmonitor={gdkmonitor}>
-      <box vertical>
+      <box orientation={Gtk.Orientation.VERTICAL}>
         <label label={time} />
         <label label={date} cssClasses={["text-secondary"]} />
         <box cssClasses={["popup-divider"]} />

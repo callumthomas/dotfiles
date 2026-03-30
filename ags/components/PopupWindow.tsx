@@ -38,7 +38,7 @@ export default function PopupWindow({ name, gdkmonitor, children }: PopupWindowP
         self.add_controller(clickController);
       }}
     >
-      <box vertical>
+      <box orientation={Gtk.Orientation.VERTICAL}>
         <box cssClasses={["popup-panel"]}>
           {children}
         </box>

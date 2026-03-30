@@ -67,7 +67,7 @@ function SpeakerSection() {
   const sliderVal = createComputed(() => speaker()?.volume ?? 0)
 
   return (
-    <box vertical cssClasses={["audio-section"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["audio-section"]}>
       <label label="Output" cssClasses={["section-header"]} xalign={0} />
 
       {/* Volume row */}
@@ -121,7 +121,7 @@ function MicSection() {
   const sliderVal = createComputed(() => mic()?.volume ?? 0)
 
   return (
-    <box vertical cssClasses={["audio-section"]}>
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["audio-section"]}>
       <label label="Input" cssClasses={["section-header"]} xalign={0} />
 
       <box cssClasses={["audio-volume-row"]}>
@@ -176,7 +176,7 @@ function AppStreamsSection() {
 
   return (
     <box
-      vertical
+      orientation={Gtk.Orientation.VERTICAL}
       cssClasses={["audio-section"]}
       visible={hasStreams}
     >
@@ -216,7 +216,7 @@ function AppStreamsSection() {
 export function AudioPopup(gdkmonitor: Gdk.Monitor) {
   return (
     <PopupWindow name="audio-popup" gdkmonitor={gdkmonitor}>
-      <box vertical cssClasses={["audio-popup"]}>
+      <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["audio-popup"]}>
         <SpeakerSection />
         <box cssClasses={["popup-divider"]} />
         <MicSection />

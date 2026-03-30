@@ -107,7 +107,7 @@ const tempStat = createPoll<TempEntry[]>(EMPTY_TEMPS, 5000, async () => {
       for (const [featureName, feature] of Object.entries(chip as Record<string, any>)) {
         if (typeof feature === "object" && feature !== null) {
           for (const [subKey, val] of Object.entries(feature as Record<string, any>)) {
-            if (subKey.endsWith("_input") && typeof val === "number") {
+            if (/^temp\d+_input$/.test(subKey) && typeof val === "number") {
               results.push({ name: `${chipName}: ${featureName}`, temp: Math.round(val) })
             }
           }
@@ -123,44 +123,26 @@ const tempStat = createPoll<TempEntry[]>(EMPTY_TEMPS, 5000, async () => {
 
 // ── bar buttons ───────────────────────────────────────────────────────────────
 
-export function CpuButton() {
-  return (
-    <button
-      cssClasses={cpuStat.as((c) => ["module-button", levelCss(c.usage, CPU_THRESHOLDS)])}
-      onClicked={() => togglePopup("system-stats-popup")}
-    >
-      <box>
-        <label label=" " />
-        <label label={cpuStat.as((c) => `${c.usage}%`)} />
-      </box>
-    </button>
-  )
-}
-
-export function MemButton() {
-  return (
-    <button
-      cssClasses={memStat.as((m) => ["module-button", levelCss(m.pct, MEM_THRESHOLDS)])}
-      onClicked={() => togglePopup("system-stats-popup")}
-    >
-      <box>
-        <label label=" " />
-        <label label={memStat.as((m) => `${m.pct}%`)} />
-      </box>
-    </button>
-  )
-}
-
-export function TempButton() {
+export function SystemStatsButton() {
   const maxTemp = tempStat.as((ts) => ts[0]?.temp ?? 0)
   return (
     <button
-      cssClasses={maxTemp.as((t) => ["module-button", levelCss(t, TMP_THRESHOLDS)])}
+      cssClasses={["module-button", "sys-stats-group"]}
       onClicked={() => togglePopup("system-stats-popup")}
     >
-      <box>
-        <label label=" " />
-        <label label={maxTemp.as((t) => `${t}°`)} />
+      <box spacing={18}>
+        <label
+          label={"\uF2C8"}
+          cssClasses={maxTemp.as((t) => [levelCss(t, TMP_THRESHOLDS)])}
+        />
+        <label
+          label={"\uEFC5"}
+          cssClasses={memStat.as((m) => [levelCss(m.pct, MEM_THRESHOLDS)])}
+        />
+        <label
+          label={"\uF2DB"}
+          cssClasses={cpuStat.as((c) => [levelCss(c.usage, CPU_THRESHOLDS)])}
+        />
       </box>
     </button>
   )
@@ -236,7 +218,7 @@ function TempPanel() {
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["stat-panel"]}>
       <label label="Temperatures" cssClasses={["section-header"]} xalign={0} />
-      <box cssClasses={["stat-temp-grid"]}>
+      <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["stat-temp-grid"]}>
         <For each={tempStat} id={(e) => e.name}>
           {(e) => (
             <box cssClasses={["stat-temp-cell"]}>

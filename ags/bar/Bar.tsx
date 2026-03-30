@@ -6,7 +6,7 @@ import { NetworkButton } from "../widgets/network";
 import { BatteryButton } from "../widgets/battery";
 import { BluetoothButton } from "../widgets/bluetooth";
 import { AudioButton } from "../widgets/audio";
-import { TempButton, MemButton, CpuButton } from "../widgets/system-stats";
+import { SystemStatsButton } from "../widgets/system-stats";
 import Media from "../widgets/media";
 import { NotificationsButton } from "../widgets/notifications";
 import { ClockButton } from "../widgets/clock";
@@ -19,7 +19,9 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       gdkmonitor={gdkmonitor}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
+      layer={Astal.Layer.OVERLAY}
       cssClasses={["bar"]}
+      visible={true}
     >
       <centerbox cssClasses={["bar-inner"]}>
         <box $type="start" cssClasses={["modules-left"]}>
@@ -28,15 +30,13 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <box $type="center" cssClasses={["modules-center"]}>
           <WindowTitle />
         </box>
-        <box $type="end" cssClasses={["modules-right"]}>
+        <box $type="end" cssClasses={["modules-right"]} spacing={2}>
+          <Media />
           <NetworkButton />
-          <BatteryButton />
           <BluetoothButton />
           <AudioButton />
-          <TempButton />
-          <MemButton />
-          <CpuButton />
-          <Media />
+          <BatteryButton />
+          <SystemStatsButton />
           <NotificationsButton />
           <ClockButton />
           <PowerButton />

@@ -25,11 +25,13 @@ function pct(vol: number): string {
 // ── bar button ────────────────────────────────────────────────────────────────
 
 export function AudioButton() {
-  const speaker = createBinding(audio, "defaultSpeaker")
+  const vol = createBinding(audio, "defaultSpeaker", "volume")
+  const mute = createBinding(audio, "defaultSpeaker", "mute")
   const icon = createComputed(() => {
-    const sp = speaker()
-    if (!sp) return "󰝟"
-    return volIcon(sp.volume, sp.mute)
+    const v = vol()
+    const m = mute()
+    if (v === null || m === null) return "󰝟"
+    return volIcon(v, m)
   })
 
   return (
@@ -56,15 +58,18 @@ export function AudioButton() {
 // ── popup ─────────────────────────────────────────────────────────────────────
 
 function SpeakerSection() {
-  const speaker = createBinding(audio, "defaultSpeaker")
+  const vol = createBinding(audio, "defaultSpeaker", "volume")
+  const mute = createBinding(audio, "defaultSpeaker", "mute")
   const speakers = createBinding(audio, "speakers")
 
-  const volLabel = createComputed(() => {
-    const sp = speaker()
-    return sp ? pct(sp.volume) : "—"
+  const volLabel = vol.as((v) => v !== null ? pct(v) : "—")
+  const iconLabel = createComputed(() => {
+    const v = vol()
+    const m = mute()
+    if (v === null || m === null) return "󰝟"
+    return volIcon(v, m)
   })
-
-  const sliderVal = createComputed(() => speaker()?.volume ?? 0)
+  const sliderVal = vol.as((v) => v ?? 0)
 
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["audio-section"]}>
@@ -72,13 +77,7 @@ function SpeakerSection() {
 
       {/* Volume row */}
       <box cssClasses={["audio-volume-row"]}>
-        <label
-          label={createComputed(() => {
-            const sp = speaker()
-            return sp ? volIcon(sp.volume, sp.mute) : "󰝟"
-          })}
-          cssClasses={["audio-icon"]}
-        />
+        <label label={iconLabel} cssClasses={["audio-icon"]} />
         <Slider
           value={sliderVal}
           min={0}
@@ -115,10 +114,11 @@ function SpeakerSection() {
 }
 
 function MicSection() {
-  const mic = createBinding(audio, "defaultMicrophone")
+  const micVol = createBinding(audio, "defaultMicrophone", "volume")
+  const micMute = createBinding(audio, "defaultMicrophone", "mute")
   const mics = createBinding(audio, "microphones")
 
-  const sliderVal = createComputed(() => mic()?.volume ?? 0)
+  const sliderVal = micVol.as((v) => v ?? 0)
 
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["audio-section"]}>
@@ -126,10 +126,7 @@ function MicSection() {
 
       <box cssClasses={["audio-volume-row"]}>
         <label
-          label={createComputed(() => {
-            const m = mic()
-            return m ? (m.mute ? "󰍭" : "󰍬") : "󰍭"
-          })}
+          label={micMute.as((m) => m === false ? "󰍬" : "󰍭")}
           cssClasses={["audio-icon"]}
         />
         <Slider
@@ -142,7 +139,7 @@ function MicSection() {
           }}
         />
         <label
-          label={createComputed(() => mic() ? pct(mic()!.volume) : "—")}
+          label={micVol.as((v) => v !== null ? pct(v) : "—")}
           cssClasses={["audio-pct"]}
           widthChars={4}
         />

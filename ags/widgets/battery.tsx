@@ -67,10 +67,7 @@ export function BatteryButton() {
       cssClasses={cssClass}
       onClicked={() => togglePopup("battery-popup")}
     >
-      <box>
-        <label label={icon} cssClasses={["bat-icon"]} />
-        <label label={pct.as((p) => `${p}%`)} cssClasses={["bat-pct"]} />
-      </box>
+      <label label={icon} cssClasses={["bat-icon"]} />
     </button>
   )
 }
@@ -83,11 +80,34 @@ function BatteryInfo() {
   const state = createBinding(bat, "state")
   const timeToEmpty = createBinding(bat, "timeToEmpty")
   const timeToFull = createBinding(bat, "timeToFull")
+  const energy = createBinding(bat, "energy")
+  const energyFull = createBinding(bat, "energyFull")
   const energyRate = createBinding(bat, "energyRate")
 
   const timeLabel = createComputed(() => {
-    if (charging()) return `Full in ${fmtSeconds(timeToFull())}`
-    return `${fmtSeconds(timeToEmpty())} remaining`
+    const s = state()
+    if (s === AstalBattery.State.FULLY_CHARGED) return "Fully charged"
+
+    const isCharging = charging()
+    const rate = energyRate()
+
+    if (isCharging) {
+      const ttf = timeToFull()
+      if (ttf > 0) return `Full in ${fmtSeconds(ttf)}`
+      if (rate > 0) {
+        const remaining = energyFull() - energy()
+        if (remaining > 0) return `Full in ${fmtSeconds((remaining / rate) * 3600)}`
+      }
+      return "Charging..."
+    }
+
+    const tte = timeToEmpty()
+    if (tte > 0) return `${fmtSeconds(tte)} remaining`
+    if (rate > 0) {
+      const cur = energy()
+      if (cur > 0) return `${fmtSeconds((cur / rate) * 3600)} remaining`
+    }
+    return ""
   })
 
   const stateLabel = state.as((s) => {

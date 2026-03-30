@@ -72,20 +72,37 @@ const bandwidth = createPoll<BwState>(
 
 // ── bar button ────────────────────────────────────────────────────────────────
 
+function wifiIcon(strength: number): string {
+  if (strength >= 75) return "󰤨"
+  if (strength >= 50) return "󰤥"
+  if (strength >= 25) return "󰤢"
+  return "󰤟"
+}
+
 export function NetworkButton() {
+  const wifi = network.wifi
   const primary = createBinding(network, "primary")
 
-  const icon = primary.as((p) => {
-    if (p === AstalNetwork.Primary.WIRED) return ""
-    if (p === AstalNetwork.Primary.WIFI) return ""
-    return "󰤭"
-  })
+  // If NM reports wifi, use that; if wifi object exists (iwd), use signal strength
+  const icon = wifi
+    ? createBinding(wifi, "strength").as((s) =>
+        s > 0 ? wifiIcon(s) : primary() === AstalNetwork.Primary.WIRED ? "" : "󰤭"
+      )
+    : primary.as((p) =>
+        p === AstalNetwork.Primary.WIRED ? "" : "󰤭"
+      )
 
-  const cssClass = primary.as((p) => {
-    if (p === AstalNetwork.Primary.WIRED) return ["module-button", "module-first", "net-wired"]
-    if (p === AstalNetwork.Primary.WIFI) return ["module-button", "module-first", "net-wifi"]
-    return ["module-button", "module-first", "net-disconnected"]
-  })
+  const cssClass = wifi
+    ? createBinding(wifi, "strength").as((s) =>
+        s > 0
+          ? ["module-button", "net-wifi"]
+          : ["module-button", "net-disconnected"]
+      )
+    : primary.as((p) =>
+        p === AstalNetwork.Primary.WIRED
+          ? ["module-button", "net-wired"]
+          : ["module-button", "net-disconnected"]
+      )
 
   return (
     <button
@@ -149,9 +166,7 @@ function WifiSection() {
               <box>
                 <label label={apSsid.as((s) => s || "(hidden)")} xalign={0} hexpand />
                 <label label={apStrength.as((s) => `${s}%`)} cssClasses={["net-strength"]} />
-                {createBinding(ap, "requiresPassword").as((r) =>
-                  r ? <label label="" cssClasses={["net-lock"]} /> : <box />
-                )}
+                <label label="" cssClasses={["net-lock"]} visible={createBinding(ap, "requiresPassword")} />
               </box>
             </button>
           )
@@ -187,27 +202,20 @@ function WiredSection() {
 }
 
 export function NetworkPopup(gdkmonitor: Gdk.Monitor) {
-  const primary = createBinding(network, "primary")
-
-  const showWifi = primary.as((p) => p === AstalNetwork.Primary.WIFI)
-  const showWired = primary.as((p) => p === AstalNetwork.Primary.WIRED)
-  const showDisconnected = primary.as((p) => p === AstalNetwork.Primary.UNKNOWN)
+  const hasWifi = network.wifi !== null
+  const hasWired = network.wired !== null
 
   return (
     <PopupWindow name="network-popup" gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["network-popup"]}>
-        <box visible={showWifi}>
-          <WifiSection />
-        </box>
-        <box visible={showWired}>
-          <WiredSection />
-        </box>
-        <box
-          visible={showDisconnected}
-          cssClasses={["net-section"]}
-        >
-          <label label="Not connected" cssClasses={["net-disconnected-label"]} />
-        </box>
+        {hasWifi && <WifiSection />}
+        {hasWifi && hasWired && <box cssClasses={["popup-divider"]} />}
+        {hasWired && <WiredSection />}
+        {!hasWifi && !hasWired && (
+          <box cssClasses={["net-section"]}>
+            <label label="Not connected" cssClasses={["net-disconnected-label"]} />
+          </box>
+        )}
       </box>
     </PopupWindow>
   )

@@ -1,0 +1,7 @@
+{"type":"server-started","port":49885,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:49885","screen_dir":"/home/cal/dev/dotfiles/.superpowers/brainstorm/604825-1774794068"}
+{"type":"screen-added","file":"/home/cal/dev/dotfiles/.superpowers/brainstorm/604825-1774794068/modules.html"}
+{"source":"user-event","type":"click","text":"\n    \n      Notification Center\n      Bell icon with dropdown showing recent notifications, DND toggle — could replace dunst","choice":"notifications","id":null,"timestamp":1774795769238}
+{"source":"user-event","type":"click","text":"\n    \n      Media Player\n      Now-playing info with controls — you already have playerctl keybinds, this adds a visual widget","choice":"media","id":null,"timestamp":1774795770109}
+{"source":"user-event","type":"click","text":"\n    \n      Power Menu\n      Shutdown / reboot / suspend / lock / logout dropdown","choice":"power","id":null,"timestamp":1774795772447}
+{"type":"screen-added","file":"/home/cal/dev/dotfiles/.superpowers/brainstorm/604825-1774794068/approaches.html"}
+{"type":"server-stopped","reason":"idle timeout"}

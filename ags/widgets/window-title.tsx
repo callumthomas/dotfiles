@@ -1,4 +1,4 @@
-import { createBinding, createComputed } from "gnim"
+import { createBinding } from "gnim"
 import AstalHyprland from "gi://AstalHyprland?version=0.1"
 
 const hypr = AstalHyprland.get_default()!
@@ -23,11 +23,10 @@ function truncate(str: string, max: number): string {
   return str.length > max ? str.slice(0, max - 1) + "…" : str
 }
 
-// Reactive focused client title — null-safe since there may be no focused client
-const windowTitle = createBinding(hypr, "focusedClient").as((client) => {
-  const raw = client?.title ?? ""
-  return truncate(rewriteTitle(raw), 50)
-})
+// Deep binding: fires both when focused client changes AND when its title changes
+const windowTitle = createBinding(hypr, "focusedClient", "title").as((title) =>
+  truncate(rewriteTitle(title ?? ""), 50)
+)
 
 export default function WindowTitle() {
   return (

@@ -79,7 +79,7 @@ function wifiIcon(strength: number): string {
   return "󰤟"
 }
 
-export function NetworkButton() {
+export function NetworkButton({ monitor }: { monitor: string }) {
   const wifi = network.wifi
   const primary = createBinding(network, "primary")
 
@@ -107,7 +107,7 @@ export function NetworkButton() {
   return (
     <button
       cssClasses={cssClass}
-      onClicked={() => togglePopup("network-popup")}
+      onClicked={() => togglePopup(`network-popup-${monitor}`)}
     >
       <label label={icon} />
     </button>
@@ -206,7 +206,7 @@ export function NetworkPopup(gdkmonitor: Gdk.Monitor) {
   const hasWired = network.wired !== null
 
   return (
-    <PopupWindow name="network-popup" gdkmonitor={gdkmonitor}>
+    <PopupWindow name={`network-popup-${gdkmonitor.get_connector()}`} gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["network-popup"]}>
         {hasWifi && <WifiSection />}
         {hasWifi && hasWired && <box cssClasses={["popup-divider"]} />}

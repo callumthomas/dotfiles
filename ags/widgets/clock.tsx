@@ -15,11 +15,11 @@ const date = createPoll("", 60000, () =>
   GLib.DateTime.new_now(londonTz)!.format("%A, %e %B %Y")!
 )
 
-export function ClockButton() {
+export function ClockButton({ monitor }: { monitor: string }) {
   return (
     <button
       cssClasses={["module-button"]}
-      onClicked={() => togglePopup("clock-popup")}
+      onClicked={() => togglePopup(`clock-popup-${monitor}`)}
     >
       <label label={time} />
     </button>
@@ -28,7 +28,7 @@ export function ClockButton() {
 
 export function ClockPopup(gdkmonitor: Gdk.Monitor) {
   return (
-    <PopupWindow name="clock-popup" gdkmonitor={gdkmonitor}>
+    <PopupWindow name={`clock-popup-${gdkmonitor.get_connector()}`} gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL}>
         <label label={time} />
         <label label={date} cssClasses={["text-secondary"]} />

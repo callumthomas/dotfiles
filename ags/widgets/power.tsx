@@ -12,11 +12,11 @@ const actions = [
   { label: "⏻  Shutdown", cmd: "systemctl poweroff", danger: true },
 ]
 
-export function PowerButton() {
+export function PowerButton({ monitor }: { monitor: string }) {
   return (
     <button
       cssClasses={["module-button", "module-last"]}
-      onClicked={() => togglePopup("power-popup")}
+      onClicked={() => togglePopup(`power-popup-${monitor}`)}
     >
       <label label="⏻" />
     </button>
@@ -25,7 +25,7 @@ export function PowerButton() {
 
 export function PowerPopup(gdkmonitor: Gdk.Monitor) {
   return (
-    <PopupWindow name="power-popup" gdkmonitor={gdkmonitor}>
+    <PopupWindow name={`power-popup-${gdkmonitor.get_connector()}`} gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL}>
         {actions.map((action) => (
           <button

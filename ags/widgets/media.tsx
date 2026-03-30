@@ -28,7 +28,7 @@ const media = createExternal<MediaState>(
       const t = p.title || p.identity || ""
       const a = p.artist ? ` – ${p.artist}` : ""
       return {
-        title: truncate(t + a, 50),
+        title: truncate(t + a, 20),
         playing: p.playbackStatus === AstalMpris.PlaybackStatus.PLAYING,
         visible: true,
       }
@@ -112,7 +112,7 @@ export default function Media() {
           label={media.as((m) => m.title)}
           cssClasses={["media-title"]}
           ellipsize={3}
-          maxWidthChars={30}
+          maxWidthChars={20}
         />
       </box>
     </button>

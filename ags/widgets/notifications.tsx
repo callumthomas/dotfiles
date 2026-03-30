@@ -2,7 +2,8 @@ import { createBinding, createComputed, For } from "gnim"
 import { Gdk } from "ags/gtk4"
 import Gtk from "gi://Gtk?version=4.0"
 import AstalNotifd from "gi://AstalNotifd?version=0.1"
-import { togglePopup } from "../bar/PopupManager"
+import { execAsync } from "ags/process"
+import { togglePopup, closePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
 import ToggleRow from "../components/ToggleRow"
 
@@ -20,7 +21,7 @@ function relativeTime(unixSec: number): string {
 
 // ── bar button ────────────────────────────────────────────────────────────────
 
-export function NotificationsButton() {
+export function NotificationsButton({ monitor }: { monitor: string }) {
   const notifs = createBinding(notifd, "notifications")
   const count = notifs.as((ns) => ns.length)
   const dnd = createBinding(notifd, "dontDisturb")
@@ -40,7 +41,7 @@ export function NotificationsButton() {
   return (
     <button
       cssClasses={cssClass}
-      onClicked={() => togglePopup("notifications-popup")}
+      onClicked={() => togglePopup(`notifications-popup-${monitor}`)}
     >
       <box>
         <label label={icon} />
@@ -56,56 +57,87 @@ export function NotificationsButton() {
 
 // ── popup ─────────────────────────────────────────────────────────────────────
 
+function focusAppWindow(notif: AstalNotifd.Notification) {
+  // Invoke default action for in-app navigation (e.g. opens specific Slack conversation)
+  const defaultAction = notif.actions.find((a) => a.id === "default")
+  if (defaultAction) {
+    notif.invoke("default")
+  }
+
+  // Look up the window address and focus by address — this forces workspace switching
+  const query = notif.desktopEntry || notif.appName
+  if (query) {
+    execAsync(["bash", "-c",
+      `hyprctl clients -j | jq -r '.[] | select(.class | test("${query}"; "i")) | .address' | head -1`
+    ]).then((addr) => {
+      const trimmed = addr.trim()
+      if (trimmed) {
+        execAsync(["hyprctl", "dispatch", "focuswindow", `address:${trimmed}`])
+          .catch(console.error)
+      }
+    }).catch(console.error)
+  }
+}
+
 function NotificationItem({ notif }: { notif: AstalNotifd.Notification }) {
   const time = notif.time
 
   return (
-    <box cssClasses={["notif-item"]}>
-      <box orientation={Gtk.Orientation.VERTICAL} hexpand>
-        {/* Header row */}
-        <box cssClasses={["notif-header"]}>
+    <button
+      cssClasses={["notif-item"]}
+      onClicked={() => {
+        focusAppWindow(notif)
+        notif.dismiss()
+        closePopup()
+      }}
+    >
+      <box>
+        <box orientation={Gtk.Orientation.VERTICAL} hexpand>
+          {/* Header row */}
+          <box cssClasses={["notif-header"]}>
+            <label
+              label={notif.appName || "Unknown"}
+              cssClasses={["notif-app-name"]}
+              xalign={0}
+              hexpand
+            />
+            <label
+              label={relativeTime(time)}
+              cssClasses={["notif-time"]}
+            />
+          </box>
+
+          {/* Summary */}
           <label
-            label={notif.appName || "Unknown"}
-            cssClasses={["notif-app-name"]}
+            label={notif.summary}
+            cssClasses={["notif-summary"]}
             xalign={0}
-            hexpand
+            wrap
+            wrapMode={2}
           />
+
+          {/* Body (if non-empty) */}
           <label
-            label={relativeTime(time)}
-            cssClasses={["notif-time"]}
+            label={notif.body}
+            cssClasses={["notif-body"]}
+            xalign={0}
+            visible={notif.body.length > 0}
+            wrap
+            wrapMode={2}
+            maxWidthChars={40}
           />
         </box>
 
-        {/* Summary */}
-        <label
-          label={notif.summary}
-          cssClasses={["notif-summary"]}
-          xalign={0}
-          wrap
-          wrapMode={2}
-        />
-
-        {/* Body (if non-empty) */}
-        <label
-          label={notif.body}
-          cssClasses={["notif-body"]}
-          xalign={0}
-          visible={notif.body.length > 0}
-          wrap
-          wrapMode={2}
-          maxWidthChars={40}
-        />
+        {/* Dismiss button */}
+        <button
+          cssClasses={["notif-dismiss"]}
+          onClicked={() => notif.dismiss()}
+          valign={1} // START
+        >
+          <label label="✕" />
+        </button>
       </box>
-
-      {/* Dismiss button */}
-      <button
-        cssClasses={["notif-dismiss"]}
-        onClicked={() => notif.dismiss()}
-        valign={1} // START
-      >
-        <label label="✕" />
-      </button>
-    </box>
+    </button>
   )
 }
 
@@ -115,7 +147,7 @@ export function NotificationsPopup(gdkmonitor: Gdk.Monitor) {
   const hasNotifs = notifs.as((ns) => ns.length > 0)
 
   return (
-    <PopupWindow name="notifications-popup" gdkmonitor={gdkmonitor}>
+    <PopupWindow name={`notifications-popup-${gdkmonitor.get_connector()}`} gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["notifications-popup"]}>
         {/* Header row */}
         <box cssClasses={["notif-popup-header"]}>
@@ -145,18 +177,25 @@ export function NotificationsPopup(gdkmonitor: Gdk.Monitor) {
         <box cssClasses={["popup-divider"]} />
 
         {/* Notification list */}
-        <box
-          orientation={Gtk.Orientation.VERTICAL}
-          cssClasses={["notif-list"]}
+        <Gtk.ScrolledWindow
+          vexpand
+          hscrollbarPolicy={Gtk.PolicyType.NEVER}
+          vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
+          cssClasses={["notif-scroll"]}
           visible={hasNotifs}
         >
-          <For
-            each={notifs.as((ns) => [...ns].reverse())}
-            id={(n) => n.id}
+          <box
+            orientation={Gtk.Orientation.VERTICAL}
+            cssClasses={["notif-list"]}
           >
-            {(notif) => <NotificationItem notif={notif} />}
-          </For>
-        </box>
+            <For
+              each={notifs.as((ns) => [...ns].sort((a, b) => b.time - a.time))}
+              id={(n) => n.id}
+            >
+              {(notif) => <NotificationItem notif={notif} />}
+            </For>
+          </box>
+        </Gtk.ScrolledWindow>
 
         {/* Empty state */}
         <box

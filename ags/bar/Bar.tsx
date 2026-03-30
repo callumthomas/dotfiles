@@ -13,9 +13,10 @@ import { ClockButton } from "../widgets/clock";
 import { PowerButton } from "../widgets/power";
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
+  const monitor = gdkmonitor.get_connector()!;
   return (
     <window
-      name={`bar-${gdkmonitor.get_connector()}`}
+      name={`bar-${monitor}`}
       gdkmonitor={gdkmonitor}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.LEFT | Astal.WindowAnchor.RIGHT}
       exclusivity={Astal.Exclusivity.EXCLUSIVE}
@@ -26,20 +27,20 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       <centerbox cssClasses={["bar-inner"]}>
         <box $type="start" cssClasses={["modules-left"]}>
           <Workspaces />
+          <Media />
         </box>
         <box $type="center" cssClasses={["modules-center"]}>
           <WindowTitle />
         </box>
         <box $type="end" cssClasses={["modules-right"]} spacing={2}>
-          <Media />
-          <NetworkButton />
-          <BluetoothButton />
-          <AudioButton />
-          <BatteryButton />
-          <SystemStatsButton />
-          <NotificationsButton />
-          <ClockButton />
-          <PowerButton />
+          <NetworkButton monitor={monitor} />
+          <BluetoothButton monitor={monitor} />
+          <AudioButton monitor={monitor} />
+          <BatteryButton monitor={monitor} />
+          <SystemStatsButton monitor={monitor} />
+          <NotificationsButton monitor={monitor} />
+          <ClockButton monitor={monitor} />
+          <PowerButton monitor={monitor} />
         </box>
       </centerbox>
     </window>

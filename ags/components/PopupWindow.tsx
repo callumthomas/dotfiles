@@ -39,19 +39,25 @@ export default function PopupWindow({ name, gdkmonitor, children }: PopupWindowP
         vexpand
         $={(self: Gtk.Box) => {
           const gesture = new Gtk.GestureClick();
+          gesture.connect("pressed", (_g: Gtk.GestureClick, _n: number, x: number, y: number) => {
+            const target = self.pick(x, y, Gtk.PickFlags.DEFAULT);
+            if (target) {
+              let w: Gtk.Widget | null = target;
+              while (w && w !== self) {
+                if (w.get_css_classes().includes("popup-panel")) {
+                  _g.set_state(Gtk.EventSequenceState.DENIED);
+                  return;
+                }
+                w = w.get_parent();
+              }
+            }
+          });
           gesture.connect("released", () => closePopup());
           self.add_controller(gesture);
         }}
       >
         <box hexpand />
-        <box
-          valign={Gtk.Align.START}
-          hexpand={false}
-          $={(self: Gtk.Box) => {
-            const gesture = new Gtk.GestureClick();
-            self.add_controller(gesture);
-          }}
-        >
+        <box valign={Gtk.Align.START} hexpand={false}>
           <box
             cssClasses={["popup-panel"]}
             orientation={Gtk.Orientation.VERTICAL}

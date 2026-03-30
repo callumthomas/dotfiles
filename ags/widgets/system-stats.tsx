@@ -123,12 +123,12 @@ const tempStat = createPoll<TempEntry[]>(EMPTY_TEMPS, 5000, async () => {
 
 // ── bar buttons ───────────────────────────────────────────────────────────────
 
-export function SystemStatsButton() {
+export function SystemStatsButton({ monitor }: { monitor: string }) {
   const maxTemp = tempStat.as((ts) => ts[0]?.temp ?? 0)
   return (
     <button
       cssClasses={["module-button", "sys-stats-group"]}
-      onClicked={() => togglePopup("system-stats-popup")}
+      onClicked={() => togglePopup(`system-stats-popup-${monitor}`)}
     >
       <box spacing={18}>
         <label
@@ -242,7 +242,7 @@ function TempPanel() {
 
 export function SystemStatsPopup(gdkmonitor: Gdk.Monitor) {
   return (
-    <PopupWindow name="system-stats-popup" gdkmonitor={gdkmonitor}>
+    <PopupWindow name={`system-stats-popup-${gdkmonitor.get_connector()}`} gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["system-stats-popup"]}>
         <CpuPanel />
         <box cssClasses={["popup-divider"]} />

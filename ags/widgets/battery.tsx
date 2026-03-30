@@ -52,7 +52,7 @@ function fmtSeconds(secs: number): string {
 
 // ── bar button ────────────────────────────────────────────────────────────────
 
-export function BatteryButton() {
+export function BatteryButton({ monitor }: { monitor: string }) {
   const pct = createBinding(bat, "percentage").as((p) => Math.round(p * 100))
   const charging = createBinding(bat, "charging")
 
@@ -65,7 +65,7 @@ export function BatteryButton() {
   return (
     <button
       cssClasses={cssClass}
-      onClicked={() => togglePopup("battery-popup")}
+      onClicked={() => togglePopup(`battery-popup-${monitor}`)}
     >
       <label label={icon} cssClasses={["bat-icon"]} />
     </button>
@@ -201,7 +201,7 @@ function TlpInfo() {
 
 export function BatteryPopup(gdkmonitor: Gdk.Monitor) {
   return (
-    <PopupWindow name="battery-popup" gdkmonitor={gdkmonitor}>
+    <PopupWindow name={`battery-popup-${gdkmonitor.get_connector()}`} gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["battery-popup"]}>
         <BatteryInfo />
         <box cssClasses={["popup-divider"]} />

@@ -24,7 +24,7 @@ function pct(vol: number): string {
 
 // ── bar button ────────────────────────────────────────────────────────────────
 
-export function AudioButton() {
+export function AudioButton({ monitor }: { monitor: string }) {
   const vol = createBinding(audio, "defaultSpeaker", "volume")
   const mute = createBinding(audio, "defaultSpeaker", "mute")
   const icon = createComputed(() => {
@@ -37,7 +37,7 @@ export function AudioButton() {
   return (
     <button
       cssClasses={["module-button"]}
-      onClicked={() => togglePopup("audio-popup")}
+      onClicked={() => togglePopup(`audio-popup-${monitor}`)}
       $={(self: Gtk.Button) => {
         const scrollCtrl = new Gtk.EventControllerScroll()
         scrollCtrl.flags = Gtk.EventControllerScrollFlags.VERTICAL
@@ -212,7 +212,7 @@ function AppStreamsSection() {
 
 export function AudioPopup(gdkmonitor: Gdk.Monitor) {
   return (
-    <PopupWindow name="audio-popup" gdkmonitor={gdkmonitor}>
+    <PopupWindow name={`audio-popup-${gdkmonitor.get_connector()}`} gdkmonitor={gdkmonitor}>
       <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["audio-popup"]}>
         <SpeakerSection />
         <box cssClasses={["popup-divider"]} />

@@ -1,6 +1,7 @@
 #!/bin/bash
 sudo pacman -S --noconfirm \
 	base-devel \
+	linux-headers \
 	git \
 	ghostty \
 	fish \

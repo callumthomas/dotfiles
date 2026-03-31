@@ -26,7 +26,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
     >
       <centerbox cssClasses={["bar-inner"]}>
         <box $type="start" cssClasses={["modules-left"]}>
-          <Workspaces />
+          <Workspaces monitor={monitor} />
           <Media />
         </box>
         <box $type="center" cssClasses={["modules-center"]}>

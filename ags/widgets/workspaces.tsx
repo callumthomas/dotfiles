@@ -3,15 +3,16 @@ import AstalHyprland from "gi://AstalHyprland?version=0.1"
 
 const hypr = AstalHyprland.get_default()!
 
-// Reactive list of workspaces sorted by id (positive ids only)
-const workspaces = createBinding(hypr, "workspaces").as((ws) =>
-  ws.filter((w) => w.id > 0).sort((a, b) => a.id - b.id)
-)
-
 // Reactive focused workspace id
 const focusedId = createBinding(hypr, "focusedWorkspace").as((ws) => ws?.id ?? -1)
 
-export default function Workspaces() {
+export default function Workspaces({ monitor }: { monitor: string }) {
+  const workspaces = createBinding(hypr, "workspaces").as((ws) =>
+    ws
+      .filter((w) => w.id > 0 && w.monitor?.name === monitor)
+      .sort((a, b) => a.id - b.id)
+  )
+
   return (
     <box cssClasses={["workspaces"]}>
       <For each={workspaces} id={(ws) => ws.id}>

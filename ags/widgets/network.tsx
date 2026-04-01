@@ -124,9 +124,16 @@ function WifiSection() {
   const strength = createBinding(wifi, "strength")
   const aps = createBinding(wifi, "accessPoints")
 
-  const sortedAps = aps.as((list) =>
-    [...list].sort((a, b) => b.strength - a.strength).slice(0, 10)
-  )
+  const sortedAps = aps.as((list) => {
+    const sorted = [...list].sort((a, b) => b.strength - a.strength)
+    const seen = new Set<string>()
+    return sorted.filter((ap) => {
+      const key = ap.ssid || ""
+      if (seen.has(key)) return false
+      seen.add(key)
+      return true
+    }).slice(0, 10)
+  })
 
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["net-section"]}>

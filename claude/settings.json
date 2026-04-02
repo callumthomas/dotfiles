@@ -81,8 +81,6 @@
       "Bash(ps:*)",
       "Bash(kill:*)",
       "Bash(pkill:*)",
-      "Bash(python3 -c \"from langchain_mcp_adapters.client import MultiServerMCPClient; import inspect; print\\(inspect.getsourcefile\\(MultiServerMCPClient\\)\\)\")",
-      "Read(//home/cal/dev/denv/**)",
       "Bash(docker compose:*)"
     ],
     "deny": [

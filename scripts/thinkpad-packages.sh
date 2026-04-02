@@ -4,3 +4,9 @@ sudo pacman -S --noconfirm \
 	brightnessctl \
 	tlp \
 	tlp-rdw
+
+yay -S --noconfirm \
+	thinkfan \
+	evdi-dkms-git \
+	displaylink
+

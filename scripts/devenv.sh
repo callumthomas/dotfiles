@@ -10,8 +10,13 @@ sudo pacman -S --noconfirm \
 	nvm \
 	composer \
 	mysql-clients \
-	postgresql-libs
+	postgresql-libs \
+	postgresql \
+	k9s
 
+yay -S --noconfirm \
+	datagrip \
+	datagrip-jre \
 
 sudo npm i -g yarn
 

@@ -11,6 +11,7 @@ import PopupWindow from "../components/PopupWindow"
 const CPU_THRESHOLDS = [45, 60, 75, 90]
 const MEM_THRESHOLDS = [45, 60, 75, 90]
 const TMP_THRESHOLDS = [50, 60, 70, 85]
+const FAN_THRESHOLDS = [3000, 4000, 5000, 6000]
 
 function levelCss(val: number, thresholds: number[]): string {
   if (val >= thresholds[3]) return "stat-warning"
@@ -95,6 +96,22 @@ const memStat = createPoll<MemSample>(EMPTY_MEM, 2000, async (prev) => {
 
 interface TempEntry { name: string; temp: number }
 
+const KNOWN_FEATURE_NAMES: Record<string, string> = {
+  "Tctl": "CPU Package",
+  "edge": "GPU Edge",
+  "Composite": "NVMe",
+  "Sensor 1": "NVMe Die",
+}
+
+function friendlyTempName(chipName: string, featureName: string): string {
+  if (KNOWN_FEATURE_NAMES[featureName]) return KNOWN_FEATURE_NAMES[featureName]
+  if (chipName.startsWith("mt79") || chipName.startsWith("iwl")) return "WiFi"
+  if (chipName.startsWith("acpitz")) return "ACPI"
+  if (chipName.startsWith("thinkpad") && /^temp\d+$/.test(featureName))
+    return `Zone ${featureName.slice(4)}`
+  return featureName
+}
+
 const EMPTY_TEMPS: TempEntry[] = []
 
 const tempStat = createPoll<TempEntry[]>(EMPTY_TEMPS, 5000, async () => {
@@ -108,7 +125,7 @@ const tempStat = createPoll<TempEntry[]>(EMPTY_TEMPS, 5000, async () => {
         if (typeof feature === "object" && feature !== null) {
           for (const [subKey, val] of Object.entries(feature as Record<string, any>)) {
             if (/^temp\d+_input$/.test(subKey) && typeof val === "number") {
-              results.push({ name: `${chipName}: ${featureName}`, temp: Math.round(val) })
+              results.push({ name: friendlyTempName(chipName, featureName), temp: Math.round(val) })
             }
           }
         }
@@ -118,6 +135,38 @@ const tempStat = createPoll<TempEntry[]>(EMPTY_TEMPS, 5000, async () => {
     return results.filter((e) => e.temp > 0).sort((a, b) => b.temp - a.temp).slice(0, 8)
   } catch {
     return EMPTY_TEMPS
+  }
+})
+
+// ── Fan ──────────────────────────────────────────────────────────────────────
+
+interface FanSample {
+  rpm: number
+  pct: number
+  level: string
+}
+
+const EMPTY_FAN: FanSample = { rpm: 0, pct: 0, level: "auto" }
+
+const fanStat = createPoll<FanSample>(EMPTY_FAN, 5000, async () => {
+  try {
+    const [sensorsOut, fanOut] = await Promise.all([
+      execAsync("sensors -j"),
+      execAsync("cat /proc/acpi/ibm/fan"),
+    ])
+
+    const json = JSON.parse(sensorsOut)
+    const thinkpad = json["thinkpad-isa-0000"]
+    const rpm = thinkpad?.fan1?.fan1_input ?? 0
+    const pwm = thinkpad?.pwm1?.pwm1 ?? 0
+    const pct = Math.round((pwm / 255) * 100)
+
+    const levelMatch = fanOut.match(/^level:\s+(.+)$/m)
+    const level = levelMatch?.[1]?.trim() ?? "unknown"
+
+    return { rpm: Math.round(rpm), pct, level }
+  } catch {
+    return EMPTY_FAN
   }
 })
 
@@ -134,6 +183,10 @@ export function SystemStatsButton({ monitor }: { monitor: string }) {
         <label
           label={"\uF2C8"}
           cssClasses={maxTemp.as((t) => [levelCss(t, TMP_THRESHOLDS)])}
+        />
+        <label
+          label={"\u{F0210}"}
+          cssClasses={fanStat.as((f) => [levelCss(f.rpm, FAN_THRESHOLDS)])}
         />
         <label
           label={"\uEFC5"}
@@ -214,6 +267,58 @@ function MemPanel() {
   )
 }
 
+function FanPanel() {
+  return (
+    <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["stat-panel"]}>
+      <box>
+        <label label="Fan" cssClasses={["section-header"]} hexpand xalign={0} />
+        <label
+          label={fanStat.as((f) => `${f.pct}% (${f.rpm} RPM)`)}
+          cssClasses={fanStat.as((f) => ["stat-value", levelCss(f.rpm, FAN_THRESHOLDS)])}
+        />
+      </box>
+      <box cssClasses={["stat-fan-detail"]}>
+        <label label="Level" xalign={0} hexpand cssClasses={["stat-temp-name"]} />
+        <label label={fanStat.as((f) => f.level)} cssClasses={["stat-temp-val"]} />
+      </box>
+      <box cssClasses={["stat-fan-control"]} spacing={8}>
+        <slider
+          hexpand
+          value={fanStat.as((f) => {
+            const n = parseInt(f.level)
+            return isNaN(n) ? 4 : n
+          })}
+          min={0}
+          max={7}
+          step={1}
+          drawValue={false}
+          sensitive={fanStat.as((f) => f.level !== "auto")}
+          onChangeValue={(_self, _scroll, val) => {
+            execAsync(`sudo /usr/local/bin/fan-set ${Math.round(val)}`)
+            return false
+          }}
+        />
+        <button
+          label="Auto"
+          cssClasses={fanStat.as((f) => [
+            "stat-fan-auto-btn",
+            f.level === "auto" ? "active" : "",
+          ])}
+          onClicked={() => {
+            const current = fanStat.get()
+            if (current.level === "auto") {
+              const level = Math.min(7, Math.max(0, Math.round(current.pct / 100 * 7)))
+              execAsync(`sudo /usr/local/bin/fan-set ${level}`)
+            } else {
+              execAsync("sudo /usr/local/bin/fan-set auto")
+            }
+          }}
+        />
+      </box>
+    </box>
+  )
+}
+
 function TempPanel() {
   return (
     <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["stat-panel"]}>
@@ -223,7 +328,7 @@ function TempPanel() {
           {(e) => (
             <box cssClasses={["stat-temp-cell"]}>
               <label
-                label={e.name.split(":").pop()!.trim().slice(0, 20)}
+                label={e.name.slice(0, 20)}
                 xalign={0}
                 hexpand
                 cssClasses={["stat-temp-name"]}
@@ -249,6 +354,8 @@ export function SystemStatsPopup(gdkmonitor: Gdk.Monitor) {
         <MemPanel />
         <box cssClasses={["popup-divider"]} />
         <TempPanel />
+        <box cssClasses={["popup-divider"]} />
+        <FanPanel />
       </box>
     </PopupWindow>
   )

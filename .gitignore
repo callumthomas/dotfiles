@@ -5,4 +5,4 @@ claude/*
 !claude/settings.json
 !claude/statusline.sh
 .superpowers/*
-docs/superpowers/*
+docs/*

@@ -1,6 +1,7 @@
 #!/bin/bash
 sudo pacman -S --noconfirm \
 	base-devel \
+	linux-headers \
 	git \
 	ghostty \
 	fish \
@@ -12,7 +13,6 @@ sudo pacman -S --noconfirm \
 	less \
 	wl-clipboard \
 	tmux \
-	waybar \
 	ttf-font-awesome \
 	otf-font-awesome \
 	thunar \
@@ -24,6 +24,7 @@ sudo pacman -S --noconfirm \
 	lsof \
 	gammastep \
 	btop \
+	dart-sass \
 	xdg-desktop-portal-gtk
 
 sudo pacman -Rns dolphin kitty
@@ -33,4 +34,13 @@ git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -
 yay -S --noconfirm \
 	hyprcap \
 	claude-code \
-	clipse
+	clipse \
+	aylurs-gtk-shell-git \
+	libastal-hyprland-git \
+	libastal-wireplumber-git \
+	libastal-network-git \
+	libastal-bluetooth-git \
+	libastal-battery-git \
+	libastal-mpris-git \
+	libastal-notifd-git \
+	libastal-tray-git

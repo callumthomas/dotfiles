@@ -80,14 +80,16 @@
       "Bash(lsof:*)",
       "Bash(ps:*)",
       "Bash(kill:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(docker compose:*)"
     ],
     "deny": [
       "Bash(sudo:*)"
     ],
     "ask": [
       "Bash(rm:*)"
-    ]
+    ],
+    "defaultMode": "default"
   },
   "statusLine": {
     "type": "command",
@@ -112,6 +114,12 @@
       "source": {
         "source": "git",
         "url": "https://github.com/obra/superpowers.git"
+      }
+    },
+    "delio-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "deliowales/claude-plugins"
       }
     }
   },

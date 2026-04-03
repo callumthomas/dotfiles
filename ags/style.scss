@@ -1,0 +1,691 @@
+// === Variables ===
+$component-bg: rgba(15, 27, 53, 0.7);
+$component-bg-hover: rgba(70, 75, 90, 0.9);
+$popup-bg: rgba(15, 27, 53, 0.95);
+$text-primary: #dcdfe1;
+$text-secondary: #888;
+$text-dim: #555;
+$border-subtle: rgba(255, 255, 255, 0.08);
+$border-radius: 10px;
+$font-family: "CaskaydiaCove Nerd Font", "Liberation Mono", "Font Awesome 6 Free";
+
+// Color palette
+$green: #00FF7F;
+$yellow: #FFFF00;
+$orange: #FFA500;
+$warning: #FF9F0A;
+$red: #FF4040;
+$cyan: #00BFFF;
+$mint: #28CD41;
+$pink: #FF1493;
+
+// === Bar ===
+.bar {
+  background-color: transparent;
+}
+
+.bar-inner {
+  // Reset padding on the centerbox itself
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  border-radius: $border-radius;
+  background-color: $component-bg;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0px 2px 4px rgba(0, 0, 0, 0.6);
+  color: $text-primary;
+}
+
+.modules-left {
+  margin-left: 10px;
+}
+
+.modules-right {
+  margin-right: 10px;
+}
+
+// === Module buttons ===
+.module-button {
+  padding: 4px 8px;
+  min-width: 0;
+  font-family: $font-family;
+  font-weight: bold;
+  font-size: 15px;
+  background-color: transparent;
+  border: none;
+  color: $text-primary;
+
+  &:hover {
+    background-color: $component-bg-hover;
+  }
+}
+
+.modules-right > :first-child {
+  border-top-left-radius: $border-radius;
+  border-bottom-left-radius: $border-radius;
+}
+
+.modules-right > :last-child {
+  border-top-right-radius: $border-radius;
+  border-bottom-right-radius: $border-radius;
+}
+
+// === System stat colors (bar buttons + popup values) ===
+.stat-normal { color: $green; }
+.stat-moderate { color: $yellow; }
+.stat-high { color: $orange; }
+.stat-warning { color: $red; }
+
+// === Workspaces ===
+.workspaces {
+  padding: 4px 6px;
+  border-radius: $border-radius;
+}
+
+.workspace-button {
+  background: transparent;
+  border: none;
+  color: #919BA1;
+  padding: 2px 6px;
+  margin: 0 1px;
+  border-radius: $border-radius;
+  font-weight: bold;
+
+  &.active {
+    color: $text-primary;
+  }
+}
+
+// === Window title ===
+.window-title {
+  padding: 4px 8px;
+  border-radius: $border-radius;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+// === Popup windows ===
+.popup-window {
+  background-color: transparent;
+}
+
+.popup-panel {
+  background-color: $popup-bg;
+  border-radius: $border-radius;
+  padding: 14px;
+  margin-top: 4px;
+  margin-right: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  min-width: 280px;
+  font-family: $font-family;
+  color: $text-primary;
+}
+
+.section-header {
+  font-size: 13px;
+  font-weight: bold;
+  color: $text-secondary;
+  margin-bottom: 6px;
+}
+
+.popup-divider {
+  background-color: $border-subtle;
+  min-height: 1px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+// === Sliders ===
+scale {
+  padding: 0;
+  margin: 4px 0;
+
+  trough {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    min-height: 6px;
+  }
+
+  highlight {
+    background-color: $green;
+    border-radius: 6px;
+    min-height: 6px;
+  }
+
+  slider {
+    background-color: $text-primary;
+    border-radius: 50%;
+    min-width: 14px;
+    min-height: 14px;
+    margin: -4px;
+  }
+}
+
+// === Toggle rows ===
+.toggle-row {
+  padding: 6px 0;
+}
+
+.toggle-switch {
+  border-radius: 12px;
+  min-width: 40px;
+  min-height: 22px;
+  padding: 2px;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: background-color 200ms;
+
+  &.active {
+    background-color: $green;
+  }
+}
+
+// === General color classes ===
+.color-normal { color: $green; }
+.color-moderate { color: $yellow; }
+.color-high { color: $orange; }
+.color-warning { color: $warning; }
+.color-critical { color: $red; }
+.cyan { color: $cyan; }
+.pink { color: $pink; }
+.text-secondary { color: $text-secondary; }
+.text-dim { color: $text-dim; }
+
+// ============================================================================
+// AUDIO POPUP
+// ============================================================================
+.audio-section {
+  margin-bottom: 2px;
+}
+
+.audio-volume-row {
+  padding: 4px 0;
+
+  .audio-icon {
+    font-size: 18px;
+    min-width: 28px;
+  }
+
+  .audio-pct {
+    font-size: 13px;
+    color: $text-secondary;
+    min-width: 40px;
+    margin-left: 8px;
+  }
+}
+
+.audio-device {
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: $text-primary;
+  font-size: 13px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  &.active {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: $green;
+  }
+}
+
+.audio-app-name {
+  font-size: 12px;
+  color: $text-secondary;
+}
+
+// ============================================================================
+// NETWORK POPUP
+// ============================================================================
+.net-wifi { color: $cyan; }
+.net-wired { color: $green; }
+.net-disconnected { color: $text-dim; }
+
+.net-section {
+  margin-bottom: 2px;
+}
+
+.net-info-row {
+  padding: 4px 0;
+
+  .net-icon {
+    font-size: 16px;
+    min-width: 24px;
+    color: $cyan;
+  }
+
+  .net-strength {
+    color: $text-secondary;
+    font-size: 13px;
+    margin-left: 8px;
+  }
+
+  .net-speed {
+    color: $text-secondary;
+    font-size: 13px;
+  }
+}
+
+.net-bw-row {
+  padding: 2px 0 4px 0;
+
+  .net-bandwidth {
+    font-size: 12px;
+    color: $text-dim;
+  }
+}
+
+.net-sub-header {
+  font-size: 12px;
+  color: $text-dim;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.net-ap {
+  background: transparent;
+  border: none;
+  padding: 5px 8px;
+  border-radius: 6px;
+  color: $text-primary;
+  font-size: 13px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  &.active {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: $cyan;
+  }
+}
+
+.net-lock {
+  color: $text-dim;
+  margin-left: 6px;
+  font-size: 12px;
+}
+
+.net-disconnected-label {
+  color: $text-dim;
+  padding: 12px 0;
+}
+
+// ============================================================================
+// BLUETOOTH POPUP
+// ============================================================================
+.bt-connected {
+  color: $cyan;
+}
+
+.bt-devices {
+  margin-top: 4px;
+}
+
+.bt-device {
+  padding: 6px 0;
+  font-size: 13px;
+
+  &.connected {
+    color: $cyan;
+  }
+
+  .bt-battery {
+    color: $text-secondary;
+    font-size: 12px;
+    margin-right: 8px;
+  }
+
+  .bt-action {
+    background: transparent;
+    border: 1px solid $border-subtle;
+    border-radius: 6px;
+    padding: 2px 10px;
+    color: $text-secondary;
+    font-size: 12px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.06);
+      color: $text-primary;
+    }
+  }
+}
+
+.bt-scan-row {
+  padding: 4px 0;
+}
+
+.bt-scanning {
+  color: $text-dim;
+  font-size: 12px;
+  padding: 6px 0;
+}
+
+// ============================================================================
+// BATTERY POPUP
+// ============================================================================
+.bat-icon {
+  margin-right: 2px;
+}
+
+.bat-good { color: $green; }
+.bat-medium { color: $yellow; }
+.bat-low { color: $orange; }
+.bat-critical { color: $red; }
+
+.bat-info {
+  margin-bottom: 4px;
+}
+
+.bat-header-row {
+  padding: 4px 0;
+
+  .bat-big-icon {
+    font-size: 28px;
+    min-width: 40px;
+    margin-right: 8px;
+  }
+
+  .bat-big-pct {
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .bat-state {
+    font-size: 13px;
+    color: $text-secondary;
+  }
+}
+
+.bat-time {
+  font-size: 13px;
+  color: $text-secondary;
+  padding: 2px 0;
+}
+
+.bat-power {
+  font-size: 12px;
+  color: $text-dim;
+}
+
+.bat-tlp {
+  margin-top: 4px;
+}
+
+.bat-detail-row {
+  padding: 3px 0;
+  font-size: 13px;
+
+  .bat-detail-val {
+    color: $text-secondary;
+  }
+}
+
+// ============================================================================
+// SYSTEM STATS POPUP
+// ============================================================================
+.stat-panel {
+  margin-bottom: 2px;
+
+  .stat-value {
+    font-weight: bold;
+    font-size: 14px;
+  }
+}
+
+.stat-levelbar {
+  margin: 6px 0;
+
+  trough {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    min-height: 4px;
+  }
+
+  // Level bars use fill-level block styling
+  block {
+    &.filled {
+      border-radius: 4px;
+      min-height: 4px;
+    }
+  }
+}
+
+.stat-levelbar.stat-normal block.filled { background-color: $green; }
+.stat-levelbar.stat-moderate block.filled { background-color: $yellow; }
+.stat-levelbar.stat-high block.filled { background-color: $orange; }
+.stat-levelbar.stat-warning block.filled { background-color: $red; }
+
+.stat-proc-row {
+  padding: 2px 0;
+  font-size: 12px;
+  color: $text-secondary;
+
+  .stat-proc-pct {
+    color: $text-dim;
+    min-width: 40px;
+  }
+}
+
+.stat-fan-detail {
+  padding: 3px 0;
+  font-size: 13px;
+}
+
+.stat-fan-control {
+  margin-top: 6px;
+}
+
+.stat-fan-auto-btn {
+  background: transparent;
+  border: 1px solid $border-subtle;
+  border-radius: 6px;
+  padding: 2px 10px;
+  color: $text-secondary;
+  font-size: 12px;
+  min-width: 0;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  &.active {
+    background-color: rgba(0, 255, 127, 0.15);
+    color: $green;
+    border-color: rgba(0, 255, 127, 0.3);
+  }
+}
+
+.stat-temp-grid {
+  margin-top: 4px;
+}
+
+.stat-temp-cell {
+  padding: 3px 0;
+  font-size: 13px;
+
+  .stat-temp-name {
+    color: $text-secondary;
+  }
+
+  .stat-temp-val {
+    font-weight: bold;
+    margin-left: 8px;
+  }
+}
+
+// ============================================================================
+// NOTIFICATIONS POPUP
+// ============================================================================
+.notif-dnd {
+  color: $warning;
+}
+
+.notif-active {
+  color: $cyan;
+}
+
+.notif-count {
+  font-size: 11px;
+  margin-left: 3px;
+  color: $cyan;
+}
+
+.notif-popup-header {
+  padding-bottom: 4px;
+
+  .notif-title {
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .notif-clear-btn {
+    background: transparent;
+    border: none;
+    color: $text-dim;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+
+    &:hover {
+      color: $red;
+      background-color: rgba(255, 64, 64, 0.1);
+    }
+  }
+}
+
+.notif-scroll {
+  min-height: 700px;
+}
+
+.notif-list {
+  margin-top: 4px;
+}
+
+.notif-item {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 4px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .notif-header {
+    margin-bottom: 2px;
+
+    .notif-app-name {
+      font-size: 11px;
+      font-weight: bold;
+      color: $text-dim;
+    }
+
+    .notif-time {
+      font-size: 10px;
+      color: $text-dim;
+    }
+  }
+
+  .notif-summary {
+    font-size: 13px;
+    font-weight: bold;
+  }
+
+  .notif-body {
+    font-size: 12px;
+    color: $text-secondary;
+    margin-top: 2px;
+  }
+
+  .notif-dismiss {
+    background: transparent;
+    border: none;
+    color: $text-dim;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    min-width: 0;
+
+    &:hover {
+      color: $red;
+    }
+  }
+}
+
+.notif-empty {
+  padding: 16px 0;
+
+  .notif-empty-label {
+    color: $text-dim;
+    font-size: 13px;
+  }
+}
+
+// ============================================================================
+// CLOCK POPUP
+// ============================================================================
+// Calendar uses GTK4 calendar widget
+calendar {
+  background-color: transparent;
+  color: $text-primary;
+  padding: 4px;
+
+  &:selected {
+    color: $pink;
+  }
+}
+
+// ============================================================================
+// MEDIA PLAYER
+// ============================================================================
+.media-title {
+  font-size: 12px;
+  color: $text-primary;
+}
+
+.media-playing-icon {
+  color: $green;
+}
+
+// ============================================================================
+// POWER MENU
+// ============================================================================
+.power-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: $text-primary;
+  font-size: 13px;
+  background: transparent;
+  border: none;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  &.danger {
+    color: $red;
+  }
+}
+
+// === Popup animation ===
+@keyframes popup-reveal {
+  from {
+    opacity: 0;
+    margin-top: -2px;
+  }
+  to {
+    opacity: 1;
+    margin-top: 4px;
+  }
+}
+
+.popup-panel {
+  animation: popup-reveal 150ms ease-out;
+}

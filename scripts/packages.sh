@@ -17,6 +17,7 @@ sudo pacman -S --noconfirm \
 	otf-font-awesome \
 	thunar \
 	ripgrep \
+	tree-sitter-cli \
 	lazygit \
 	socat \
 	glow \

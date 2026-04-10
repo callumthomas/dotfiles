@@ -70,5 +70,7 @@ alias k="kubectl"
 alias de="docker exec -it"
 alias lg="lazygit"
 alias ld="lazydocker"
+alias dl="docker logs -f"
+alias dr="docker restart"
 
 alias nvm="fnm"

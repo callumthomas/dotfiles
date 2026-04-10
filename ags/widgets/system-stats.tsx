@@ -78,11 +78,12 @@ const memStat = createPoll<MemSample>(EMPTY_MEM, 2000, async (prev) => {
     const used = parseInt(parts[2], 10)
     const pct = total > 0 ? Math.round((used / total) * 100) : 0
 
-    const psOut = await execAsync("ps aux --sort=-%mem --no-headers")
+    const psOut = await execAsync("ps -eo pid,rss,comm --sort=-rss --no-headers")
     const top = psOut.split("\n").slice(0, 3)
       .map((row) => {
         const cols = row.trim().split(/\s+/)
-        return { pid: cols[1] ?? "", cmd: cols[10] ?? "?", pct: cols[3] ?? "0" }
+        const rssKb = parseInt(cols[1] ?? "0", 10)
+        return { pid: cols[0] ?? "", cmd: cols[2] ?? "?", pct: String(Math.round(rssKb / 1024)) }
       })
       .filter((r) => r.pid)
 
@@ -216,13 +217,20 @@ function UsageBar({ pct, thresholds }: { pct: Accessor<number>, thresholds: numb
 
 // ── proc rows ─────────────────────────────────────────────────────────────────
 
-function TopProcesses({ procs }: { procs: Accessor<ProcEntry[]> }) {
+function formatMb(mb: number): string {
+  return mb >= 1024 ? `${(mb / 1024).toFixed(1)} GB` : `${mb} MB`
+}
+
+function TopProcesses({ procs, unit }: { procs: Accessor<ProcEntry[]>, unit?: "mem" }) {
   return (
     <For each={procs} id={(p) => p.pid}>
       {(p) => (
         <box cssClasses={["stat-proc-row"]}>
           <label label={p.cmd.split("/").pop()!.slice(0, 24)} xalign={0} hexpand />
-          <label label={`${p.pct}%`} cssClasses={["stat-proc-pct"]} />
+          <label
+            label={unit === "mem" ? formatMb(parseInt(p.pct, 10)) : `${p.pct}%`}
+            cssClasses={["stat-proc-pct"]}
+          />
         </box>
       )}
     </For>
@@ -255,13 +263,13 @@ function MemPanel() {
       <box>
         <label label="Memory" cssClasses={["section-header"]} hexpand xalign={0} />
         <label
-          label={memStat.as((m) => `${m.usedMb}/${m.totalMb} MB`)}
+          label={memStat.as((m) => `${formatMb(m.usedMb)} / ${formatMb(m.totalMb)}`)}
           cssClasses={memStat.as((m) => ["stat-value", levelCss(m.pct, MEM_THRESHOLDS)])}
         />
       </box>
       <UsageBar pct={memStat.as((m) => m.pct)} thresholds={MEM_THRESHOLDS} />
       <box orientation={Gtk.Orientation.VERTICAL}>
-        <TopProcesses procs={memStat.as((m) => m.top)} />
+        <TopProcesses procs={memStat.as((m) => m.top)} unit="mem" />
       </box>
     </box>
   )

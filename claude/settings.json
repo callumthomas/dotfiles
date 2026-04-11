@@ -123,6 +123,27 @@
       }
     }
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(git push*)",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"VERIFICATION REQUIRED: Before pushing, confirm you have actually run tests or checked CI status in this session. Do not push based on assumptions that tests will pass.\"}}'",
+            "statusMessage": "Push verification check"
+          },
+          {
+            "type": "command",
+            "if": "Bash(gh pr create*)",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"VERIFICATION REQUIRED: Before creating a PR, confirm you have actually run tests or checked CI status. Do not create a PR based on assumptions that tests pass.\"}}'",
+            "statusMessage": "PR verification check"
+          }
+        ]
+      }
+    ]
+  },
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true

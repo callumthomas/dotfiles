@@ -35,6 +35,9 @@ sudo systemctl enable --now tlp.service
 sudo systemctl enable --now NetworkManager-dispatcher.service
 sudo systemctl mask systemd-rfkill.service systemd-rfkill.socket
 
+rm -rf ~/.config/gammastep
+ln -s "$SCRIPT_DIR/gammastep" ~/.config/gammastep
+
 sudo ln -sf "$SCRIPT_DIR/modprobe/thinkpad_acpi.conf" /etc/modprobe.d/thinkpad_acpi.conf
 sudo ln -sf "$SCRIPT_DIR/thinkfan/thinkfan.yaml" /etc/thinkfan.yaml
 sudo ln -sf "$SCRIPT_DIR/scripts/fan-set.sh" /usr/local/bin/fan-set

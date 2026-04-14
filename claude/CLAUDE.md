@@ -1,6 +1,16 @@
-When spawning subagents for parallelising work, prefer to use 'team members' pattern where possible, team members can spawn their own subagents, allowing them to keep their main context cleaner
+## Agent Dispatch Rules
 
-When spawning subagents for multi-repo work, use 'team members' pattern (separate Claude instances per repo), not subagents within a single session. Always check branch cleanliness before starting work.
+When I ask to "dispatch a team", "use a team", or "spawn teammates":
+- ALWAYS use Agent Teams (TeamCreate + SpawnTeammate), NOT subagents
+- Subagents (Task tool) should only be used for quick, isolated lookups
+- For any parallel work involving 2+ independent domains, default to Agent Teams
+- Use delegate mode — coordinate and assign, do not implement directly
+
+
+When spawning subagents for parallelising work, prefer to use 'team members' pattern (TeamCreate, SpawnTeammate) where possible, team members can spawn their own subagents, allowing them to keep their main context cleaner
+
+When spawning subagents for multi-repo work, use 'team members' (TeamCreate, SpawnTeammate) pattern (separate Claude instances per repo), not subagents within a single session. Always check branch cleanliness before starting work.
+
 
 Always use subagents for read heavy tasks such as gathering specific information from logs, reading large files for small subsets of the information they contain, and anything else that might fill up the context with noise that we won't need later.
 
@@ -11,3 +21,24 @@ When implementing something that uses a third party API or library, always check
 Before suggesting commands or fixes that depend on system state (running services, installed packages, enabled configs, file paths), verify the actual state first. Do not assume services exist, packages are/aren't installed, or that config changes take effect without restarts. Check with systemctl, which, pacman -Q, etc. before recommending.
 
 Never commit directly to main or master. Before committing, always check the current branch. If on main/master (or the repo's default branch), create a new feature branch first before making any commits.
+
+## Team Memory
+
+A team memory system is available via the `team-memory` MCP server. Relevant memories are automatically recalled on each prompt via a hook — you don't need to search manually unless doing a targeted lookup.
+
+**When to save (use `memory_save` tool):**
+- Architecture decisions ("we chose PostgreSQL for billing")
+- Coding conventions and standards the team follows
+- Debugging insights that would help next time
+- Project status changes, deadlines, ownership
+- Anything someone said that others would benefit from knowing
+
+**When NOT to save:**
+- Routine code changes (the git history captures those)
+- Temporary state ("I'm debugging X right now")
+- Information already in CLAUDE.md files or documentation
+
+**Scope guidance:**
+- `scope="team"` — decisions, conventions, knowledge that benefits everyone
+- `scope="personal"` — individual preferences, current work context
+- Default (no scope) — saves to your personal namespace

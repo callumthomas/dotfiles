@@ -124,6 +124,18 @@
     }
   },
   "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/cal/dev/agentic-memory/hooks/memory-recall.sh",
+            "timeout": 5,
+            "statusMessage": "Searching team memory..."
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",

@@ -44,4 +44,8 @@ sudo ln -sf "$SCRIPT_DIR/scripts/fan-set.sh" /usr/local/bin/fan-set
 sudo cp "$SCRIPT_DIR/sudoers/fan-set" /etc/sudoers.d/fan-set
 sudo chown root:root /etc/sudoers.d/fan-set
 sudo chmod 440 /etc/sudoers.d/fan-set
+sudo ln -sf "$SCRIPT_DIR/scripts/charge-set.sh" /usr/local/bin/charge-set
+sudo cp "$SCRIPT_DIR/sudoers/charge-set" /etc/sudoers.d/charge-set
+sudo chown root:root /etc/sudoers.d/charge-set
+sudo chmod 440 /etc/sudoers.d/charge-set
 sudo systemctl enable --now thinkfan.service

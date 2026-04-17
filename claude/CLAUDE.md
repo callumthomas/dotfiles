@@ -26,6 +26,8 @@ Never commit directly to main or master. Before committing, always check the cur
 
 A team memory system is available via the `team-memory` MCP server. Relevant memories are automatically recalled on each prompt via a hook — you don't need to search manually unless doing a targeted lookup.
 
+Do not use the regular memory tool. Always use the team memory tool to store memories
+
 **When to save (use `memory_save` tool):**
 - Architecture decisions ("we chose PostgreSQL for billing")
 - Coding conventions and standards the team follows

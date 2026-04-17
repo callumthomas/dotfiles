@@ -72,5 +72,6 @@ alias lg="lazygit"
 alias ld="lazydocker"
 alias dl="docker logs -f"
 alias dr="docker restart"
+alias cc="claude --effort=max --dangerously-skip-permissions"
 
 alias nvm="fnm"

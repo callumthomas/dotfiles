@@ -91,6 +91,40 @@
     ],
     "defaultMode": "default"
   },
+  "model": "claude-opus-4-7[1m]",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/cal/dev/agentic-memory/hooks/memory-recall.sh",
+            "timeout": 5,
+            "statusMessage": "Searching team memory..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"VERIFICATION REQUIRED: Before pushing, confirm you have actually run tests or checked CI status in this session. Do not push based on assumptions that tests will pass.\"}}'",
+            "if": "Bash(git push*)",
+            "statusMessage": "Push verification check"
+          },
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"VERIFICATION REQUIRED: Before creating a PR, confirm you have actually run tests or checked CI status. Do not create a PR based on assumptions that tests pass.\"}}'",
+            "if": "Bash(gh pr create*)",
+            "statusMessage": "PR verification check"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh"
@@ -123,40 +157,8 @@
       }
     }
   },
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/home/cal/dev/agentic-memory/hooks/memory-recall.sh",
-            "timeout": 5,
-            "statusMessage": "Searching team memory..."
-          }
-        ]
-      }
-    ],
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "if": "Bash(git push*)",
-            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"VERIFICATION REQUIRED: Before pushing, confirm you have actually run tests or checked CI status in this session. Do not push based on assumptions that tests will pass.\"}}'",
-            "statusMessage": "Push verification check"
-          },
-          {
-            "type": "command",
-            "if": "Bash(gh pr create*)",
-            "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"VERIFICATION REQUIRED: Before creating a PR, confirm you have actually run tests or checked CI status. Do not create a PR based on assumptions that tests pass.\"}}'",
-            "statusMessage": "PR verification check"
-          }
-        ]
-      }
-    ]
-  },
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high",
+  "effortLevel": "xhigh",
+  "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true
 }

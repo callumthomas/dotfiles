@@ -316,6 +316,41 @@ scale {
   padding: 12px 0;
 }
 
+.net-password-row {
+  padding: 8px 0;
+  border-top: 1px solid $border-subtle;
+  margin-top: 4px;
+
+  entry {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 4px 8px;
+    margin-right: 4px;
+    color: $text-primary;
+  }
+
+  button {
+    background: transparent;
+    border: 1px solid $border-subtle;
+    border-radius: 6px;
+    padding: 2px 10px;
+    margin-left: 4px;
+    color: $text-secondary;
+    font-size: 12px;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.06);
+      color: $text-primary;
+    }
+  }
+}
+
+.net-error {
+  color: $red;
+  padding: 4px 0;
+  font-size: 12px;
+}
+
 // ============================================================================
 // BLUETOOTH POPUP
 // ============================================================================

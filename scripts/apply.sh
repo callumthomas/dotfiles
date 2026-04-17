@@ -39,6 +39,7 @@ rm -rf ~/.config/gammastep
 ln -s "$SCRIPT_DIR/gammastep" ~/.config/gammastep
 
 sudo ln -sf "$SCRIPT_DIR/modprobe/thinkpad_acpi.conf" /etc/modprobe.d/thinkpad_acpi.conf
+sudo ln -sf "$SCRIPT_DIR/modprobe/mt7925e.conf" /etc/modprobe.d/mt7925e.conf
 sudo ln -sf "$SCRIPT_DIR/thinkfan/thinkfan.yaml" /etc/thinkfan.yaml
 sudo ln -sf "$SCRIPT_DIR/scripts/fan-set.sh" /usr/local/bin/fan-set
 sudo cp "$SCRIPT_DIR/sudoers/fan-set" /etc/sudoers.d/fan-set

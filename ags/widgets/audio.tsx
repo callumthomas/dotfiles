@@ -1,5 +1,6 @@
 import { createBinding, createComputed, For } from "gnim"
 import { Gdk } from "ags/gtk4"
+import { execAsync } from "ags/process"
 import Gtk from "gi://Gtk?version=4.0"
 import AstalWp from "gi://AstalWp?version=0.1"
 import { togglePopup, closePopup } from "../bar/PopupManager"
@@ -100,7 +101,9 @@ function SpeakerSection() {
                 d ? ["audio-device", "active"] : ["audio-device"]
               )}
               onClicked={() => {
-                ep.isDefault = true
+                ep.set_is_default(true)
+                execAsync(["wpctl", "set-default", String(ep.id)])
+                  .catch((e) => console.error("wpctl set-default failed", e))
                 closePopup()
               }}
             >
@@ -154,7 +157,9 @@ function MicSection() {
                 d ? ["audio-device", "active"] : ["audio-device"]
               )}
               onClicked={() => {
-                ep.isDefault = true
+                ep.set_is_default(true)
+                execAsync(["wpctl", "set-default", String(ep.id)])
+                  .catch((e) => console.error("wpctl set-default failed", e))
                 closePopup()
               }}
             >

@@ -4,8 +4,9 @@ import { Gdk } from "ags/gtk4"
 import { createState, createComputed, For, type Accessor } from "gnim"
 import { currentPopup, closePopup } from "../bar/PopupManager"
 import { appEntries, initAppIndex } from "./AppIndex"
+import GLib from "gi://GLib?version=2.0"
 import { filePaths, initFileIndex } from "./FileIndex"
-import { match, matchPrepared } from "./FuzzyMatcher"
+import { match, matchStrings } from "./FuzzyMatcher"
 import { launchApp, openFile } from "./launch"
 import { LIMITS } from "./config"
 import type { AppEntry } from "./AppIndex"
@@ -20,10 +21,10 @@ type Row =
 const [query, setQuery] = createState("")
 const [selectedIndex, setSelectedIndex] = createState(0)
 
-function computeRows(q: string, apps: AppEntry[], files: Fuzzysort.Prepared[]): Row[] {
+function computeRows(q: string, apps: AppEntry[], files: string[]): Row[] {
   if (q.startsWith("/")) {
     const inner = q.slice(1)
-    return matchPrepared(inner, files, LIMITS.files).map((path) => ({ kind: "file", path }))
+    return matchStrings(inner, files, LIMITS.files).map((path) => ({ kind: "file", path }))
   }
   const hits = match(q, apps, (a) => a.searchHaystack, LIMITS.apps)
   return hits.map((h) => ({ kind: "app", entry: h.item }))
@@ -102,9 +103,17 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
               }}
               $={(self: Gtk.Entry) => {
                 entryRef = self
+                // Debounce query updates so fast typing doesn't flood
+                // the reactive chain with intermediate searches.
+                let debounceId: number | null = null
                 self.connect("changed", () => {
-                  setQuery(self.get_text())
-                  setSelectedIndex(0)
+                  if (debounceId !== null) GLib.source_remove(debounceId)
+                  debounceId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 60, () => {
+                    debounceId = null
+                    setQuery(self.get_text())
+                    setSelectedIndex(0)
+                    return false
+                  })
                 })
                 const key = new Gtk.EventControllerKey()
                 key.connect("key-pressed", (_c, keyval, _code, state) => {

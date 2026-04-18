@@ -29,23 +29,15 @@ export function match<T>(
   return results.map((r) => ({ item: r.obj.item, score: r.score }))
 }
 
-// Convenience for plain string arrays.
+// Fast path for plain string arrays. Passes strings directly to fuzzysort
+// (its string[] overload) to avoid the per-call wrapper allocation `match`
+// does for generic T.
 export function matchStrings(
   query: string,
   items: readonly string[],
   limit: number,
-): FuzzyHit<string>[] {
-  return match(query, items, (s) => s, limit)
-}
-
-// Fast path for pre-prepared targets (see FileIndex). Skips the per-call
-// wrapping and lets fuzzysort avoid re-preparing strings.
-export function matchPrepared(
-  query: string,
-  items: readonly Fuzzysort.Prepared[],
-  limit: number,
 ): string[] {
-  if (!query) return items.slice(0, limit).map((p) => p.target)
+  if (!query) return items.slice(0, limit)
   const results = fuzzysort.go(query, items, { limit })
   return results.map((r) => r.target)
 }

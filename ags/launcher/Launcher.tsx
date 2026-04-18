@@ -5,7 +5,7 @@ import { createState, createComputed, For, type Accessor } from "gnim"
 import { currentPopup, closePopup } from "../bar/PopupManager"
 import { appEntries, initAppIndex } from "./AppIndex"
 import { filePaths, initFileIndex } from "./FileIndex"
-import { match, matchStrings } from "./FuzzyMatcher"
+import { match, matchPrepared } from "./FuzzyMatcher"
 import { launchApp, openFile } from "./launch"
 import { LIMITS } from "./config"
 import type { AppEntry } from "./AppIndex"
@@ -20,11 +20,10 @@ type Row =
 const [query, setQuery] = createState("")
 const [selectedIndex, setSelectedIndex] = createState(0)
 
-function computeRows(q: string, apps: AppEntry[], files: string[]): Row[] {
+function computeRows(q: string, apps: AppEntry[], files: Fuzzysort.Prepared[]): Row[] {
   if (q.startsWith("/")) {
     const inner = q.slice(1)
-    const hits = matchStrings(inner, files, LIMITS.files)
-    return hits.map((h) => ({ kind: "file", path: h.item }))
+    return matchPrepared(inner, files, LIMITS.files).map((path) => ({ kind: "file", path }))
   }
   const hits = match(q, apps, (a) => a.searchHaystack, LIMITS.apps)
   return hits.map((h) => ({ kind: "app", entry: h.item }))

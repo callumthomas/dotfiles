@@ -1,12 +1,16 @@
 import Gio from "gi://Gio?version=2.0"
 import GLib from "gi://GLib?version=2.0"
 import { createState } from "gnim"
+import fuzzysort from "fuzzysort/fuzzysort.js"
 import { FILE_EXCLUDES } from "./config"
 
 const HOME = GLib.get_home_dir()
 
-const [paths, setPaths] = createState<string[]>([])
-let internal: string[] = []
+// Paths are stored pre-prepared for fuzzysort. This avoids re-preparing
+// hundreds of thousands of strings on every keystroke — the major typing-latency
+// culprit with an unprepared index.
+const [paths, setPaths] = createState<Fuzzysort.Prepared[]>([])
+let internal: Fuzzysort.Prepared[] = []
 let ready = false
 const [isReady, setIsReady] = createState(false)
 
@@ -76,7 +80,7 @@ function startInitialScan() {
   streamLines(
     proc.get_stdout_pipe()!,
     (line) => {
-      if (line) internal.push(line)
+      if (line) internal.push(fuzzysort.prepare(line))
     },
     () => {
       notify()
@@ -104,10 +108,10 @@ function handleInotifyLine(line: string) {
   const name = parts.slice(2).join(" ")
   const full = dir.endsWith("/") ? `${dir}${name}` : `${dir}/${name}`
   if (events.includes("CREATE") || events.includes("MOVED_TO")) {
-    internal.push(full)
+    internal.push(fuzzysort.prepare(full))
     notify()
   } else if (events.includes("DELETE") || events.includes("MOVED_FROM")) {
-    const idx = internal.indexOf(full)
+    const idx = internal.findIndex((p) => p.target === full)
     if (idx >= 0) {
       internal.splice(idx, 1)
       notify()

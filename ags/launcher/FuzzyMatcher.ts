@@ -37,3 +37,15 @@ export function matchStrings(
 ): FuzzyHit<string>[] {
   return match(query, items, (s) => s, limit)
 }
+
+// Fast path for pre-prepared targets (see FileIndex). Skips the per-call
+// wrapping and lets fuzzysort avoid re-preparing strings.
+export function matchPrepared(
+  query: string,
+  items: readonly Fuzzysort.Prepared[],
+  limit: number,
+): string[] {
+  if (!query) return items.slice(0, limit).map((p) => p.target)
+  const results = fuzzysort.go(query, items, { limit })
+  return results.map((r) => r.target)
+}

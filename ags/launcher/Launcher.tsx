@@ -12,9 +12,14 @@ import { launchApp, openFile, runCommand } from "./launch"
 import { LIMITS } from "./config"
 import type { AppEntry } from "./AppIndex"
 
-initAppIndex()
-initFileIndex()
-initHistoryIndex()
+// Defer index init until the main loop is idle so the bar renders first.
+// Low-priority idle fires after higher-priority work (including initial paint).
+GLib.idle_add(GLib.PRIORITY_LOW, () => {
+  initAppIndex()
+  initFileIndex()
+  initHistoryIndex()
+  return false
+})
 
 type Row =
   | { kind: "app"; entry: AppEntry }
@@ -38,7 +43,11 @@ query.subscribe(() => {
     return
   }
   const token = ++fileQueryToken
-  const inner = q.slice(1)
+  const raw = q.slice(1)
+  // Let `~` and `~/...` map to the user's home dir so `/~/Downloads` works.
+  const inner = raw === "~" ? GLib.get_home_dir()
+    : raw.startsWith("~/") ? GLib.get_home_dir() + raw.slice(1)
+    : raw
   const files = filePaths.get()
   fzfMatch(inner, files, LIMITS.files).then((paths) => {
     if (token === fileQueryToken) setFileResults(paths)
@@ -51,6 +60,8 @@ function computeRows(
   fileRes: string[],
   history: string[],
 ): Row[] {
+  // Don't show results until user has typed something beyond the mode marker.
+  if (q === "" || q === "/" || q === "!") return []
   if (q.startsWith("!")) {
     const inner = q.slice(1).trim()
     const rows: Row[] = []
@@ -88,6 +99,31 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
   const rows = createComputed(() => computeRows(query(), appEntries(), fileResults(), historyCommands()))
 
   let entryRef: Gtk.Entry | null = null
+  let scrollRef: Gtk.ScrolledWindow | null = null
+  let listRef: Gtk.Box | null = null
+
+  // Keep selected row visible when cycling with arrows. Row allocations may
+  // lag a frame when rows change concurrently, so defer via idle_add.
+  selectedIndex.subscribe(() => {
+    const scrolled = scrollRef
+    const list = listRef
+    if (!scrolled || !list) return
+    const idx = selectedIndex.get()
+    GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+      let child = list.get_first_child()
+      for (let i = 0; i < idx && child; i++) child = child.get_next_sibling()
+      if (!child) return false
+      const vadj = scrolled.get_vadjustment()
+      const alloc = child.get_allocation()
+      const rowTop = alloc.y
+      const rowBottom = rowTop + alloc.height
+      const visibleTop = vadj.get_value()
+      const visibleBottom = visibleTop + vadj.get_page_size()
+      if (rowTop < visibleTop) vadj.set_value(rowTop)
+      else if (rowBottom > visibleBottom) vadj.set_value(rowBottom - vadj.get_page_size())
+      return false
+    })
+  })
 
   return (
     <window
@@ -127,17 +163,17 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
         }}
       >
         <box hexpand />
-        <box valign={Gtk.Align.START} hexpand={false}>
-          <box
-            cssClasses={["launcher-panel"]}
-            orientation={Gtk.Orientation.VERTICAL}
-            widthRequest={560}
-            $={(self: Gtk.Box) => {
-              const swallow = new Gtk.GestureClick()
-              swallow.connect("pressed", (g) => g.set_state(Gtk.EventSequenceState.CLAIMED))
-              self.add_controller(swallow)
-            }}
-          >
+        <box
+          cssClasses={["launcher-panel"]}
+          orientation={Gtk.Orientation.VERTICAL}
+          widthRequest={560}
+          valign={Gtk.Align.CENTER}
+          $={(self: Gtk.Box) => {
+            const swallow = new Gtk.GestureClick()
+            swallow.connect("pressed", (g) => g.set_state(Gtk.EventSequenceState.CLAIMED))
+            self.add_controller(swallow)
+          }}
+        >
             <entry
               cssClasses={["launcher-entry"]}
               placeholderText="Type to search… / for files, ! for commands"
@@ -174,6 +210,17 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
                     return true
                   }
                   if (ctrl && keyval === Gdk.KEY_u) { self.set_text(""); return true }
+                  if (keyval === Gdk.KEY_Tab || keyval === Gdk.KEY_ISO_Left_Tab) {
+                    const r = rows.get()[selectedIndex.get()]
+                    if (!r) return true
+                    let newText = ""
+                    if (r.kind === "app") newText = r.entry.name
+                    else if (r.kind === "file") newText = r.path
+                    else if (r.kind === "run") newText = "!" + r.cmd
+                    self.set_text(newText)
+                    self.set_position(-1)
+                    return true
+                  }
                   return false
                 })
                 self.add_controller(key)
@@ -183,8 +230,14 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
               cssClasses={["launcher-scroll"]}
               hscrollbarPolicy={Gtk.PolicyType.NEVER}
               vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
+              visible={rows.as((r) => r.length > 0)}
+              $={(self: Gtk.ScrolledWindow) => { scrollRef = self }}
             >
-              <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["launcher-list"]}>
+              <box
+                orientation={Gtk.Orientation.VERTICAL}
+                cssClasses={["launcher-list"]}
+                $={(self: Gtk.Box) => { listRef = self }}
+              >
                 <For each={rows} id={(row: Row) => {
                   if (row.kind === "app") return `app:${row.entry.desktopFilePath}`
                   if (row.kind === "file") return `file:${row.path}`
@@ -203,7 +256,6 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
                 </For>
               </box>
             </Gtk.ScrolledWindow>
-          </box>
         </box>
         <box hexpand />
       </box>
@@ -224,18 +276,20 @@ function renderRow(row: Row): JSX.Element {
         <box orientation={Gtk.Orientation.VERTICAL} hexpand>
           <label
             label={name}
-            halign={Gtk.Align.START}
             hexpand
             xalign={0}
+            widthChars={1}
+            maxWidthChars={1}
             cssClasses={["launcher-row-title"]}
             ellipsize={3 /* PANGO_ELLIPSIZE_END */}
           />
           {comment ? (
             <label
               label={comment}
-              halign={Gtk.Align.START}
               hexpand
               xalign={0}
+              widthChars={1}
+              maxWidthChars={1}
               cssClasses={["launcher-row-subtitle"]}
               ellipsize={3}
             />
@@ -256,17 +310,19 @@ function renderRow(row: Row): JSX.Element {
         <box orientation={Gtk.Orientation.VERTICAL} hexpand>
           <label
             label={basename}
-            halign={Gtk.Align.START}
             hexpand
             xalign={0}
+            widthChars={1}
+            maxWidthChars={1}
             cssClasses={["launcher-row-title"]}
             ellipsize={3}
           />
           <label
             label={parent}
-            halign={Gtk.Align.START}
             hexpand
             xalign={0}
+            widthChars={1}
+            maxWidthChars={1}
             cssClasses={["launcher-row-subtitle"]}
             ellipsize={3}
           />
@@ -281,17 +337,19 @@ function renderRow(row: Row): JSX.Element {
         <box orientation={Gtk.Orientation.VERTICAL} hexpand>
           <label
             label={row.cmd}
-            halign={Gtk.Align.START}
             hexpand
             xalign={0}
+            widthChars={1}
+            maxWidthChars={1}
             cssClasses={["launcher-row-title"]}
             ellipsize={3}
           />
           <label
             label={row.fromHistory ? "history" : "Run typed command"}
-            halign={Gtk.Align.START}
             hexpand
             xalign={0}
+            widthChars={1}
+            maxWidthChars={1}
             cssClasses={["launcher-row-subtitle"]}
             ellipsize={3}
           />

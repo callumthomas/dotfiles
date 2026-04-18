@@ -102,30 +102,38 @@ function wifiIcon(strength: number): string {
   return "󰤟"
 }
 
+interface NetIconState {
+  strength: number
+  primary: AstalNetwork.Primary
+  hasWifi: boolean
+}
+
+const netIconState = createPoll<NetIconState>(
+  {
+    strength: network.wifi?.strength ?? 0,
+    primary: network.primary,
+    hasWifi: network.wifi !== null,
+  },
+  3000,
+  () => ({
+    strength: network.wifi?.strength ?? 0,
+    primary: network.primary,
+    hasWifi: network.wifi !== null,
+  })
+)
+
 export function NetworkButton({ monitor }: { monitor: string }) {
-  const wifi = network.wifi
-  const primary = createBinding(network, "primary")
+  const icon = netIconState.as((s) => {
+    if (s.hasWifi && s.strength > 0) return wifiIcon(s.strength)
+    if (s.primary === AstalNetwork.Primary.WIRED) return ""
+    return "󰤭"
+  })
 
-  // If NM reports wifi, use that; if wifi object exists (iwd), use signal strength
-  const icon = wifi
-    ? createBinding(wifi, "strength").as((s) =>
-        s > 0 ? wifiIcon(s) : primary() === AstalNetwork.Primary.WIRED ? "" : "󰤭"
-      )
-    : primary.as((p) =>
-        p === AstalNetwork.Primary.WIRED ? "" : "󰤭"
-      )
-
-  const cssClass = wifi
-    ? createBinding(wifi, "strength").as((s) =>
-        s > 0
-          ? ["module-button", "net-wifi"]
-          : ["module-button", "net-disconnected"]
-      )
-    : primary.as((p) =>
-        p === AstalNetwork.Primary.WIRED
-          ? ["module-button", "net-wired"]
-          : ["module-button", "net-disconnected"]
-      )
+  const cssClass = netIconState.as((s) => {
+    if (s.hasWifi && s.strength > 0) return ["module-button", "net-wifi"]
+    if (s.primary === AstalNetwork.Primary.WIRED) return ["module-button", "net-wired"]
+    return ["module-button", "net-disconnected"]
+  })
 
   return (
     <button

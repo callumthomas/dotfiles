@@ -6,17 +6,20 @@ import { currentPopup, closePopup } from "../bar/PopupManager"
 import { appEntries, initAppIndex } from "./AppIndex"
 import GLib from "gi://GLib?version=2.0" // used for timeout_add debounce
 import { filePaths, initFileIndex } from "./FileIndex"
-import { fzfMatch, match } from "./FuzzyMatcher"
-import { launchApp, openFile } from "./launch"
+import { historyCommands, initHistoryIndex } from "./HistoryIndex"
+import { fzfMatch, match, matchStrings } from "./FuzzyMatcher"
+import { launchApp, openFile, runCommand } from "./launch"
 import { LIMITS } from "./config"
 import type { AppEntry } from "./AppIndex"
 
 initAppIndex()
 initFileIndex()
+initHistoryIndex()
 
 type Row =
   | { kind: "app"; entry: AppEntry }
   | { kind: "file"; path: string }
+  | { kind: "run"; cmd: string; fromHistory: boolean }
 
 const [query, setQuery] = createState("")
 const [selectedIndex, setSelectedIndex] = createState(0)
@@ -42,7 +45,25 @@ query.subscribe(() => {
   })
 })
 
-function computeRows(q: string, apps: AppEntry[], fileRes: string[]): Row[] {
+function computeRows(
+  q: string,
+  apps: AppEntry[],
+  fileRes: string[],
+  history: string[],
+): Row[] {
+  if (q.startsWith("!")) {
+    const inner = q.slice(1).trim()
+    const rows: Row[] = []
+    if (inner.length > 0) {
+      rows.push({ kind: "run", cmd: inner, fromHistory: false })
+    }
+    const hits = matchStrings(inner, history, LIMITS.history)
+    for (const h of hits) {
+      if (h === inner) continue // already at top
+      rows.push({ kind: "run", cmd: h, fromHistory: true })
+    }
+    return rows
+  }
   if (q.startsWith("/")) {
     return fileRes.map((path) => ({ kind: "file", path }))
   }
@@ -53,6 +74,7 @@ function computeRows(q: string, apps: AppEntry[], fileRes: string[]): Row[] {
 function launchRow(row: Row) {
   if (row.kind === "app") launchApp(row.entry)
   else if (row.kind === "file") openFile(row.path)
+  else if (row.kind === "run") runCommand(row.cmd)
   setQuery("")
   setSelectedIndex(0)
   closePopup()
@@ -63,7 +85,7 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
 
   // rows recomputes on query, appEntries, or fileResults changes. In file mode
   // fileResults is populated asynchronously by the query.subscribe above.
-  const rows = createComputed(() => computeRows(query(), appEntries(), fileResults()))
+  const rows = createComputed(() => computeRows(query(), appEntries(), fileResults(), historyCommands()))
 
   let entryRef: Gtk.Entry | null = null
 
@@ -165,6 +187,7 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
                 <For each={rows} id={(row: Row) => {
                   if (row.kind === "app") return `app:${row.entry.desktopFilePath}`
                   if (row.kind === "file") return `file:${row.path}`
+                  if (row.kind === "run") return `run:${row.fromHistory ? "h" : "t"}:${row.cmd}`
                   return `unknown:${JSON.stringify(row)}`
                 }}>
                   {(row: Row, index: Accessor<number>) => (
@@ -227,6 +250,21 @@ function renderRow(row: Row): JSX.Element {
             halign={Gtk.Align.START}
             cssClasses={["launcher-row-subtitle"]}
             ellipsize={3}
+          />
+        </box>
+      </box>
+    )
+  }
+  if (row.kind === "run") {
+    return (
+      <box cssClasses={["launcher-row-inner"]}>
+        <label label={row.fromHistory ? "↺" : "▶"} cssClasses={["launcher-row-icon"]} />
+        <box orientation={Gtk.Orientation.VERTICAL} hexpand>
+          <label label={row.cmd} halign={Gtk.Align.START} cssClasses={["launcher-row-title"]} />
+          <label
+            label={row.fromHistory ? "history" : "Run typed command"}
+            halign={Gtk.Align.START}
+            cssClasses={["launcher-row-subtitle"]}
           />
         </box>
       </box>

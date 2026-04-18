@@ -1,4 +1,6 @@
-import fuzzysort from "fuzzysort"
+// Explicit file path: fuzzysort ships only "main" in package.json and no ESM build,
+// which esbuild's neutral platform (AGS's bundler) won't resolve by default.
+import fuzzysort from "fuzzysort/fuzzysort.js"
 
 export interface FuzzyHit<T> {
   item: T

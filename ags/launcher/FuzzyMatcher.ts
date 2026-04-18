@@ -29,15 +29,29 @@ export function match<T>(
   return results.map((r) => ({ item: r.obj.item, score: r.score }))
 }
 
-// Fast path for plain string arrays. Passes strings directly to fuzzysort
-// (its string[] overload) to avoid the per-call wrapper allocation `match`
-// does for generic T.
+// Fast path for plain string arrays over large corpora (100k+).
+// fuzzysort's full algorithm is O(n·m) and chokes on 100k strings per keystroke.
+// Strategy: case-insensitive substring pre-filter (linear scan, very fast) to
+// cap the candidate set, then fuzzysort on the narrowed list for ranking.
+// Trade-off: queries with non-contiguous characters (e.g. "hypnd" → "hyprland")
+// won't match. In practice launcher users type contiguous substrings.
+const PREFILTER_CAP = 2000
+
 export function matchStrings(
   query: string,
   items: readonly string[],
   limit: number,
 ): string[] {
   if (!query) return items.slice(0, limit)
-  const results = fuzzysort.go(query, items, { limit })
+  const lq = query.toLowerCase()
+  const narrowed: string[] = []
+  for (let i = 0; i < items.length; i++) {
+    if (items[i].toLowerCase().includes(lq)) {
+      narrowed.push(items[i])
+      if (narrowed.length >= PREFILTER_CAP) break
+    }
+  }
+  if (narrowed.length <= limit) return narrowed
+  const results = fuzzysort.go(query, narrowed, { limit })
   return results.map((r) => r.target)
 }

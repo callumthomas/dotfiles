@@ -4,7 +4,7 @@ import { Gdk } from "ags/gtk4"
 import { createState, createComputed, For, type Accessor } from "gnim"
 import { currentPopup, closePopup } from "../bar/PopupManager"
 import { appEntries, initAppIndex } from "./AppIndex"
-import GLib from "gi://GLib?version=2.0"
+import GLib from "gi://GLib?version=2.0" // used for timeout_add debounce
 import { filePaths, initFileIndex } from "./FileIndex"
 import { match, matchStrings } from "./FuzzyMatcher"
 import { launchApp, openFile } from "./launch"

@@ -11,8 +11,9 @@
   padding: 12px;
   margin-top: 80px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-  min-width: 560px;
-  max-width: 560px;
+  // Width is pinned via widthRequest on the panel box in Launcher.tsx.
+  // GTK CSS has no max-width; long row content ellipsizes via the label
+  // ellipsize prop in renderRow.
   font-family: $font-family;
   color: $text-primary;
   animation: popup-reveal 120ms ease-out;

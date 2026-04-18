@@ -131,6 +131,7 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
           <box
             cssClasses={["launcher-panel"]}
             orientation={Gtk.Orientation.VERTICAL}
+            widthRequest={560}
             $={(self: Gtk.Box) => {
               const swallow = new Gtk.GestureClick()
               swallow.connect("pressed", (g) => g.set_state(Gtk.EventSequenceState.CLAIMED))
@@ -221,13 +222,22 @@ function renderRow(row: Row): JSX.Element {
           <box cssClasses={["launcher-row-icon"]} />
         )}
         <box orientation={Gtk.Orientation.VERTICAL} hexpand>
-          <label label={name} halign={Gtk.Align.START} cssClasses={["launcher-row-title"]} />
+          <label
+            label={name}
+            halign={Gtk.Align.START}
+            hexpand
+            xalign={0}
+            cssClasses={["launcher-row-title"]}
+            ellipsize={3 /* PANGO_ELLIPSIZE_END */}
+          />
           {comment ? (
             <label
               label={comment}
               halign={Gtk.Align.START}
+              hexpand
+              xalign={0}
               cssClasses={["launcher-row-subtitle"]}
-              ellipsize={3 /* PANGO_ELLIPSIZE_END */}
+              ellipsize={3}
             />
           ) : null}
         </box>
@@ -244,10 +254,19 @@ function renderRow(row: Row): JSX.Element {
           <label label="" />
         </box>
         <box orientation={Gtk.Orientation.VERTICAL} hexpand>
-          <label label={basename} halign={Gtk.Align.START} cssClasses={["launcher-row-title"]} />
+          <label
+            label={basename}
+            halign={Gtk.Align.START}
+            hexpand
+            xalign={0}
+            cssClasses={["launcher-row-title"]}
+            ellipsize={3}
+          />
           <label
             label={parent}
             halign={Gtk.Align.START}
+            hexpand
+            xalign={0}
             cssClasses={["launcher-row-subtitle"]}
             ellipsize={3}
           />
@@ -260,11 +279,21 @@ function renderRow(row: Row): JSX.Element {
       <box cssClasses={["launcher-row-inner"]}>
         <label label={row.fromHistory ? "↺" : "▶"} cssClasses={["launcher-row-icon"]} />
         <box orientation={Gtk.Orientation.VERTICAL} hexpand>
-          <label label={row.cmd} halign={Gtk.Align.START} cssClasses={["launcher-row-title"]} />
+          <label
+            label={row.cmd}
+            halign={Gtk.Align.START}
+            hexpand
+            xalign={0}
+            cssClasses={["launcher-row-title"]}
+            ellipsize={3}
+          />
           <label
             label={row.fromHistory ? "history" : "Run typed command"}
             halign={Gtk.Align.START}
+            hexpand
+            xalign={0}
             cssClasses={["launcher-row-subtitle"]}
+            ellipsize={3}
           />
         </box>
       </box>

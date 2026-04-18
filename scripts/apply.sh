@@ -40,6 +40,10 @@ ln -s "$SCRIPT_DIR/gammastep" ~/.config/gammastep
 
 sudo ln -sf "$SCRIPT_DIR/modprobe/thinkpad_acpi.conf" /etc/modprobe.d/thinkpad_acpi.conf
 sudo ln -sf "$SCRIPT_DIR/modprobe/mt7925e.conf" /etc/modprobe.d/mt7925e.conf
+
+sudo systemctl disable --now wifi-resume.service 2>/dev/null || true
+sudo rm -f /etc/systemd/system/wifi-resume.service
+sudo ln -sf "$SCRIPT_DIR/system-sleep/wifi-mt7925e" /etc/systemd/system-sleep/wifi-mt7925e
 sudo ln -sf "$SCRIPT_DIR/sysctl/90-inotify.conf" /etc/sysctl.d/90-inotify.conf
 sudo sysctl --system >/dev/null
 sudo ln -sf "$SCRIPT_DIR/thinkfan/thinkfan.yaml" /etc/thinkfan.yaml

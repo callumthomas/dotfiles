@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Workaround: mt7925e hangs on resume unless the driver is reloaded.
+# Invoked by systemd-sleep: $1 = pre|post, $2 = suspend|hibernate|hybrid-sleep|suspend-then-hibernate
+case "$1" in
+  pre)
+    nmcli radio wifi off 2>/dev/null || true
+    sleep 1
+    modprobe -r mt7925e || true
+    ;;
+  post)
+    modprobe mt7925e
+    nmcli radio wifi on 2>/dev/null || true
+    ;;
+esac

@@ -6,7 +6,7 @@ import { currentPopup, closePopup } from "../bar/PopupManager"
 import { appEntries, initAppIndex } from "./AppIndex"
 import GLib from "gi://GLib?version=2.0" // used for timeout_add debounce
 import { filePaths, initFileIndex } from "./FileIndex"
-import { match, matchStrings } from "./FuzzyMatcher"
+import { fzfMatch, match } from "./FuzzyMatcher"
 import { launchApp, openFile } from "./launch"
 import { LIMITS } from "./config"
 import type { AppEntry } from "./AppIndex"
@@ -21,10 +21,30 @@ type Row =
 const [query, setQuery] = createState("")
 const [selectedIndex, setSelectedIndex] = createState(0)
 
-function computeRows(q: string, apps: AppEntry[], files: string[]): Row[] {
+// File mode runs fzf as a subprocess, which is async. Results arrive out-of-band
+// and are stored in this state; rows reads it on file queries.
+const [fileResults, setFileResults] = createState<string[]>([])
+let fileQueryToken = 0
+
+query.subscribe(() => {
+  const q = query.get()
+  if (!q.startsWith("/")) {
+    // Drop stale file results when leaving file mode so they don't flash
+    // on the next file-mode entry.
+    if (fileResults.get().length) setFileResults([])
+    return
+  }
+  const token = ++fileQueryToken
+  const inner = q.slice(1)
+  const files = filePaths.get()
+  fzfMatch(inner, files, LIMITS.files).then((paths) => {
+    if (token === fileQueryToken) setFileResults(paths)
+  })
+})
+
+function computeRows(q: string, apps: AppEntry[], fileRes: string[]): Row[] {
   if (q.startsWith("/")) {
-    const inner = q.slice(1)
-    return matchStrings(inner, files, LIMITS.files).map((path) => ({ kind: "file", path }))
+    return fileRes.map((path) => ({ kind: "file", path }))
   }
   const hits = match(q, apps, (a) => a.searchHaystack, LIMITS.apps)
   return hits.map((h) => ({ kind: "app", entry: h.item }))
@@ -41,8 +61,9 @@ function launchRow(row: Row) {
 export default function Launcher(gdkmonitor: Gdk.Monitor) {
   const stateName = `launcher-${gdkmonitor.get_connector()}`
 
-  // Reactive rows: recomputes when query or appEntries changes.
-  const rows = createComputed(() => computeRows(query(), appEntries(), filePaths()))
+  // rows recomputes on query, appEntries, or fileResults changes. In file mode
+  // fileResults is populated asynchronously by the query.subscribe above.
+  const rows = createComputed(() => computeRows(query(), appEntries(), fileResults()))
 
   let entryRef: Gtk.Entry | null = null
 

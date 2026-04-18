@@ -26,6 +26,7 @@ sudo pacman -S --noconfirm \
 	gammastep \
 	btop \
 	fd \
+	fzf \
 	inotify-tools \
 	dart-sass \
 	xdg-desktop-portal-gtk

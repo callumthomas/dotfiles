@@ -4,26 +4,35 @@ import { Gdk } from "ags/gtk4"
 import { createState, createComputed, For, type Accessor } from "gnim"
 import { currentPopup, closePopup } from "../bar/PopupManager"
 import { appEntries, initAppIndex } from "./AppIndex"
-import { match } from "./FuzzyMatcher"
-import { launchApp } from "./launch"
+import { filePaths, initFileIndex } from "./FileIndex"
+import { match, matchStrings } from "./FuzzyMatcher"
+import { launchApp, openFile } from "./launch"
 import { LIMITS } from "./config"
 import type { AppEntry } from "./AppIndex"
 
 initAppIndex()
+initFileIndex()
 
 type Row =
   | { kind: "app"; entry: AppEntry }
+  | { kind: "file"; path: string }
 
 const [query, setQuery] = createState("")
 const [selectedIndex, setSelectedIndex] = createState(0)
 
-function computeRows(q: string, apps: AppEntry[]): Row[] {
+function computeRows(q: string, apps: AppEntry[], files: string[]): Row[] {
+  if (q.startsWith("/")) {
+    const inner = q.slice(1)
+    const hits = matchStrings(inner, files, LIMITS.files)
+    return hits.map((h) => ({ kind: "file", path: h.item }))
+  }
   const hits = match(q, apps, (a) => a.searchHaystack, LIMITS.apps)
   return hits.map((h) => ({ kind: "app", entry: h.item }))
 }
 
 function launchRow(row: Row) {
   if (row.kind === "app") launchApp(row.entry)
+  else if (row.kind === "file") openFile(row.path)
   setQuery("")
   setSelectedIndex(0)
   closePopup()
@@ -33,7 +42,7 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
   const stateName = `launcher-${gdkmonitor.get_connector()}`
 
   // Reactive rows: recomputes when query or appEntries changes.
-  const rows = createComputed(() => computeRows(query(), appEntries()))
+  const rows = createComputed(() => computeRows(query(), appEntries(), filePaths()))
 
   let entryRef: Gtk.Entry | null = null
 
@@ -126,6 +135,7 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
               <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["launcher-list"]}>
                 <For each={rows} id={(row: Row) => {
                   if (row.kind === "app") return `app:${row.entry.desktopFilePath}`
+                  if (row.kind === "file") return `file:${row.path}`
                   return `unknown:${JSON.stringify(row)}`
                 }}>
                   {(row: Row, index: Accessor<number>) => (
@@ -168,6 +178,27 @@ function renderRow(row: Row): JSX.Element {
               ellipsize={3 /* PANGO_ELLIPSIZE_END */}
             />
           ) : null}
+        </box>
+      </box>
+    )
+  }
+  if (row.kind === "file") {
+    const p = row.path
+    const basename = p.split("/").pop() ?? p
+    const parent = p.slice(0, p.length - basename.length - 1) || "/"
+    return (
+      <box cssClasses={["launcher-row-inner"]}>
+        <box cssClasses={["launcher-row-icon"]}>
+          <label label="" />
+        </box>
+        <box orientation={Gtk.Orientation.VERTICAL} hexpand>
+          <label label={basename} halign={Gtk.Align.START} cssClasses={["launcher-row-title"]} />
+          <label
+            label={parent}
+            halign={Gtk.Align.START}
+            cssClasses={["launcher-row-subtitle"]}
+            ellipsize={3}
+          />
         </box>
       </box>
     )

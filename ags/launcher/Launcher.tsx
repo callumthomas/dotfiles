@@ -125,7 +125,10 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
               vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC}
             >
               <box orientation={Gtk.Orientation.VERTICAL} cssClasses={["launcher-list"]}>
-                <For each={rows} id={(row: Row) => row.kind === "app" ? row.entry.desktopFilePath : ""}>
+                <For each={rows} id={(row: Row) => {
+                  if (row.kind === "app") return `app:${row.entry.desktopFilePath}`
+                  return `unknown:${JSON.stringify(row)}`
+                }}>
                   {(row: Row, index: Accessor<number>) => (
                     <box
                       cssClasses={createComputed(() =>

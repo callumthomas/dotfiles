@@ -88,6 +88,10 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
             <entry
               cssClasses={["launcher-entry"]}
               placeholderText="Type to search… / for files, ! for commands"
+              onActivate={() => {
+                const r = rows.get()[selectedIndex.get()]
+                if (r) launchRow(r)
+              }}
               $={(self: Gtk.Entry) => {
                 entryRef = self
                 self.connect("changed", () => {
@@ -98,11 +102,6 @@ export default function Launcher(gdkmonitor: Gdk.Monitor) {
                 key.connect("key-pressed", (_c, keyval, _code, state) => {
                   const ctrl = (state & Gdk.ModifierType.CONTROL_MASK) !== 0
                   if (keyval === Gdk.KEY_Escape) { closePopup(); return true }
-                  if (keyval === Gdk.KEY_Return || keyval === Gdk.KEY_KP_Enter) {
-                    const r = rows.get()[selectedIndex.get()]
-                    if (r) launchRow(r)
-                    return true
-                  }
                   if (keyval === Gdk.KEY_Up || (ctrl && keyval === Gdk.KEY_k)) {
                     const n = rows.get().length
                     if (n > 0) setSelectedIndex((i) => (i - 1 + n) % n)

@@ -1,0 +1,82 @@
+// ============================================================================
+// LAUNCHER
+// ============================================================================
+.launcher-window {
+  background-color: transparent;
+}
+
+.launcher-panel {
+  background-color: $popup-bg;
+  border-radius: $border-radius;
+  padding: 12px;
+  margin-top: 80px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  min-width: 560px;
+  max-width: 560px;
+  font-family: $font-family;
+  color: $text-primary;
+  animation: popup-reveal 120ms ease-out;
+}
+
+.launcher-entry {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  color: $text-primary;
+  font-size: 15px;
+  border: none;
+
+  &:focus {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.launcher-scroll {
+  min-height: 400px;
+}
+
+.launcher-list {
+  padding: 2px 0;
+}
+
+.launcher-row {
+  padding: 2px 0;
+  border-radius: 6px;
+
+  &.selected {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.launcher-row-inner {
+  padding: 6px 8px;
+}
+
+.launcher-row-icon {
+  margin-right: 10px;
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.launcher-row-title {
+  font-size: 14px;
+  color: $text-primary;
+}
+
+.launcher-row-subtitle {
+  font-size: 11px;
+  color: $text-secondary;
+}
+
+.launcher-row-hint {
+  font-size: 11px;
+  color: $text-dim;
+  margin-left: 6px;
+}
+
+.launcher-run-header {
+  font-size: 11px;
+  color: $text-dim;
+  margin-right: 6px;
+}

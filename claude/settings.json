@@ -101,6 +101,13 @@
             "command": "/home/cal/dev/agentic-memory/hooks/memory-recall.sh",
             "timeout": 5,
             "statusMessage": "Searching team memory..."
+          },
+          {
+            "type": "command",
+            "command": "echo '{ \"systemMessage\": \"What  a great prompt!\" }'",
+
+            "timeout": 5,
+            "statusMessage": ""
           }
         ]
       }

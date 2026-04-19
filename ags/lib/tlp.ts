@@ -55,10 +55,7 @@ async function readTlp(): Promise<TlpState> {
 export const tlpState = createPoll<TlpState>(EMPTY, 5000, readTlp)
 
 export async function setFullCharge(full: boolean): Promise<void> {
-  const [start, stop] = full ? [95, 100] : [75, 80]
   await execAsync([
-    "bash", "-c",
-    `echo ${start} | sudo tee /sys/class/power_supply/BAT0/charge_control_start_threshold && ` +
-    `echo ${stop} | sudo tee /sys/class/power_supply/BAT0/charge_control_end_threshold`,
-  ]).catch(console.error)
+    "sudo", "-n", "/usr/local/bin/charge-set", full ? "full" : "normal",
+  ])
 }

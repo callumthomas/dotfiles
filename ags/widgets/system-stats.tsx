@@ -281,7 +281,7 @@ function FanPanel() {
       <box>
         <label label="Fan" cssClasses={["section-header"]} hexpand xalign={0} />
         <label
-          label={fanStat.as((f) => `${f.pct}% (${f.rpm} RPM)`)}
+          label={fanStat.as((f) => `${f.rpm} RPM`)}
           cssClasses={fanStat.as((f) => ["stat-value", levelCss(f.rpm, FAN_THRESHOLDS)])}
         />
       </box>
@@ -300,7 +300,6 @@ function FanPanel() {
           max={7}
           step={1}
           drawValue={false}
-          sensitive={fanStat.as((f) => f.level !== "auto")}
           onChangeValue={(_self, _scroll, val) => {
             execAsync(`sudo /usr/local/bin/fan-set ${Math.round(val)}`)
             return false

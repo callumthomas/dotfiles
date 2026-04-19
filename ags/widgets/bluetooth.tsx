@@ -1,4 +1,5 @@
 import { createBinding, createComputed, createState, For } from "gnim"
+import { createPoll } from "ags/time"
 import { Gdk } from "ags/gtk4"
 import Gtk from "gi://Gtk?version=4.0"
 import Gio from "gi://Gio"
@@ -12,18 +13,24 @@ const bt = AstalBluetooth.get_default()
 
 // ── bar button ────────────────────────────────────────────────────────────────
 
-export function BluetoothButton({ monitor }: { monitor: string }) {
-  const isPowered = createBinding(bt, "isPowered")
-  const isConnected = createBinding(bt, "isConnected")
+interface BtIconState {
+  isPowered: boolean
+  isConnected: boolean
+}
 
-  const icon = createComputed(() =>
-    !isPowered() ? "󰂲" : isConnected() ? "󰂱" : "󰂯"
+const btIconState = createPoll<BtIconState>(
+  { isPowered: bt.isPowered, isConnected: bt.isConnected },
+  3000,
+  () => ({ isPowered: bt.isPowered, isConnected: bt.isConnected })
+)
+
+export function BluetoothButton({ monitor }: { monitor: string }) {
+  const icon = btIconState.as((s) =>
+    !s.isPowered ? "󰂲" : s.isConnected ? "󰂱" : "󰂯"
   )
 
-  const cssClass = createComputed(() =>
-    isConnected()
-      ? ["module-button", "bt-connected"]
-      : ["module-button"]
+  const cssClass = btIconState.as((s) =>
+    s.isConnected ? ["module-button", "bt-connected"] : ["module-button"]
   )
 
   return (

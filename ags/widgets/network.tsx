@@ -1,4 +1,4 @@
-import { createBinding, createComputed, For } from "gnim"
+import { createBinding, createComputed, createState, For } from "gnim"
 import { createPoll } from "ags/time"
 import { execAsync } from "ags/process"
 import { Gdk } from "ags/gtk4"
@@ -8,6 +8,29 @@ import { togglePopup } from "../bar/PopupManager"
 import PopupWindow from "../components/PopupWindow"
 
 const network = AstalNetwork.get_default()
+
+const [pwTarget, setPwTarget] = createState<AstalNetwork.AccessPoint | null>(null)
+const [netError, setError] = createState<string | null>(null)
+
+function onApClicked(ap: AstalNetwork.AccessPoint) {
+  const hasSaved = ap.get_connections().length > 0
+  if (!ap.requiresPassword || hasSaved) {
+    ap.activate(null).catch((e: unknown) => setError(String(e)))
+    return
+  }
+  setError(null)
+  setPwTarget(ap)
+}
+
+async function submitPw(ap: AstalNetwork.AccessPoint, password: string) {
+  try {
+    await ap.activate(password)
+    setPwTarget(null)
+    setError(null)
+  } catch (e) {
+    setError(String(e))
+  }
+}
 
 // ── bandwidth polling (/sys/class/net) ────────────────────────────────────────
 
@@ -79,30 +102,38 @@ function wifiIcon(strength: number): string {
   return "󰤟"
 }
 
+interface NetIconState {
+  strength: number
+  primary: AstalNetwork.Primary
+  hasWifi: boolean
+}
+
+const netIconState = createPoll<NetIconState>(
+  {
+    strength: network.wifi?.strength ?? 0,
+    primary: network.primary,
+    hasWifi: network.wifi !== null,
+  },
+  3000,
+  () => ({
+    strength: network.wifi?.strength ?? 0,
+    primary: network.primary,
+    hasWifi: network.wifi !== null,
+  })
+)
+
 export function NetworkButton({ monitor }: { monitor: string }) {
-  const wifi = network.wifi
-  const primary = createBinding(network, "primary")
+  const icon = netIconState.as((s) => {
+    if (s.hasWifi && s.strength > 0) return wifiIcon(s.strength)
+    if (s.primary === AstalNetwork.Primary.WIRED) return ""
+    return "󰤭"
+  })
 
-  // If NM reports wifi, use that; if wifi object exists (iwd), use signal strength
-  const icon = wifi
-    ? createBinding(wifi, "strength").as((s) =>
-        s > 0 ? wifiIcon(s) : primary() === AstalNetwork.Primary.WIRED ? "" : "󰤭"
-      )
-    : primary.as((p) =>
-        p === AstalNetwork.Primary.WIRED ? "" : "󰤭"
-      )
-
-  const cssClass = wifi
-    ? createBinding(wifi, "strength").as((s) =>
-        s > 0
-          ? ["module-button", "net-wifi"]
-          : ["module-button", "net-disconnected"]
-      )
-    : primary.as((p) =>
-        p === AstalNetwork.Primary.WIRED
-          ? ["module-button", "net-wired"]
-          : ["module-button", "net-disconnected"]
-      )
+  const cssClass = netIconState.as((s) => {
+    if (s.hasWifi && s.strength > 0) return ["module-button", "net-wifi"]
+    if (s.primary === AstalNetwork.Primary.WIRED) return ["module-button", "net-wired"]
+    return ["module-button", "net-disconnected"]
+  })
 
   return (
     <button
@@ -155,6 +186,18 @@ function WifiSection() {
         />
       </box>
 
+      {/* Error label */}
+      <label
+        label={netError.as((e) => e ?? "")}
+        cssClasses={["net-error"]}
+        visible={netError.as((e) => e !== null)}
+        xalign={0}
+        wrap
+      />
+
+      {/* Password entry row */}
+      <PasswordRow />
+
       {/* Access point list */}
       <label label="Available networks" cssClasses={["net-sub-header"]} xalign={0} />
       <For each={sortedAps} id={(ap) => ap.bssid}>
@@ -168,7 +211,7 @@ function WifiSection() {
               cssClasses={isActive.as((a) =>
                 a ? ["net-ap", "active"] : ["net-ap"]
               )}
-              onClicked={() => ap.activate().catch(console.error)}
+              onClicked={() => onApClicked(ap)}
             >
               <box>
                 <label label={apSsid.as((s) => s || "(hidden)")} xalign={0} hexpand />
@@ -179,6 +222,56 @@ function WifiSection() {
           )
         }}
       </For>
+    </box>
+  )
+}
+
+function PasswordRow() {
+  let entryRef: Gtk.Entry | null = null
+
+  const ssidLabel = pwTarget.as((t) => t ? `Password for ${t.ssid}` : "")
+  const rowVisible = pwTarget.as((t) => t !== null)
+
+  const onConnect = () => {
+    const ap = pwTarget.get()
+    if (ap && entryRef) submitPw(ap, entryRef.text)
+  }
+
+  const onCancel = () => {
+    setPwTarget(null)
+    setError(null)
+  }
+
+  return (
+    <box
+      cssClasses={["net-password-row"]}
+      orientation={Gtk.Orientation.VERTICAL}
+      visible={rowVisible}
+    >
+      <label label={ssidLabel} xalign={0} />
+      <box>
+        <entry
+          visibility={false}
+          hexpand
+          placeholderText="Password"
+          $={(self: Gtk.Entry) => {
+            entryRef = self
+            pwTarget.subscribe(() => {
+              if (pwTarget.get() !== null) {
+                self.text = ""
+                self.grab_focus()
+              }
+            })
+          }}
+          onActivate={onConnect}
+        />
+        <button onClicked={onCancel}>
+          <label label="Cancel" />
+        </button>
+        <button onClicked={onConnect}>
+          <label label="Connect" />
+        </button>
+      </box>
     </box>
   )
 }

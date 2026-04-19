@@ -12,6 +12,7 @@ import { BluetoothPopup } from "./widgets/bluetooth";
 import { BatteryPopup } from "./widgets/battery";
 import { SystemStatsPopup } from "./widgets/system-stats";
 import { NotificationsPopup } from "./widgets/notifications";
+import Launcher from "./launcher/Launcher";
 import { togglePopup, closePopup } from "./bar/PopupManager";
 
 const hypr = AstalHyprland.get_default()!;
@@ -25,6 +26,7 @@ const POPUP_PREFIXES = [
   "battery-popup",
   "system-stats-popup",
   "notifications-popup",
+  "launcher",
 ];
 
 const activeMonitors = new Set<string>();
@@ -51,6 +53,7 @@ function setupMonitor(connector: string) {
     BatteryPopup(gdkMonitor),
     SystemStatsPopup(gdkMonitor),
     NotificationsPopup(gdkMonitor),
+    Launcher(gdkMonitor),
   ];
 
   for (const win of popups) {
@@ -85,7 +88,12 @@ app.start({
   requestHandler(argv, res) {
     const args = argv.join(" ").split(" ");
     if (args[0] === "toggle" && args[1]) {
-      togglePopup(args[1]);
+      let name = args[1];
+      if (name === "launcher") {
+        const focused = hypr.get_focused_monitor();
+        if (focused) name = `launcher-${focused.name}`;
+      }
+      togglePopup(name);
       res("ok");
     } else if (args[0] === "close") {
       closePopup();

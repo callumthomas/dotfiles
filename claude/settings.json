@@ -91,7 +91,6 @@
     ],
     "defaultMode": "default"
   },
-  "model": "claude-opus-4-7[1m]",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -105,7 +104,6 @@
           {
             "type": "command",
             "command": "echo '{ \"systemMessage\": \"What  a great prompt!\" }'",
-
             "timeout": 5,
             "statusMessage": ""
           }

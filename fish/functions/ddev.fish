@@ -33,7 +33,7 @@ function ddev
         tmux rename-window -t =$project:1 vim
         tmux send-keys -t =$project:vim 'vim .' C-m
 		tmux new-window -t =$project -n claude -c $project_path
-		tmux send-keys -t =$project:claude 'claude' C-m
+		tmux send-keys -t =$project:claude 'cc' C-m
         tmux new-window -t =$project -n shell -c $project_path
     else
         ensure_window $project vim $project_path 'vim .'

@@ -19,6 +19,16 @@ function start_agent
     /usr/bin/ssh-add
 end
 
+function valet
+    if test "$argv[1]" = "stop"
+        command valet $argv
+        sudo systemctl start dnsmasq
+        echo "dnsmasq kept running to preserve system DNS"
+    else
+        command valet $argv
+    end
+end
+
 # Source SSH settings, if applicable
 if test -f $SSH_ENV
     source $SSH_ENV > /dev/null
@@ -74,3 +84,4 @@ alias dl="docker logs -f"
 alias dr="docker restart"
 alias cc="claude --effort=max --dangerously-skip-permissions"
 alias nvm="fnm"
+alias ded="docker compose --project-directory ~/dev/denv"

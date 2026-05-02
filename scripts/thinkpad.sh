@@ -8,7 +8,17 @@ sudo pacman -S --noconfirm \
 yay -S --noconfirm \
 	thinkfan \
 	evdi-dkms-git \
-	displaylink
+	displaylink \
+	aylurs-gtk-shell-git \
+	libastal-hyprland-git \
+	libastal-wireplumber-git \
+	libastal-network-git \
+	libastal-bluetooth-git \
+	libastal-battery-git \
+	libastal-mpris-git \
+	libastal-notifd-git \
+	libastal-tray-git
+
 
 sudo ln -sf "$SCRIPT_DIR/tlp/tlp.conf" /etc/tlp.conf
 sudo systemctl enable --now tlp.service

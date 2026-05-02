@@ -38,13 +38,4 @@ git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -
 yay -S --noconfirm \
 	hyprcap \
 	claude-code \
-	clipse \
-	aylurs-gtk-shell-git \
-	libastal-hyprland-git \
-	libastal-wireplumber-git \
-	libastal-network-git \
-	libastal-bluetooth-git \
-	libastal-battery-git \
-	libastal-mpris-git \
-	libastal-notifd-git \
-	libastal-tray-git
+	clipse 

@@ -164,6 +164,7 @@
   },
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
+  "fastMode": true,
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true
 }

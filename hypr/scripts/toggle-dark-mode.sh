@@ -6,6 +6,8 @@ CURRENT=$(gsettings get org.gnome.desktop.interface color-scheme)
 
 if [ "$CURRENT" = "'prefer-dark'" ]; then
   gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
+  hyprctl hyprpaper wallpaper ",$HOME/.config/hypr/wallpaper/wave.jpeg"
 else
   gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+  hyprctl hyprpaper wallpaper ",$HOME/.config/hypr/wallpaper/wave-dark.png"
 fi

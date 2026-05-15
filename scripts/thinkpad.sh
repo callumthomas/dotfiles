@@ -10,16 +10,7 @@ sudo pacman -S --noconfirm \
 yay -S --noconfirm \
 	thinkfan \
 	evdi-dkms-git \
-	displaylink \
-	aylurs-gtk-shell-git \
-	libastal-hyprland-git \
-	libastal-wireplumber-git \
-	libastal-network-git \
-	libastal-bluetooth-git \
-	libastal-battery-git \
-	libastal-mpris-git \
-	libastal-notifd-git \
-	libastal-tray-git
+	displaylink
 
 
 sudo ln -sf "$SCRIPT_DIR/tlp/tlp.conf" /etc/tlp.conf

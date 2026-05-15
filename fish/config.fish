@@ -4,7 +4,11 @@ end
 # Source environment variables
 if test -f ~/dev/dotfiles/.env
     for line in (cat ~/dev/dotfiles/.env | grep -v '^#' | grep -v '^$')
-        set -gx (echo $line | cut -d= -f1) (echo $line | cut -d= -f2-)
+        set key (string split -m 1 = -- $line)[1]
+        set value (string split -m 1 = -- $line)[2]
+        # Strip surrounding single or double quotes
+        set value (string trim --chars='"\'' -- $value)
+        set -gx $key $value
     end
 end
 

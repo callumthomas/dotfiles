@@ -54,7 +54,6 @@ hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" 
 local terminal    = "ghostty"
 local fileManager = "thunar"
 local menu        = 'ags request "toggle launcher"'
-local webBrowser  = "firefox"
 
 
 -------------------

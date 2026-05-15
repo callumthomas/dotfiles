@@ -15,6 +15,8 @@ sensors:
 fans:
   - tpacpi: /proc/acpi/ibm/fan
 
+# Levels skip 4 and 6 deliberately — those steps are too aggressive on this chassis;
+# the gap between 3 and 5 (and 5 and 7) smooths the ramp.
 levels:
   - ["level 0",          0, 55]
   - ["level 1",         48, 60]

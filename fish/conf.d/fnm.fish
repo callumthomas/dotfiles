@@ -1,8 +1,5 @@
-
-# fnm
-set FNM_PATH "$HOME/.local/share/fnm"
-if [ -d "$FNM_PATH" ]
-  set PATH "$FNM_PATH" $PATH
-  fnm env | source
+set -gx FNM_PATH "$HOME/.local/share/fnm"
+if test -d "$FNM_PATH"
+    fish_add_path "$FNM_PATH"
+    fnm env --use-on-cd | source
 end
-

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 sudo pacman -S --noconfirm \
 	docker \
 	docker-compose \
@@ -16,25 +17,22 @@ sudo pacman -S --noconfirm \
 
 yay -S --noconfirm \
 	datagrip \
-	datagrip-jre \
+	datagrip-jre
 
 sudo npm i -g yarn
 
 sudo usermod -aG docker $USER
-newgrp docker
+echo "Note: log out and back in for 'docker' group membership to take effect"
 
 sudo pacman -S php-gd php-igbinary php-redis php-grpc php-pgsql
 yay -S php-pear php-protobuf phpenv
 sudo pecl install decimal
 
-echo "PHP extensions installed"
-echo "update php.ini to enable"
-echo "
-extension=gd
-extension=igbinary
-extension=redis
-extension=grpc
-extension=decimal
-extension=protobuf
-extension=pdo_pgsql
-"
+# Enable PHP extensions in /etc/php/php.ini (idempotent — no-op once uncommented)
+sudo sed -i 's/^;extension=gd$/extension=gd/' /etc/php/php.ini
+sudo sed -i 's/^;extension=igbinary$/extension=igbinary/' /etc/php/php.ini
+sudo sed -i 's/^;extension=redis$/extension=redis/' /etc/php/php.ini
+sudo sed -i 's/^;extension=grpc$/extension=grpc/' /etc/php/php.ini
+sudo sed -i 's/^;extension=decimal$/extension=decimal/' /etc/php/php.ini
+sudo sed -i 's/^;extension=protobuf$/extension=protobuf/' /etc/php/php.ini
+sudo sed -i 's/^;extension=pdo_pgsql$/extension=pdo_pgsql/' /etc/php/php.ini

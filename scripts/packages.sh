@@ -31,6 +31,7 @@ sudo pacman -S --noconfirm \
 	aws-cli \
 	kubectl \
 	lazydocker \
+	upower \
 	inotify-tools \
 	dart-sass \
 	xdg-desktop-portal-gtk

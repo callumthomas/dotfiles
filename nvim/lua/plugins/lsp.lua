@@ -82,7 +82,7 @@ return {
 				)
 				vim.keymap.set(
 					"n",
-					"<leader>d",
+					"<leader>cd",
 					vim.diagnostic.open_float,
 					vim.tbl_extend("force", opts, { desc = "Show diagnostics" })
 				)

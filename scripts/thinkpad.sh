@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")/.."
 sudo pacman -S --noconfirm \
 	fprintd \
 	brightnessctl \

@@ -24,10 +24,9 @@ return {
 			require("mason-lspconfig").setup({
 				ensure_installed = {
 					"eslint",
-					"intelephense",
 					"bashls",
-					"rust_analyzer",
 					"vtsls",
+					"lua_ls",
 				},
 				automatic_installation = true,
 			})
@@ -83,22 +82,16 @@ return {
 				)
 				vim.keymap.set(
 					"n",
-					"<leader>d",
+					"<leader>cd",
 					vim.diagnostic.open_float,
 					vim.tbl_extend("force", opts, { desc = "Show diagnostics" })
 				)
-				vim.keymap.set(
-					"n",
-					"[d",
-					vim.diagnostic.goto_prev,
-					vim.tbl_extend("force", opts, { desc = "Previous diagnostic" })
-				)
-				vim.keymap.set(
-					"n",
-					"]d",
-					vim.diagnostic.goto_next,
-					vim.tbl_extend("force", opts, { desc = "Next diagnostic" })
-				)
+				vim.keymap.set("n", "[d", function()
+					vim.diagnostic.jump({ count = -1, float = true })
+				end, vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
+				vim.keymap.set("n", "]d", function()
+					vim.diagnostic.jump({ count = 1, float = true })
+				end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
 			end
 
 			-- Common server configuration
@@ -153,58 +146,8 @@ return {
 				})
 			)
 
-			-- PHP (Intelephense)
-			vim.lsp.config(
-				"intelephense",
-				vim.tbl_extend("force", default_config, {
-					settings = {
-						intelephense = {
-							files = {
-								maxSize = 5000000,
-							},
-						},
-					},
-				})
-			)
-
 			-- Bash
 			vim.lsp.config("bashls", default_config)
-
-			-- Go
-			vim.lsp.config(
-				"gopls",
-				vim.tbl_extend("force", default_config, {
-					settings = {
-						gopls = {
-							analyses = {
-								unusedparams = true,
-							},
-							staticcheck = true,
-							gofumpt = true,
-							completeUnimported = true,
-							usePlaceholders = true,
-						},
-					},
-				})
-			)
-
-			-- Rust
-			vim.lsp.config(
-				"rust_analyzer",
-				vim.tbl_extend("force", default_config, {
-					settings = {
-						["rust-analyzer"] = {
-							checkOnSave = true,
-							check = {
-								command = "clippy",
-							},
-							cargo = {
-								allFeatures = true,
-							},
-						},
-					},
-				})
-			)
 
 			-- Lua
 			vim.lsp.config(
@@ -230,30 +173,9 @@ return {
 			})
 
 			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "php",
-				callback = function()
-					vim.lsp.enable("intelephense")
-				end,
-			})
-
-			vim.api.nvim_create_autocmd("FileType", {
 				pattern = { "sh", "bash" },
 				callback = function()
 					vim.lsp.enable("bashls")
-				end,
-			})
-
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "go",
-				callback = function()
-					vim.lsp.enable("gopls")
-				end,
-			})
-
-			vim.api.nvim_create_autocmd("FileType", {
-				pattern = "rust",
-				callback = function()
-					vim.lsp.enable("rust_analyzer")
 				end,
 			})
 
@@ -278,11 +200,16 @@ return {
 			})
 
 			-- Diagnostic signs
-			local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-			for type, icon in pairs(signs) do
-				local hl = "DiagnosticSign" .. type
-				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-			end
+			vim.diagnostic.config({
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = " ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.INFO] = " ",
+						[vim.diagnostic.severity.HINT] = "󰠠 ",
+					},
+				},
+			})
 		end,
 	},
 

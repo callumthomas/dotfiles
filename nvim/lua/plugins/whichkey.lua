@@ -26,9 +26,6 @@ return {
 			{ "<leader>c", group = "Code" },
 			{ "<leader>f", group = "File/Find" },
 			{ "<leader>g", group = "Git" },
-			{ "<leader>s", group = "Search" },
-			{ "<leader>w", group = "Window" },
-			{ "<leader>x", group = "Diagnostics/Quickfix" },
 		})
 	end,
 }

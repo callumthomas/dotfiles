@@ -6,7 +6,7 @@ sudo pacman -S --noconfirm \
 	ghostty \
 	fish \
 	firefox \
-	nvim \
+	neovim \
 	hyprlock \
 	hyprpaper \
 	hypridle \
@@ -27,6 +27,10 @@ sudo pacman -S --noconfirm \
 	btop \
 	fd \
 	fzf \
+	jq \
+	aws-cli \
+	kubectl \
+	lazydocker \
 	inotify-tools \
 	dart-sass \
 	xdg-desktop-portal-gtk

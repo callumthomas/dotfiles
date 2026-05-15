@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # source $(echo $0 | sed -E 's/\/[^\/]*$//')/../.env
 source "${BASH_SOURCE[0]%/*}/../.env"
@@ -16,15 +17,16 @@ if ! ping -c 1 $HOMEASSISTANT_SERVER &>/dev/null; then
 fi
 
 get_current_value() {
-	local cb=$(curl -X GET \
+	local cb
+	cb=$(curl -sf -X GET \
 		-H "Authorization: Bearer $HOMEASSISTANT_TOKEN" \
 		-H "Content-Type: application/json" \
-		http://$HOMEASSISTANT_SERVER:8123/api/states/light.cals_office_lamp | jq -r '.attributes.brightness')
-	echo $cb
-	if [[ "$cb" == "null" ]]; then
+		"http://$HOMEASSISTANT_SERVER:8123/api/states/light.cals_office_lamp" \
+		| jq -r '.attributes.brightness')
+	if [[ "$cb" == "null" || -z "$cb" ]]; then
 		echo 0
 	else
-		echo $brightness
+		echo "$cb"
 	fi
 }
 

@@ -86,18 +86,12 @@ return {
 					vim.diagnostic.open_float,
 					vim.tbl_extend("force", opts, { desc = "Show diagnostics" })
 				)
-				vim.keymap.set(
-					"n",
-					"[d",
-					vim.diagnostic.goto_prev,
-					vim.tbl_extend("force", opts, { desc = "Previous diagnostic" })
-				)
-				vim.keymap.set(
-					"n",
-					"]d",
-					vim.diagnostic.goto_next,
-					vim.tbl_extend("force", opts, { desc = "Next diagnostic" })
-				)
+				vim.keymap.set("n", "[d", function()
+					vim.diagnostic.jump({ count = -1, float = true })
+				end, vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
+				vim.keymap.set("n", "]d", function()
+					vim.diagnostic.jump({ count = 1, float = true })
+				end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
 			end
 
 			-- Common server configuration
@@ -206,11 +200,16 @@ return {
 			})
 
 			-- Diagnostic signs
-			local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
-			for type, icon in pairs(signs) do
-				local hl = "DiagnosticSign" .. type
-				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-			end
+			vim.diagnostic.config({
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = " ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.INFO] = " ",
+						[vim.diagnostic.severity.HINT] = "󰠠 ",
+					},
+				},
+			})
 		end,
 	},
 

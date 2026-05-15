@@ -47,8 +47,6 @@ end
 
 set -gx EDITOR nvim
 
-fish_add_path $HOME/.local/bin
-
 # Tmux session-specific configuration
 if set -q TMUX
     set SESSION_NAME (tmux display-message -p '#S' 2>/dev/null)

@@ -6,7 +6,7 @@ sudo pacman -S --noconfirm \
 	ghostty \
 	fish \
 	firefox \
-	nvim \
+	neovim \
 	hyprlock \
 	hyprpaper \
 	hypridle \
@@ -27,6 +27,11 @@ sudo pacman -S --noconfirm \
 	btop \
 	fd \
 	fzf \
+	jq \
+	aws-cli \
+	kubectl \
+	lazydocker \
+	upower \
 	inotify-tools \
 	dart-sass \
 	xdg-desktop-portal-gtk
@@ -38,4 +43,16 @@ git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -
 yay -S --noconfirm \
 	hyprcap \
 	claude-code \
-	clipse 
+	clipse
+
+# AGS / Astal — required for the ags bar
+yay -S --noconfirm \
+	aylurs-gtk-shell-git \
+	libastal-hyprland-git \
+	libastal-wireplumber-git \
+	libastal-network-git \
+	libastal-bluetooth-git \
+	libastal-battery-git \
+	libastal-mpris-git \
+	libastal-notifd-git \
+	libastal-tray-git

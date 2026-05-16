@@ -19,6 +19,3 @@ keymap("n", "N", "Nzzzv")
 
 -- paste without replacing buffer
 keymap({ "x", "v" }, "<leader>p", '"_dP', { desc = "_Paste" })
-
-
-keymap("n", "<leader>cv", "<cmd>lua vim.diagnostic.open_float()<cr>", { desc = "Error Dialog" })

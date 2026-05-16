@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
 git config --global user.name "callum"
 git config --global user.email "ct@deliowealth.com"
 git config --global core.editor "vim"

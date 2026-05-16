@@ -1,15 +1,8 @@
 # Host i-* mi-*
 # ProxyCommand ~/.ssh/aws-ssm-ec2-proxy-command.sh %h %r %p
 
-Host db-demo
-	HostName i-020d375ca27cbc355
-	User ec2-user
-	ProxyCommand env AWS_PROFILE=delio-demo ~/.ssh/aws-ssm-ec2-proxy-command.sh %h %r %p
-
-Host db-prod
-	HostName i-0c05f0a7f22a6ca50
-	User ec2-user
-	ProxyCommand env AWS_PROFILE=delio-prod ~/.ssh/aws-ssm-ec2-proxy-command.sh %h %r %p
+# Per-machine overrides (instance IDs, internal hostnames, etc.)
+Include ~/.ssh/config.local
 
 
 Match Final Exec "echo $TERM | grep -q xterm-ghostty" Host *

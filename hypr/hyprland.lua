@@ -177,6 +177,14 @@ hl.config({
         disable_hyprland_logo    = true,
         disable_splash_rendering = true,
     },
+
+    -- Workaround for aquamarine 0.11.0 per-frame modeset + page-flip loop on
+    -- multi-monitor laptops. Re-enable once aquamarine > 0.11.0-2 lands the fix.
+    -- https://github.com/hyprwm/aquamarine/issues/265
+    -- https://github.com/hyprwm/Hyprland/issues/10979
+    render = {
+        new_render_scheduling = false,
+    },
 })
 
 -- Curves

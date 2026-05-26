@@ -5,5 +5,10 @@ claude/*
 !claude/CLAUDE.md
 !claude/settings.json
 !claude/statusline.sh
+!claude/hooks
+!claude/hooks/**
+!systemd
+!systemd/**
+!scripts/install-systemd-units.sh
 .superpowers/*
 docs/*

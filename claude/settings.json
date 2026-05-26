@@ -81,7 +81,14 @@
       "Bash(ps:*)",
       "Bash(kill:*)",
       "Bash(pkill:*)",
-      "Bash(docker compose:*)"
+      "Bash(docker compose:*)",
+      "mcp__sibyl__memory_correct",
+      "mcp__sibyl__memory_invalidate",
+      "mcp__sibyl__memory_lookup",
+      "mcp__sibyl__memory_pin",
+      "mcp__sibyl__memory_save",
+      "mcp__sibyl__memory_search",
+      "mcp__sibyl__memory_unpin"
     ],
     "deny": [
       "Bash(sudo:*)"
@@ -97,15 +104,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/cal/dev/agentic-memory/hooks/memory-recall.sh",
-            "timeout": 5,
-            "statusMessage": "Searching team memory..."
-          },
-          {
-            "type": "command",
-            "command": "echo '{ \"systemMessage\": \"What  a great prompt!\" }'",
-            "timeout": 5,
-            "statusMessage": ""
+            "command": "/home/cal/.claude/hooks/sibyl-memory-recall.sh",
+            "timeout": 10,
+            "statusMessage": "Searching sibyl memory…"
           }
         ]
       }
@@ -125,6 +126,18 @@
             "command": "echo '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"VERIFICATION REQUIRED: Before creating a PR, confirm you have actually run tests or checked CI status. Do not create a PR based on assumptions that tests pass.\"}}'",
             "if": "Bash(gh pr create*)",
             "statusMessage": "PR verification check"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__sibyl__memory_(save|pin|unpin|correct|invalidate)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/cal/.claude/hooks/sibyl-memory-save-echo.sh",
+            "timeout": 3
           }
         ]
       }

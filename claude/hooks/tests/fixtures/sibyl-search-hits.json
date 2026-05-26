@@ -1,0 +1,34 @@
+{
+  "results": [
+    {
+      "text": "We chose PostgreSQL for billing because of LSN-based replication guarantees.",
+      "credibility": 0.91,
+      "scope_key": "team:default",
+      "fact_uuid": "f-001"
+    },
+    {
+      "text": "Sibyl listens on neo4j port 7689 and redis port 6389 locally (overrides 7687/6379 defaults).",
+      "credibility": 0.87,
+      "scope_key": "team:default",
+      "fact_uuid": "f-002"
+    },
+    {
+      "text": "Pre-commit hook fails on Python files with mismatched mypy stubs — run `uv pip install --upgrade types-redis` first.",
+      "credibility": 0.74,
+      "scope_key": "team:default",
+      "fact_uuid": "f-003"
+    },
+    {
+      "text": "Plan 15 gold sets live in tests/fixtures/gold/ and regenerate via `make goldset`.",
+      "credibility": 0.61,
+      "scope_key": "team:default",
+      "fact_uuid": "f-004"
+    },
+    {
+      "text": "Background workers are gated by SIBYL_GPU_CONCURRENCY; on CPU dev boxes leave at 4.",
+      "credibility": 0.55,
+      "scope_key": "team:default",
+      "fact_uuid": "f-005"
+    }
+  ]
+}

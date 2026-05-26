@@ -1,6 +1,7 @@
 #!/bin/bash
 sudo pacman -S --noconfirm \
 	base-devel \
+	cmake \
 	linux-headers \
 	git \
 	ghostty \

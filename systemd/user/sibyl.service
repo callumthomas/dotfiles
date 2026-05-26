@@ -1,0 +1,16 @@
+[Unit]
+Description=Sibyl team-memory docker stack
+# Note: user units cannot Requires= system units. Docker is system-level and
+# is already running by the time the user session starts. ExecStart will
+# fail visibly if it isn't.
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/cal/dev/sibyl
+ExecStart=/usr/bin/docker compose up -d --wait
+ExecStop=/usr/bin/docker compose stop
+TimeoutStartSec=30min
+
+[Install]
+WantedBy=default.target

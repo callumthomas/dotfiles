@@ -22,25 +22,19 @@ Before suggesting commands or fixes that depend on system state (running service
 
 Never commit directly to main or master. Before committing, always check the current branch. If on main/master (or the repo's default branch), create a new feature branch first before making any commits.
 
-## Team Memory
+## Sibyl Memory
 
-A team memory system is available via the `team-memory` MCP server. Relevant memories are automatically recalled on each prompt via a hook — you don't need to search manually unless doing a targeted lookup.
+A shared team-memory pool is available via the `sibyl` MCP server. Tools are `mcp__sibyl__memory_save`, `memory_search`, `memory_lookup`, `memory_pin`, `memory_unpin`, `memory_correct`, `memory_invalidate`. Relevant memories are auto-recalled on each prompt via a UserPromptSubmit hook; you don't need to search manually unless doing a targeted lookup.
 
-Do not use the regular memory tool. Always use the team memory tool to store memories
+**Shared pool.** Every caller reads/writes the same memories — phrase facts with explicit entity names ("cal prefers X"), not bare pronouns, so they make sense to other sessions.
 
-**When to save (use `memory_save` tool):**
-- Architecture decisions ("we chose PostgreSQL for billing")
-- Coding conventions and standards the team follows
-- Debugging insights that would help next time
-- Project status changes, deadlines, ownership
-- Anything someone said that others would benefit from knowing
+**Save inline whenever the conversation produces something a future session should know:**
+- Architecture decisions ("we chose X over Y because Z")
+- Project-specific conventions and gotchas
+- Debugging insights ("error X actually means Y, fix is Z")
+- Status changes, deadlines, ownership shifts
+- Anything the user explicitly tells you to remember
 
-**When NOT to save:**
-- Routine code changes (the git history captures those)
-- Temporary state ("I'm debugging X right now")
-- Information already in CLAUDE.md files or documentation
+**Don't save:** routine code changes (git captures those), transient session state, info already in CLAUDE.md / docs.
 
-**Scope guidance:**
-- `scope="team"` — decisions, conventions, knowledge that benefits everyone
-- `scope="personal"` — individual preferences, current work context
-- Default (no scope) — saves to your personal namespace
+If a prompt arrives with `⚠ Sibyl unreachable`, skip `memory_save` calls for the turn — they will fail.

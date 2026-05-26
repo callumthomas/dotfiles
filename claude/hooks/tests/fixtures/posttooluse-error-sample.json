@@ -1,0 +1,23 @@
+{
+  "session_id": "39977faf-a6c7-4330-ba98-ff59591e013e",
+  "transcript_path": "/home/cal/.claude/projects/-home-cal-dev-sibyl/39977faf-a6c7-4330-ba98-ff59591e013e.jsonl",
+  "cwd": "/home/cal/dev/sibyl",
+  "permission_mode": "bypassPermissions",
+  "effort": {
+    "level": "xhigh"
+  },
+  "hook_event_name": "PostToolUse",
+  "tool_name": "mcp__sibyl__memory_pin",
+  "tool_input": {
+    "fact_uuid": "definitely-not-a-real-uuid-12345678"
+  },
+  "tool_response": [
+    {
+      "type": "text",
+      "text": "fact definitely-not-a-real-uuid-12345678 not found"
+    }
+  ],
+  "tool_use_id": "toolu_01JUuB7BnbggX1gomQCbczTX",
+  "duration_ms": 109,
+  "tool_response_is_error": true
+}

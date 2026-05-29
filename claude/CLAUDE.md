@@ -22,6 +22,10 @@ Before suggesting commands or fixes that depend on system state (running service
 
 Never commit directly to main or master. Before committing, always check the current branch. If on main/master (or the repo's default branch), create a new feature branch first before making any commits.
 
+
+## IMPORTANT
+NEVER EVER EVER stub/mock implementations as placeholders unless explicitly asked to do so. Always implement properly, if you believe using a stub as a placeholder may be appropriate, ask first.
+
 ## Sibyl Memory
 
 A shared team-memory pool is available via the `sibyl` MCP server. Tools are `mcp__sibyl__memory_save`, `memory_search`, `memory_lookup`, `memory_pin`, `memory_unpin`, `memory_correct`, `memory_invalidate`. Relevant memories are auto-recalled on each prompt via a UserPromptSubmit hook; you don't need to search manually unless doing a targeted lookup.
@@ -38,3 +42,6 @@ A shared team-memory pool is available via the `sibyl` MCP server. Tools are `mc
 **Don't save:** routine code changes (git captures those), transient session state, info already in CLAUDE.md / docs.
 
 If a prompt arrives with `⚠ Sibyl unreachable`, skip `memory_save` calls for the turn — they will fail.
+
+## Sibyl Memory Usage
+When the user references a graph, service, or codebase already in context, inspect the obvious Sibyl graph FIRST rather than asking for clarification. Save atomic facts (not compound statements) when documenting services, and verify saves succeeded before reporting completion.

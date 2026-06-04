@@ -107,6 +107,11 @@
             "command": "/home/cal/.claude/hooks/sibyl-memory-recall.sh",
             "timeout": 10,
             "statusMessage": "Searching sibyl memory…"
+          },
+          {
+            "type": "command",
+            "command": "/home/cal/.claude/hooks/claude-attention.sh clear",
+            "timeout": 3
           }
         ]
       }
@@ -138,6 +143,18 @@
             "type": "command",
             "command": "/home/cal/.claude/hooks/sibyl-memory-save-echo.sh",
             "timeout": 3
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/cal/.claude/hooks/claude-attention.sh",
+            "timeout": 5
           }
         ]
       }
@@ -178,5 +195,6 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "autoMemoryEnabled": false,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "terminal_bell"
 }

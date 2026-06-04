@@ -1,0 +1,13 @@
+[Unit]
+Description=Hyprland urgent-window border blinker
+PartOf=hyprland-session.target
+After=hyprland-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.config/hypr/scripts/hypr-urgent-border.sh
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=hyprland-session.target

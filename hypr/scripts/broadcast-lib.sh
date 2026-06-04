@@ -82,6 +82,13 @@ sys.exit(1)
 PY
 }
 
+bc_deliver() {
+  local session="$1" msg_file="$2"
+  bc_tmux load-buffer -b broadcast "$msg_file"
+  bc_tmux paste-buffer -p -d -b broadcast -t "$session"
+  bc_tmux send-keys -t "$session" Enter
+}
+
 bc_state_init() { mkdir -p "$(dirname "$BC_STATE_FILE")"; [ -f "$BC_STATE_FILE" ] || : >"$BC_STATE_FILE"; }
 bc_state_list() { bc_state_init; cat "$BC_STATE_FILE"; }
 bc_state_has() { bc_state_init; grep -q "^$1	" "$BC_STATE_FILE"; }

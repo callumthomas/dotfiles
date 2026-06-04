@@ -111,5 +111,13 @@ reset
 check "window with no tmux client in subtree returns failure" \
   "1" "$(bc_match_session 400 "$PROC_TABLE" "$TMUX_TABLE"; echo $?)"
 
+reset
+MSGF="$(mktemp)"; printf 'line one\nline two' >"$MSGF"
+bc_deliver delio-ai "$MSGF"
+check "deliver loads buffer, bracketed-pastes, then submits" \
+"load-buffer -b broadcast $MSGF
+paste-buffer -p -d -b broadcast -t delio-ai
+send-keys -t delio-ai Enter" "$(cap)"
+
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

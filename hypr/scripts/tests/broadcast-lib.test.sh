@@ -114,8 +114,8 @@ MSGF="$(mktemp)"; printf 'line one\nline two' >"$MSGF"
 bc_deliver delio-ai "$MSGF"
 check "deliver loads buffer, bracketed-pastes, then submits" \
 "load-buffer -b broadcast $MSGF
-paste-buffer -p -d -b broadcast -t =delio-ai
-send-keys -t =delio-ai Enter" "$(cap)"
+paste-buffer -p -d -b broadcast -t delio-ai
+send-keys -t delio-ai Enter" "$(cap)"
 
 reset
 bc_state_add 0xaaa delio-ai

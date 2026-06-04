@@ -28,9 +28,8 @@ sent=0; skipped=0
 while IFS=$'\t' read -r addr session; do
   [ -n "$addr" ] || continue
   if ! printf '%s' "$clients" | grep -q "\"$addr\""; then skipped=$((skipped + 1)); continue; fi
-  if ! tmux has-session -t "=$session" 2>/dev/null; then skipped=$((skipped + 1)); continue; fi
-  bc_deliver "$session" "$msg_file"
-  sent=$((sent + 1))
+  if ! tmux has-session -t "$session" 2>/dev/null; then skipped=$((skipped + 1)); continue; fi
+  if bc_deliver "$session" "$msg_file"; then sent=$((sent + 1)); else skipped=$((skipped + 1)); fi
 done <"$BC_STATE_FILE"
 
 bc_clear_all

@@ -82,9 +82,9 @@ PY
 
 bc_deliver() {
   local session="$1" msg_file="$2"
-  bc_tmux load-buffer -b broadcast "$msg_file"
-  bc_tmux paste-buffer -p -d -b broadcast -t "=$session"
-  bc_tmux send-keys -t "=$session" Enter
+  bc_tmux load-buffer -b broadcast "$msg_file" || return 1
+  bc_tmux paste-buffer -p -d -b broadcast -t "$session" || return 1
+  bc_tmux send-keys -t "$session" Enter || return 1
 }
 
 bc_state_init() { mkdir -p "$(dirname "$BC_STATE_FILE")"; [ -f "$BC_STATE_FILE" ] || : >"$BC_STATE_FILE"; }

@@ -110,6 +110,10 @@ check "window with no tmux client in subtree returns failure" \
   "1" "$(bc_match_session 400 "$PROC_TABLE" "$TMUX_TABLE"; echo $?)"
 
 reset
+check "shared pid with multiple tmux sessions in subtree is ambiguous (exit 2)" \
+  "2" "$(bc_match_session 1 "$PROC_TABLE" "$TMUX_TABLE"; echo $?)"
+
+reset
 MSGF="$(mktemp)"; printf 'line one\nline two' >"$MSGF"
 bc_deliver delio-ai "$MSGF"
 check "deliver loads buffer, bracketed-pastes, then submits" \

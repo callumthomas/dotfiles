@@ -19,12 +19,15 @@ read -r addr pid <<<"$resolved"
 proc_table="$(mktemp)"; ps -eo pid=,ppid= >"$proc_table"
 tmux_table="$(mktemp)"; tmux list-clients -F '#{client_pid} #{session_name}' >"$tmux_table" 2>/dev/null || true
 
-if ! session="$(bc_match_session "$pid" "$proc_table" "$tmux_table")"; then
-  rm -f "$proc_table" "$tmux_table"
+session="$(bc_match_session "$pid" "$proc_table" "$tmux_table")"; rc=$?
+rm -f "$proc_table" "$tmux_table"
+if [ "$rc" -eq 2 ]; then
+  bc_notify "Ambiguous: ghostty single-instance is on. Fully restart ghostty so each window has its own PID."
+  exit 0
+elif [ "$rc" -ne 0 ]; then
   bc_notify "Not a tmux terminal — can't broadcast here"
   exit 0
 fi
-rm -f "$proc_table" "$tmux_table"
 
 if bc_state_has "$addr"; then
   bc_state_remove "$addr"

@@ -67,16 +67,21 @@ for line in open(sys.argv[3]):
     if len(parts) < 2:
         continue
     tmux[parts[0]] = parts[1].strip()
+found = []
 seen = set()
 stack = [wpid]
 while stack:
     p = stack.pop()
-    if p in tmux:
-        print(tmux[p]); sys.exit(0)
+    if p in tmux and tmux[p] not in found:
+        found.append(tmux[p])
     for ch in children.get(p, []):
         if ch not in seen:
             seen.add(ch); stack.append(ch)
-sys.exit(1)
+if not found:
+    sys.exit(1)
+if len(found) > 1:
+    sys.exit(2)
+print(found[0])
 PY
 }
 

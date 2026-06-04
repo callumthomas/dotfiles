@@ -17,6 +17,9 @@ ghostty --class=com.floating.broadcast --confirm-close-surface=false \
   -e nvim "$msg_file" &
 wait "$!"
 
+msg="$(cat "$msg_file")"
+printf '%s' "$msg" >"$msg_file"
+
 if [ -z "$(tr -d '[:space:]' <"$msg_file")" ]; then
   bc_clear_all
   bc_notify "Selection cleared"

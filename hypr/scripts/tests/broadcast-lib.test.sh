@@ -119,5 +119,16 @@ check "deliver loads buffer, bracketed-pastes, then submits" \
 paste-buffer -p -d -b broadcast -t delio-ai
 send-keys -t delio-ai Enter" "$(cap)"
 
+reset
+bc_state_add 0xaaa delio-ai
+bc_state_add 0xbbb portfolio
+bc_clear_all
+check "clear_all reverts borders for every selected window" \
+"dispatch setprop address:0xaaa active_border_color rgba(33ccffee)
+dispatch setprop address:0xaaa inactive_border_color rgba(33ccff00)
+dispatch setprop address:0xbbb active_border_color rgba(33ccffee)
+dispatch setprop address:0xbbb inactive_border_color rgba(33ccff00)" "$(cap)"
+check "clear_all empties the state file" "" "$(bc_state_list)"
+
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

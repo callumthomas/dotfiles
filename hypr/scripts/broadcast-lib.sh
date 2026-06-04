@@ -100,3 +100,12 @@ bc_state_remove() {
   grep -v "^$1	" "$BC_STATE_FILE" >"$tmp" || true
   mv "$tmp" "$BC_STATE_FILE"
 }
+
+bc_clear_all() {
+  bc_state_init
+  local addr _session
+  while IFS=$'\t' read -r addr _session; do
+    [ -n "$addr" ] && bc_clear_border "$addr"
+  done <"$BC_STATE_FILE"
+  : >"$BC_STATE_FILE"
+}

@@ -8,6 +8,10 @@ pos="$(hyprctl cursorpos)"            # e.g. "960, 540"
 cx="${pos%%,*}"; cx="${cx// /}"
 cy="${pos##*,}"; cy="${cy// /}"
 
+if ! [[ "$cx" =~ ^-?[0-9]+$ && "$cy" =~ ^-?[0-9]+$ ]]; then
+  bc_notify "Couldn't read cursor position"; exit 1
+fi
+
 resolved="$(hyprctl clients -j | bc_resolve_window "$cx" "$cy")"
 if [ -z "$resolved" ]; then bc_notify "No window under cursor"; exit 0; fi
 read -r addr pid <<<"$resolved"

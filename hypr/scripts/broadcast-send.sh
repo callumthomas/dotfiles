@@ -11,7 +11,7 @@ if [ ! -s "$BC_STATE_FILE" ]; then
 fi
 
 msg_file="$(mktemp --suffix=.broadcast)"
-trap 'rm -f "$msg_file"' EXIT
+trap 'rm -f "$msg_file"; bc_clear_all' EXIT
 
 ghostty --class=com.floating.broadcast --confirm-close-surface=false \
   -e nvim "$msg_file" &

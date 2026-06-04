@@ -36,6 +36,8 @@ sudo pacman -S --noconfirm \
 	upower \
 	inotify-tools \
 	dart-sass \
+	libnotify \
+	python \
 	xdg-desktop-portal-gtk
 
 sudo pacman -Rns dolphin kitty

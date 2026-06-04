@@ -21,6 +21,15 @@ bc_notify() {
   notify-send -a broadcast "Broadcast" "$1" >/dev/null 2>&1 || true
 }
 
+bc_set_border() {
+  bc_hyprctl dispatch setprop "address:$1" active_border_color "$BC_SELECT_COLOR"
+  bc_hyprctl dispatch setprop "address:$1" inactive_border_color "$BC_SELECT_COLOR"
+}
+bc_clear_border() {
+  bc_hyprctl dispatch setprop "address:$1" active_border_color "$BC_NORMAL_ACTIVE"
+  bc_hyprctl dispatch setprop "address:$1" inactive_border_color "$BC_NORMAL_INACTIVE"
+}
+
 bc_state_init() { mkdir -p "$(dirname "$BC_STATE_FILE")"; [ -f "$BC_STATE_FILE" ] || : >"$BC_STATE_FILE"; }
 bc_state_list() { bc_state_init; cat "$BC_STATE_FILE"; }
 bc_state_has() { bc_state_init; grep -q "^$1	" "$BC_STATE_FILE"; }

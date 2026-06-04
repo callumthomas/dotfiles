@@ -60,5 +60,17 @@ bc_state_add 0xaaa delio-ai
 bc_state_add 0xaaa delio-ai
 check "duplicate add does not create a second record" "1" "$(bc_state_list | wc -l)"
 
+reset
+bc_set_border 0xaaa
+check "set_border paints both borders orange" \
+"dispatch setprop address:0xaaa active_border_color rgb(ff8800)
+dispatch setprop address:0xaaa inactive_border_color rgb(ff8800)" "$(cap)"
+
+reset
+bc_clear_border 0xaaa
+check "clear_border restores configured colours" \
+"dispatch setprop address:0xaaa active_border_color rgba(33ccffee)
+dispatch setprop address:0xaaa inactive_border_color rgba(33ccff00)" "$(cap)"
+
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

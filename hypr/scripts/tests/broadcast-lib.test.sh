@@ -34,5 +34,31 @@ source "$SCRIPT"
 
 # --- tests appended by later increments ---
 
+reset
+bc_state_add 0xaaa delio-ai
+bc_state_add 0xbbb portfolio
+check "add writes two records" "0xaaa	delio-ai
+0xbbb	portfolio" "$(bc_state_list)"
+
+reset
+bc_state_add 0xaaa delio-ai
+check "has finds present address" "0" "$(bc_state_has 0xaaa; echo $?)"
+check "has rejects absent address" "1" "$(bc_state_has 0xzzz; echo $?)"
+
+reset
+bc_state_add 0xaaa delio-ai
+bc_state_add 0xbbb portfolio
+bc_state_remove 0xaaa
+check "remove drops only the matching record" "0xbbb	portfolio" "$(bc_state_list)"
+
+reset
+bc_state_add 0xaaa delio-ai
+check "session lookup returns the mapped session" "delio-ai" "$(bc_state_session 0xaaa)"
+
+reset
+bc_state_add 0xaaa delio-ai
+bc_state_add 0xaaa delio-ai
+check "duplicate add does not create a second record" "1" "$(bc_state_list | wc -l)"
+
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

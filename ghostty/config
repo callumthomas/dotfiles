@@ -4,3 +4,4 @@ background-opacity = 1
 theme = Monokai Remastered
 keybind = shift+enter=text:\x1b\r
 bell-features = attention,title,border
+gtk-single-instance = false

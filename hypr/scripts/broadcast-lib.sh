@@ -31,12 +31,10 @@ bc_clear_border() {
 }
 
 bc_resolve_window() {
-  local _json_input
-  _json_input="$(cat)"
-  python3 - "$1" "$2" "$_json_input" <<'PY'
+  python3 -c '
 import json, sys
 x, y = int(sys.argv[1]), int(sys.argv[2])
-data = json.loads(sys.argv[3])
+data = json.load(sys.stdin)
 cands = []
 for c in data:
     if not c.get("mapped", False) or c.get("hidden", False):
@@ -49,7 +47,7 @@ if not cands:
     sys.exit(1)
 cands.sort(key=lambda c: c.get("focusHistoryID", 1 << 30))
 print(cands[0]["address"], cands[0]["pid"])
-PY
+' "$1" "$2"
 }
 
 bc_match_session() {
@@ -91,13 +89,13 @@ bc_deliver() {
 
 bc_state_init() { mkdir -p "$(dirname "$BC_STATE_FILE")"; [ -f "$BC_STATE_FILE" ] || : >"$BC_STATE_FILE"; }
 bc_state_list() { bc_state_init; cat "$BC_STATE_FILE"; }
-bc_state_has() { bc_state_init; grep -q "^$1	" "$BC_STATE_FILE"; }
-bc_state_session() { bc_state_init; awk -F'	' -v a="$1" '$1==a{print $2; exit}' "$BC_STATE_FILE"; }
+bc_state_has() { bc_state_init; awk -F'\t' -v a="$1" '$1==a{f=1} END{exit !f}' "$BC_STATE_FILE"; }
+bc_state_session() { bc_state_init; awk -F'\t' -v a="$1" '$1==a{print $2; exit}' "$BC_STATE_FILE"; }
 bc_state_add() { bc_state_init; bc_state_has "$1" || printf '%s\t%s\n' "$1" "$2" >>"$BC_STATE_FILE"; }
 bc_state_remove() {
   bc_state_init
   local tmp; tmp="$(mktemp)"
-  grep -v "^$1	" "$BC_STATE_FILE" >"$tmp" || true
+  awk -F'\t' -v a="$1" '$1!=a' "$BC_STATE_FILE" >"$tmp"
   mv "$tmp" "$BC_STATE_FILE"
 }
 

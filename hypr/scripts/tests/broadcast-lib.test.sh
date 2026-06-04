@@ -32,8 +32,6 @@ check() {
 # shellcheck disable=SC1090
 source "$SCRIPT"
 
-# --- tests appended by later increments ---
-
 reset
 bc_state_add 0xaaa delio-ai
 bc_state_add 0xbbb portfolio

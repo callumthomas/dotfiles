@@ -30,6 +30,28 @@ bc_clear_border() {
   bc_hyprctl dispatch setprop "address:$1" inactive_border_color "$BC_NORMAL_INACTIVE"
 }
 
+bc_resolve_window() {
+  local _json_input
+  _json_input="$(cat)"
+  python3 - "$1" "$2" "$_json_input" <<'PY'
+import json, sys
+x, y = int(sys.argv[1]), int(sys.argv[2])
+data = json.loads(sys.argv[3])
+cands = []
+for c in data:
+    if not c.get("mapped", False) or c.get("hidden", False):
+        continue
+    ax, ay = c.get("at", [0, 0])
+    w, h = c.get("size", [0, 0])
+    if ax <= x < ax + w and ay <= y < ay + h:
+        cands.append(c)
+if not cands:
+    sys.exit(1)
+cands.sort(key=lambda c: c.get("focusHistoryID", 1 << 30))
+print(cands[0]["address"], cands[0]["pid"])
+PY
+}
+
 bc_state_init() { mkdir -p "$(dirname "$BC_STATE_FILE")"; [ -f "$BC_STATE_FILE" ] || : >"$BC_STATE_FILE"; }
 bc_state_list() { bc_state_init; cat "$BC_STATE_FILE"; }
 bc_state_has() { bc_state_init; grep -q "^$1	" "$BC_STATE_FILE"; }

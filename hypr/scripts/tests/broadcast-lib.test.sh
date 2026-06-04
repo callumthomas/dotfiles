@@ -72,5 +72,25 @@ check "clear_border restores configured colours" \
 "dispatch setprop address:0xaaa active_border_color rgba(33ccffee)
 dispatch setprop address:0xaaa inactive_border_color rgba(33ccff00)" "$(cap)"
 
+CLIENTS_JSON='[
+  {"address":"0xaaa","pid":100,"mapped":true,"hidden":false,"at":[0,0],"size":[500,500],"focusHistoryID":2},
+  {"address":"0xbbb","pid":200,"mapped":true,"hidden":false,"at":[100,100],"size":[500,500],"focusHistoryID":0},
+  {"address":"0xccc","pid":300,"mapped":false,"hidden":false,"at":[0,0],"size":[500,500],"focusHistoryID":1},
+  {"address":"0xddd","pid":400,"mapped":true,"hidden":true,"at":[0,0],"size":[500,500],"focusHistoryID":3}
+]'
+
+reset
+check "cursor in single window resolves it" "0xaaa 100" "$(printf '%s' "$CLIENTS_JSON" | bc_resolve_window 50 50)"
+
+reset
+check "overlap picks topmost by focusHistoryID" "0xbbb 200" "$(printf '%s' "$CLIENTS_JSON" | bc_resolve_window 200 200)"
+
+reset
+check "cursor over empty space resolves nothing" "" "$(printf '%s' "$CLIENTS_JSON" | bc_resolve_window 2000 2000)"
+check "empty-space resolution returns failure" "1" "$(printf '%s' "$CLIENTS_JSON" | bc_resolve_window 2000 2000; echo $?)"
+
+reset
+check "unmapped/hidden windows ignored" "0xaaa 100" "$(printf '%s' "$CLIENTS_JSON" | bc_resolve_window 10 10)"
+
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

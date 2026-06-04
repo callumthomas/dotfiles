@@ -2,6 +2,7 @@
 sudo pacman -S --noconfirm \
 	base-devel \
 	cmake \
+	rust \
 	linux-headers \
 	git \
 	ghostty \
@@ -39,15 +40,15 @@ sudo pacman -S --noconfirm \
 
 sudo pacman -Rns dolphin kitty
 
-git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -si
+git clone https://aur.archlinux.org/paru.git /tmp/paru && cd /tmp/paru && makepkg -si
 
-yay -S --noconfirm \
+paru -S --noconfirm \
 	hyprcap \
 	claude-code \
 	clipse
 
 # AGS / Astal — required for the ags bar
-yay -S --noconfirm \
+paru -S --noconfirm \
 	aylurs-gtk-shell-git \
 	libastal-hyprland-git \
 	libastal-wireplumber-git \

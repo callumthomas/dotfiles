@@ -15,7 +15,7 @@ sudo pacman -S --noconfirm \
 	postgresql \
 	k9s
 
-yay -S --noconfirm \
+paru -S --noconfirm \
 	datagrip \
 	datagrip-jre
 
@@ -25,7 +25,7 @@ sudo usermod -aG docker $USER
 echo "Note: log out and back in for 'docker' group membership to take effect"
 
 sudo pacman -S php-gd php-igbinary php-redis php-grpc php-pgsql
-yay -S php-pear php-protobuf phpenv
+paru -S php-pear php-protobuf phpenv
 sudo pecl install decimal
 
 # Enable PHP extensions in /etc/php/php.ini (idempotent — no-op once uncommented)

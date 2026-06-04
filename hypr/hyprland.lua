@@ -40,29 +40,38 @@ hl.monitor({
     position = "1200x0",
     scale    = 1,
 })
--- Office: Dell U2414H, top-right above laptop; bottom edge meets laptop top at 50% of center monitor (y=600)
+-- Office: Dell U2414H (legacy), top-right above laptop; bottom edge meets laptop top at 50% of center monitor (y=600)
 hl.monitor({
     output   = "desc:Dell Inc. DELL U2414H 9TG4661BC3ML",
     mode     = "1920x1080@60",
     position = "3120x-480",
     scale    = 1,
 })
+-- Office: Dell P2419H, current replacement for the U2414H — same top-right slot above the laptop
+hl.monitor({
+    output   = "desc:Dell Inc. DELL P2419H 61WZFZ2",
+    mode     = "1920x1080@60",
+    position = "3120x-480",
+    scale    = 1,
+})
 
--- Laptop panel — default auto; pinned below U2414H only when that monitor is present (see callback below).
+-- Laptop panel — default auto; pinned below the office top monitor (U2414H or P2419H) when present (see callback below).
 hl.monitor({ output = "eDP-1", mode = "preferred", position = "auto", scale = 1 })
 
--- When the office U2414H is connected, pin the laptop directly below it so the
--- split between the two right-stack monitors sits at y=600 (50% of center monitor).
--- When it's not connected, leave the laptop on auto so the home layout works.
-local function apply_laptop_position_for_u2414h()
-    local has_u2414h = false
+-- When the office top monitor (U2414H or its P2419H replacement) is connected, pin the
+-- laptop directly below it so the split between the two right-stack monitors sits at
+-- y=600 (50% of center monitor). When neither is connected, leave the laptop on auto so
+-- the home layout works.
+local function apply_laptop_position_for_office_top()
+    local has_office_top = false
     for _, m in ipairs(hl.get_monitors() or {}) do
-        if m.description and m.description:find("DELL U2414H 9TG4661BC3ML") then
-            has_u2414h = true
+        if m.description and (m.description:find("DELL U2414H 9TG4661BC3ML")
+                              or m.description:find("DELL P2419H 61WZFZ2")) then
+            has_office_top = true
             break
         end
     end
-    if has_u2414h then
+    if has_office_top then
         hl.monitor({
             output   = "desc:Lenovo Group Limited B140UAN02.7",
             mode     = "1920x1200@60",
@@ -79,11 +88,11 @@ local function apply_laptop_position_for_u2414h()
     end
 end
 
-hl.on("hyprland.start",        apply_laptop_position_for_u2414h)
-hl.on("config.reloaded",       apply_laptop_position_for_u2414h)
-hl.on("monitor.added",         function(_) apply_laptop_position_for_u2414h() end)
-hl.on("monitor.removed",       function(_) apply_laptop_position_for_u2414h() end)
-hl.on("monitor.layout_changed", apply_laptop_position_for_u2414h)
+hl.on("hyprland.start",        apply_laptop_position_for_office_top)
+hl.on("config.reloaded",       apply_laptop_position_for_office_top)
+hl.on("monitor.added",         function(_) apply_laptop_position_for_office_top() end)
+hl.on("monitor.removed",       function(_) apply_laptop_position_for_office_top() end)
+hl.on("monitor.layout_changed", apply_laptop_position_for_office_top)
 -- Fallback for any other monitor
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 

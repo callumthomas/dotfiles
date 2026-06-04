@@ -7,7 +7,7 @@ sudo pacman -S --noconfirm \
 	tlp \
 	tlp-rdw
 
-yay -S --noconfirm \
+paru -S --noconfirm \
 	thinkfan \
 	evdi-dkms-git \
 	displaylink

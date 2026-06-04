@@ -4,7 +4,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$HERE/broadcast-lib.sh"
 
-pos="$(hyprctl cursorpos)"            # e.g. "960, 540"
+pos="$(hyprctl cursorpos)"
 cx="${pos%%,*}"; cx="${cx// /}"
 cy="${pos##*,}"; cy="${cy// /}"
 

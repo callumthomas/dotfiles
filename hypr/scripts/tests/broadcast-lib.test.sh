@@ -92,5 +92,24 @@ check "empty-space resolution returns failure" "1" "$(printf '%s' "$CLIENTS_JSON
 reset
 check "unmapped/hidden windows ignored" "0xaaa 100" "$(printf '%s' "$CLIENTS_JSON" | bc_resolve_window 10 10)"
 
+PROC_TABLE="$(mktemp)"; printf '%s\n' \
+  "100 1" "150 100" "200 150" \
+  "300 1" "350 300" \
+  "400 1" >"$PROC_TABLE"
+TMUX_TABLE="$(mktemp)"; printf '%s\n' \
+  "200 delio-ai" "350 portfolio" >"$TMUX_TABLE"
+
+reset
+check "window pid maps to session via grandchild tmux client" \
+  "delio-ai" "$(bc_match_session 100 "$PROC_TABLE" "$TMUX_TABLE")"
+
+reset
+check "second window maps to its own session" \
+  "portfolio" "$(bc_match_session 300 "$PROC_TABLE" "$TMUX_TABLE")"
+
+reset
+check "window with no tmux client in subtree returns failure" \
+  "1" "$(bc_match_session 400 "$PROC_TABLE" "$TMUX_TABLE"; echo $?)"
+
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

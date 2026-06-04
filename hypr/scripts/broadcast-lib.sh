@@ -52,6 +52,36 @@ print(cands[0]["address"], cands[0]["pid"])
 PY
 }
 
+bc_match_session() {
+  python3 - "$1" "$2" "$3" <<'PY'
+import sys
+wpid = sys.argv[1]
+children = {}
+for line in open(sys.argv[2]):
+    parts = line.split()
+    if len(parts) < 2:
+        continue
+    pid, ppid = parts[0], parts[1]
+    children.setdefault(ppid, []).append(pid)
+tmux = {}
+for line in open(sys.argv[3]):
+    parts = line.split(None, 1)
+    if len(parts) < 2:
+        continue
+    tmux[parts[0]] = parts[1].strip()
+seen = set()
+stack = [wpid]
+while stack:
+    p = stack.pop()
+    if p in tmux:
+        print(tmux[p]); sys.exit(0)
+    for ch in children.get(p, []):
+        if ch not in seen:
+            seen.add(ch); stack.append(ch)
+sys.exit(1)
+PY
+}
+
 bc_state_init() { mkdir -p "$(dirname "$BC_STATE_FILE")"; [ -f "$BC_STATE_FILE" ] || : >"$BC_STATE_FILE"; }
 bc_state_list() { bc_state_init; cat "$BC_STATE_FILE"; }
 bc_state_has() { bc_state_init; grep -q "^$1	" "$BC_STATE_FILE"; }

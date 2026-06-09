@@ -38,7 +38,9 @@ sudo pacman -S --noconfirm \
 	dart-sass \
 	libnotify \
 	python \
-	xdg-desktop-portal-gtk
+	xdg-desktop-portal-gtk \
+	eza \
+	bat
 
 sudo pacman -Rns dolphin kitty
 

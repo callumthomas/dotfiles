@@ -74,9 +74,9 @@ set -gx PATH $HOME/.phpenv/bin $PATH
 status is-interactive; and phpenv init - | source
 
 # Aliases
+alias ls="eza"
 alias hbinds="cat ~/.config/hypr/hyprland.conf | grep 'bind = '"
 alias n="nvim"
-alias ll="ls -alh"
 alias febuild="tmux new -A -s fe-build"
 alias k="kubectl"
 alias de="docker exec -it"

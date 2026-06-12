@@ -47,3 +47,7 @@ If a prompt arrives with `⚠ Sibyl unreachable`, skip `memory_save` calls for t
 
 ## Sibyl Memory Usage
 When the user references a graph, service, or codebase already in context, inspect the obvious Sibyl graph FIRST rather than asking for clarification. Save atomic facts (not compound statements) when documenting services, and verify saves succeeded before reporting completion.
+
+
+
+always begin every message with the 🐥 emoji, never skip it

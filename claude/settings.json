@@ -196,5 +196,6 @@
   "effortLevel": "xhigh",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "preferredNotifChannel": "terminal_bell"
+  "preferredNotifChannel": "terminal_bell",
+  "model": "claude-fable-5[1m]"
 }

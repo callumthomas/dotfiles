@@ -21,13 +21,16 @@ bc_notify() {
   notify-send -a broadcast "Broadcast" "$1" >/dev/null 2>&1 || true
 }
 
+bc_setprop() {
+  bc_hyprctl dispatch "hl.dsp.window.set_prop({ window = \"address:$1\", prop = \"$2\", value = \"$3\" })"
+}
 bc_set_border() {
-  bc_hyprctl dispatch setprop "address:$1" active_border_color "$BC_SELECT_COLOR"
-  bc_hyprctl dispatch setprop "address:$1" inactive_border_color "$BC_SELECT_COLOR"
+  bc_setprop "$1" active_border_color "$BC_SELECT_COLOR"
+  bc_setprop "$1" inactive_border_color "$BC_SELECT_COLOR"
 }
 bc_clear_border() {
-  bc_hyprctl dispatch setprop "address:$1" active_border_color "$BC_NORMAL_ACTIVE"
-  bc_hyprctl dispatch setprop "address:$1" inactive_border_color "$BC_NORMAL_INACTIVE"
+  bc_setprop "$1" active_border_color "$BC_NORMAL_ACTIVE"
+  bc_setprop "$1" inactive_border_color "$BC_NORMAL_INACTIVE"
 }
 
 bc_resolve_window() {

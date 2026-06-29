@@ -61,14 +61,14 @@ check "duplicate add does not create a second record" "1" "$(bc_state_list | wc 
 reset
 bc_set_border 0xaaa
 check "set_border paints both borders orange" \
-"dispatch setprop address:0xaaa active_border_color rgb(ff8800)
-dispatch setprop address:0xaaa inactive_border_color rgb(ff8800)" "$(cap)"
+"dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"active_border_color\", value = \"rgb(ff8800)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"inactive_border_color\", value = \"rgb(ff8800)\" })" "$(cap)"
 
 reset
 bc_clear_border 0xaaa
 check "clear_border restores configured colours" \
-"dispatch setprop address:0xaaa active_border_color rgba(33ccffee)
-dispatch setprop address:0xaaa inactive_border_color rgba(33ccff00)" "$(cap)"
+"dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"active_border_color\", value = \"rgba(33ccffee)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"inactive_border_color\", value = \"rgba(33ccff00)\" })" "$(cap)"
 
 CLIENTS_JSON='[
   {"address":"0xaaa","pid":100,"mapped":true,"hidden":false,"at":[0,0],"size":[500,500],"focusHistoryID":2},
@@ -126,10 +126,10 @@ bc_state_add 0xaaa delio-ai
 bc_state_add 0xbbb portfolio
 bc_clear_all
 check "clear_all reverts borders for every selected window" \
-"dispatch setprop address:0xaaa active_border_color rgba(33ccffee)
-dispatch setprop address:0xaaa inactive_border_color rgba(33ccff00)
-dispatch setprop address:0xbbb active_border_color rgba(33ccffee)
-dispatch setprop address:0xbbb inactive_border_color rgba(33ccff00)" "$(cap)"
+"dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"active_border_color\", value = \"rgba(33ccffee)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"inactive_border_color\", value = \"rgba(33ccff00)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xbbb\", prop = \"active_border_color\", value = \"rgba(33ccffee)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xbbb\", prop = \"inactive_border_color\", value = \"rgba(33ccff00)\" })" "$(cap)"
 check "clear_all empties the state file" "" "$(bc_state_list)"
 
 printf '\n%d passed, %d failed\n' "$PASS" "$FAIL"

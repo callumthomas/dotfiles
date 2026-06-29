@@ -49,8 +49,8 @@ hub_handle_event "urgent>>aaa"
 hub_handle_event "activewindowv2>>aaa"
 check "focusing an urgent window removes it" "0" "${#HUB_URGENT[@]}"
 check "focusing urgent window reverts both borders to normal" \
-"dispatch setprop address:0xaaa active_border_color rgba(33ccffee)
-dispatch setprop address:0xaaa inactive_border_color rgba(33ccff00)" "$(cap)"
+"dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"active_border_color\", value = \"rgba(33ccffee)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"inactive_border_color\", value = \"rgba(33ccff00)\" })" "$(cap)"
 
 reset
 hub_handle_event "urgent>>aaa"
@@ -72,8 +72,8 @@ reset
 hub_handle_event "urgent>>aaa"
 hub_blink_tick
 check "first tick sets red on urgent window" \
-"dispatch setprop address:0xaaa active_border_color rgb(ff3333)
-dispatch setprop address:0xaaa inactive_border_color rgb(ff3333)" "$(cap)"
+"dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"active_border_color\", value = \"rgb(ff3333)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"inactive_border_color\", value = \"rgb(ff3333)\" })" "$(cap)"
 check "phase advances to 1 after first tick" "1" "$HUB_PHASE"
 
 reset
@@ -82,8 +82,8 @@ hub_blink_tick
 : >"$HUB_CAPTURE"
 hub_blink_tick
 check "second tick reverts to normal (blink off-phase)" \
-"dispatch setprop address:0xaaa active_border_color rgba(33ccffee)
-dispatch setprop address:0xaaa inactive_border_color rgba(33ccff00)" "$(cap)"
+"dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"active_border_color\", value = \"rgba(33ccffee)\" })
+dispatch hl.dsp.window.set_prop({ window = \"address:0xaaa\", prop = \"inactive_border_color\", value = \"rgba(33ccff00)\" })" "$(cap)"
 
 reset
 hub_blink_tick

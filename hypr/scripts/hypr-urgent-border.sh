@@ -17,14 +17,18 @@ hub_hyprctl() {
   hyprctl "$@" >/dev/null
 }
 
+hub_setprop() {
+  hub_hyprctl dispatch "hl.dsp.window.set_prop({ window = \"address:$1\", prop = \"$2\", value = \"$3\" })"
+}
+
 hub_set_red() {
-  hub_hyprctl dispatch setprop "address:$1" active_border_color "$URGENT_COLOR"
-  hub_hyprctl dispatch setprop "address:$1" inactive_border_color "$URGENT_COLOR"
+  hub_setprop "$1" active_border_color "$URGENT_COLOR"
+  hub_setprop "$1" inactive_border_color "$URGENT_COLOR"
 }
 
 hub_set_normal() {
-  hub_hyprctl dispatch setprop "address:$1" active_border_color "$NORMAL_ACTIVE_COLOR"
-  hub_hyprctl dispatch setprop "address:$1" inactive_border_color "$NORMAL_INACTIVE_COLOR"
+  hub_setprop "$1" active_border_color "$NORMAL_ACTIVE_COLOR"
+  hub_setprop "$1" inactive_border_color "$NORMAL_INACTIVE_COLOR"
 }
 
 hub_handle_event() {

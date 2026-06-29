@@ -145,6 +145,13 @@ hl.window_rule({
     size  = "900 600",
 })
 
+hl.window_rule({
+    name  = "broadcast-float",
+    match = { class = "com.floating.broadcast" },
+    float = true,
+    size  = "900 500",
+})
+
 
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----
@@ -332,6 +339,10 @@ hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall gjs || ags run --dir
 hl.bind(mainMod .. " + SHIFT + H", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("rfkill toggle bluetooth"))
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-dark-mode.sh"))
+
+-- Broadcast input: SUPER+SHIFT+LMB toggles a window's membership, SUPER+SHIFT+Return sends
+hl.bind(mainMod .. " + SHIFT + mouse:272", hl.dsp.exec_cmd("~/.config/hypr/scripts/broadcast-select.sh"), { mouse = true })
+hl.bind(mainMod .. " + SHIFT + Return",    hl.dsp.exec_cmd("~/.config/hypr/scripts/broadcast-send.sh"))
 
 -- Floating scratch terminals
 -- closewindow always returns "ok" async, so we check for the window's existence

@@ -197,5 +197,5 @@
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "preferredNotifChannel": "terminal_bell",
-  "model": "claude-fable-5[1m]"
+  "tui": "fullscreen"
 }

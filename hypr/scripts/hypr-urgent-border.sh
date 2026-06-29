@@ -86,10 +86,14 @@ hub_run() {
       continue
     fi
     while true; do
-      if IFS= read -r -t "$BLINK_INTERVAL" line; then
+      IFS= read -r -t "$BLINK_INTERVAL" line
+      local rc=$?
+      if [ "$rc" -eq 0 ]; then
         hub_handle_event "$line"
-      else
+      elif [ "$rc" -gt 128 ]; then
         hub_blink_tick
+      else
+        break
       fi
     done < <(socat -U - "UNIX-CONNECT:$sock")
     sleep 1

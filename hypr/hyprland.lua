@@ -119,6 +119,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user start xdg-desktop-portal-hyprland")
     hl.exec_cmd("clipse -listen")
     hl.exec_cmd("easyeffects --gapplication-service")
+    hl.exec_cmd("~/.config/hypr/scripts/hypr-urgent-border.sh")
 
     -- Monitoring tools on special workspace
     hl.exec_cmd(terminal .. " --class=com.special.btop -e btop")

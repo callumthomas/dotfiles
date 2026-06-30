@@ -314,8 +314,8 @@ local mainMod = "SUPER"
 -- Apps
 hl.bind(mainMod .. " + T", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + F", hl.dsp.exec_cmd("firefox -P default-release"))
-hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd("firefox -P minimal"))
+hl.bind(mainMod .. " + F", hl.dsp.exec_cmd("env MOZ_ENABLE_WAYLAND=0 firefox -P default-release"))
+hl.bind(mainMod .. " + Z", hl.dsp.exec_cmd("env MOZ_ENABLE_WAYLAND=0 firefox -P minimal"))
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd("datagrip"))
 

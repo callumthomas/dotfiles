@@ -1,6 +1,7 @@
 {
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_AFK_TIMEOUT_MS": "86400000"
   },
   "permissions": {
     "allow": [
@@ -98,6 +99,7 @@
     ],
     "defaultMode": "default"
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -197,6 +199,5 @@
   "tui": "fullscreen",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "preferredNotifChannel": "terminal_bell",
-  "fastMode": true
+  "preferredNotifChannel": "terminal_bell"
 }

@@ -6,3 +6,5 @@ git config --global core.editor "vim"
 git config --global pull.ff true
 git config --global pull.rebase false
 git config --global push.autoSetupRemote true
+git config --global maintenance.auto false
+git config --global gc.auto 0

@@ -352,7 +352,7 @@ hl.bind(mainMod .. " + V",         hl.dsp.exec_cmd('hyprctl clients | grep -q "c
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd('hyprctl clients | grep -q "class: com.floating.scratch" && hyprctl dispatch closewindow class:com.floating.scratch || ' .. terminal .. ' --class=com.floating.scratch --confirm-close-surface=false -e tmux new -A -s scratch'))
 
 -- Screenshot
-hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("hyprcap shot region -c -z -n"))
+hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("hyprcap shot region -z -n -r | wl-copy --type image/png"))
 
 -- Window / session control
 hl.bind(mainMod .. " + SHIFT + CONTROL + Q", hl.dsp.exit())

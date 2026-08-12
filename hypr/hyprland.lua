@@ -92,7 +92,7 @@ hl.on("hyprland.start",        apply_laptop_position_for_office_top)
 hl.on("config.reloaded",       apply_laptop_position_for_office_top)
 hl.on("monitor.added",         function(_) apply_laptop_position_for_office_top() end)
 hl.on("monitor.removed",       function(_) apply_laptop_position_for_office_top() end)
-hl.on("monitor.layout_changed", apply_laptop_position_for_office_top)
+-- hl.on("monitor.layout_changed", apply_laptop_position_for_office_top)
 -- Fallback for any other monitor
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 
@@ -352,7 +352,7 @@ hl.bind(mainMod .. " + V",         hl.dsp.exec_cmd('hyprctl clients | grep -q "c
 hl.bind(mainMod .. " + SHIFT + T", hl.dsp.exec_cmd('hyprctl clients | grep -q "class: com.floating.scratch" && hyprctl dispatch closewindow class:com.floating.scratch || ' .. terminal .. ' --class=com.floating.scratch --confirm-close-surface=false -e tmux new -A -s scratch'))
 
 -- Screenshot
-hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("hyprcap shot region -c -z -n"))
+hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("hyprcap shot region -z -n -A -r | wl-copy --type image/png"))
 
 -- Window / session control
 hl.bind(mainMod .. " + SHIFT + CONTROL + Q", hl.dsp.exit())

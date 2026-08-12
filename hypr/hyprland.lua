@@ -92,7 +92,7 @@ hl.on("hyprland.start",        apply_laptop_position_for_office_top)
 hl.on("config.reloaded",       apply_laptop_position_for_office_top)
 hl.on("monitor.added",         function(_) apply_laptop_position_for_office_top() end)
 hl.on("monitor.removed",       function(_) apply_laptop_position_for_office_top() end)
-hl.on("monitor.layout_changed", apply_laptop_position_for_office_top)
+-- hl.on("monitor.layout_changed", apply_laptop_position_for_office_top)
 -- Fallback for any other monitor
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = "auto" })
 

@@ -1,0 +1,8 @@
+{
+  "routes": {
+    "Explore": "haiku",
+    "general-purpose": "sonnet",
+    "claude-code-guide": "haiku",
+    "superpowers:code-reviewer": "opus"
+  }
+}

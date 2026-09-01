@@ -135,6 +135,17 @@
             "statusMessage": "PR verification check"
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/cal/.claude/hooks/subagent-model-router.sh",
+            "timeout": 10,
+            "statusMessage": "Routing subagent model"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -151,7 +162,7 @@
     ],
     "Notification": [
       {
-        "matcher": "permission_prompt|idle_prompt",
+        "matcher": "permission_prompt",
         "hooks": [
           {
             "type": "command",

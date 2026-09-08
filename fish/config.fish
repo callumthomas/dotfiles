@@ -88,4 +88,4 @@ alias cc="claude --dangerously-skip-permissions"
 alias nvm="fnm"
 alias ded="docker compose --project-directory ~/dev/denv"
 alias t="tmux"
-
+alias fixmonitors="sudo sh -c 'chvt 2; sleep 3; chvt 1'; sleep 2; hyprctl monitors | grep -E '^Monitor|^\s+[0-9]+x[0-9]+@'"

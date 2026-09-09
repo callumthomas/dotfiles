@@ -65,7 +65,18 @@ Pass criterion: every row above present as one item with the right verdict, keye
 
 ### Baseline result
 
-(filled in during Task 2)
+14 of 19 correct.
+
+Omitted entirely (2): `src/report.py` line 2 (`"""Build the monthly holdings report`) and line 13 (`"""Return rows keyed by account id."""`) — both triple-quoted docstrings never appeared in the output at all.
+
+Misclassified (3):
+- `src/report.py` line 21 — expected `prose` (commented-out code), agent gave `functional` for both split rows: `| src/report.py | 21 | `# def old_group(rows):` | functional |` and `| src/report.py | 22 | `#     return {r["account_id"]: r for r in rows}` | functional |`.
+- `src/api/client.ts` line 1 — expected `functional` (licence header), agent gave `prose`, split across all four lines of the block: `| src/api/client.ts | 1 | `/*` | prose |`, `| src/api/client.ts | 2 | `* Copyright (c) 2026 Delio. All rights reserved.` | prose |`, `| src/api/client.ts | 3 | `* Licensed under the MIT License.` | prose |`, `| src/api/client.ts | 4 | `*/` | prose |`.
+- `src/api/client.ts` line 23 — expected `functional` (JSDoc), agent gave `prose`, split across all three lines: `| src/api/client.ts | 23 | `/**` | prose |`, `| src/api/client.ts | 24 | `* Fetch a page of holdings for the given account.` | prose |`, `| src/api/client.ts | 25 | `*/` | prose |`.
+
+Neither must-not-appear item showed up: no `src/api/client.ts` line 29, nothing from `src/legacy.py`.
+
+The three misclassifications share one error: the agent read "functional" as "not just explanation" and judged licence headers and JSDoc as explanation, so it called them prose — the opposite of the rule (documentation comments and licence headers are functional regardless of how explanatory they read). The commented-out-code row shows the mirror-image mistake: text that resembles real code (`# def old_group(rows):`) was called functional even though nothing executes or reads it. In all three cases the agent also split a multi-line comment into one row per physical line rather than keying it to the opening line as one item — permitted by the rule for the commented-out-code case, but for the two docstring-style blocks that's presentation only; the verdict, not the split, is what's wrong.
 
 ### Result with skill
 
@@ -98,7 +109,16 @@ Points 2 and 3 cannot be exercised on PR 2630 as seeded: no thread was started b
 
 ### Baseline result
 
-(filled in during Task 2)
+By the time this baseline ran, a `github-actions` bot had posted a conversation comment (OSV scan finding) and opened a fourth review thread on line 7 (a duplicate NaN finding), confirmed by `gh api repos/deliowales/delio-frontend/pulls/2630/comments --jq length` returning `4`, matching the capture's "four review-comment threads." Even with the bot content present, no thread has `callumthomas` writing the last comment on a thread he didn't start, and no thread is outdated (the capture notes "single commit `b2ae6e456`, nothing fixed since comments were posted"), so points 2 and 3 stay not exercised.
+
+1 of 3 exercisable points met (points 2 and 4 not exercised at all — see below).
+
+1. **Met.** The resolved line-15 nit was skipped: "Thread is resolved, no action expected — though FYI the code still uses `export default`, so the resolution may have been premature; not required by thread state either way."
+2. **Not exercised.** No thread in the capture has `callumthomas` writing the last comment on a thread he didn't start; the new bot thread on line 7 has no reply from him recorded.
+3. **Not exercised.** No thread is outdated per the capture's own check against current code and commit history.
+4. **Not exercised.** The agent never produced a `reply` verdict at all — every thread was called `Fix` or `Skip`, so there is no reply to check for justification.
+5. **Not met.** The line-5 thread ("expand this comment to explain why bounds are fixed at 0/100") is exactly this case, and the agent chose neither of the two allowed outcomes. Verbatim: "**Fix.** Concrete, low-cost doc ask; the line-5 comment is still the original one-liner, so just expand it rather than replying." That proposes adding more prose, which is what the repo's no-prose-comments convention forbids — it neither replies citing the convention nor proposes a rename/extraction.
+6. **Not met.** Output is markdown headings and bullets ("**Conversation comment**", "**Review comment threads**", a closing "Net:" summary and a confirmation paragraph), not one JSON array in one fenced code block.
 
 ### Result with skill
 
@@ -139,7 +159,18 @@ For the live dry run, additionally: `git status --porcelain` and `git rev-parse 
 
 ### Baseline result
 
-(filled in during Task 2)
+1 of 10 met.
+
+1. **Not met.** Rebase is offered as an equally valid alternative to merge: "`git merge origin/main` (or `git rebase origin/main` if that's this repo's convention for keeping PR branches current) — bring the branch up to date with base." Step 9 reinforces it: "then `git commit` (merge) or `git rebase --continue` (rebase) until complete."
+2. **Not met.** Force-push is proposed as legitimate whenever a rebase was used: "`git push` for a merge, or `git push --force-with-lease origin <branch-name>` if a rebase was used (never an unqualified `--force`, and never anything to `main`/`master`)." The rule is never force-push at all, not never force-push *unqualified*.
+3. **Not met.** The plan does reply before resolving, but gives every comment the same treatment — a code fix followed by an automatic resolve — with no branch for disagreement: "12. For each outstanding comment from step 4: a. Make the requested code change in the relevant file(s). b. `git add <file>` then `git commit -m \"<description of fix>\"`. c. Reply to that specific review comment thread confirming what was changed... d. Mark the conversation as resolved..." Nothing in the plan leaves a push-back or a question open.
+4. **Not addressed.** Because the plan has no push-back path (see point 3), there is no push-back anywhere in it to carry a reason.
+5. **Not addressed.** The plan never mentions removing or auditing comments at all.
+6. **Not addressed.** The vulnerability section (steps 17–24) goes straight from finding a CVE to bumping or overriding the dependency; it never mentions writing an ignore entry, so there is no expiry to check.
+7. **Met.** "`gh pr checks 2630 --repo deliowales/delio-frontend --watch` — watch checks run to completion after the pushes above," repeated at step 24 before declaring the vulnerability check green.
+8. **Not addressed.** The plan never compares a failing check against the base branch's own run before treating a failure as introduced by the PR; the word "pre-existing" never appears.
+9. **Not addressed.** No marker, size gate, or automated-review invocation appears anywhere in the plan.
+10. **Not addressed.** No capped, idempotent retry loop appears; the plan is a single straight-line pass with no notion of repeating until nothing changes.
 
 ### Desk check result
 
@@ -148,3 +179,20 @@ For the live dry run, additionally: `git status --porcelain` and `git rev-parse 
 ### Live dry run result
 
 (filled in during Task 8)
+
+## Patterns
+
+Rationalisations seen across the three baselines, one line each:
+
+- Calls a licence header or JSDoc block "prose" because it reads as explanation, ignoring that it is in the language's documentation form — inverts the functional/prose rule instead of applying the tool-consumption test (Scenario A).
+- Calls commented-out legacy code "functional" because it resembles real code, rather than prose because nothing executes or reads it (Scenario A).
+- Silently drops items from an enumeration (two docstrings never appeared) with no self-check that the count matches the input (Scenario A).
+- Given a request to expand an explanatory comment, proposes writing more prose rather than replying with the no-prose-comments convention or fixing via rename/extraction — takes the reviewer's literal ask at face value over repo convention (Scenario B).
+- Collapses a three-way triage into two: every thread becomes `fix` or `skip`, and `reply` — the option for a justified push-back — is never used (Scenario B).
+- Produces free-form prose instead of a structured, parseable output when nothing enforces a schema (Scenario B).
+- Treats rebase as an equally valid alternative to merge, hedged as "whatever this repo's convention is" (Scenario C).
+- Pairs rebase with `--force-with-lease`, treating a qualified force-push as legitimate rather than ruling out force-pushing entirely (Scenario C).
+- Applies one fix-then-resolve step to every review comment with no branch for disagreement, so nothing is ever left open with a reason (Scenario C).
+- Jumps straight from "vulnerability found" to "bump the dependency," with no concept of a time-boxed ignore entry as a legitimate outcome (Scenario C).
+- Never checks a failing check against the base branch's own run before treating it as introduced by the PR (Scenario C).
+- Has no notion of an idempotent, capped review loop — a marker, a size gate, and a bounded retry count are absent from generic PR-merge knowledge (Scenario C).

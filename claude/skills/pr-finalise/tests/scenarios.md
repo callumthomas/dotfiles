@@ -88,6 +88,48 @@ The three misclassifications share one error: the agent read "functional" as "no
 
 **Baseline-to-skill comparison (RED to GREEN).** The baseline scored 14 of 19, missing exactly the five things the template's Task-5 additions targeted: both docstrings omitted entirely; the commented-out block called `functional` instead of `prose`; the licence header and JSDoc block called `prose` instead of `functional`; and all three multi-line items (the commented-out block, the licence header, the JSDoc block) split into one row per physical line instead of one item at the opening line. All five failure modes are corrected in both skill runs, with no new misses introduced — the explicit "documentation form, not content" clause for docstrings/JSDoc/licence headers, the worked four-line licence-block example showing one item at a bare `/*`, the docstring-hunting instruction for `def`/`class` lines, and the pre-output completeness self-check (count opening lines found vs. items output) together closed the gap on the first attempt, so Step 3 (REFACTOR) was not exercised.
 
+### Generalisation fixture
+
+Fixture: `claude/skills/pr-finalise/tests/fixtures/prose-audit-generalise.patch`, a `git diff -U0` over 8 files (Go, Rust, Dockerfile, JSX, Ruby, Markdown, shell, and a removed-only Python hunk), 48 insertions, 3 deletions.
+
+#### Expected
+
+| path | line | text starts | verdict |
+|------|------|-------------|---------|
+| cmd/report/main.go | 13 | `// FetchHoldings returns the holdings` | functional (godoc) |
+| cmd/report/main.go | 15 | `// Retry once because the upstream API` | prose |
+| src/lib.rs | 1 | `//! Holdings aggregation helpers.` | functional |
+| src/lib.rs | 3 | `/// Sums the holdings for one account.` | functional |
+| src/lib.rs | 5 | `// TODO handle negative balances` | prose |
+| Dockerfile | 1 | `# syntax=docker/dockerfile:1` | functional |
+| Dockerfile | 3 | `# Install deps before copying source` | prose |
+| web/src/HoldingsPanel.jsx | 19 | `// eslint-disable-next-line react-hooks/exhaustive-deps` | functional |
+| web/src/HoldingsPanel.jsx | 24 | `{/* Skeleton keeps the layout from jumping` | prose |
+| app/models/holding.rb | 1 | `# frozen_string_literal: true` | functional |
+| app/models/holding.rb | 2 | `# rubocop:disable Metrics/ClassLength` | functional, own item |
+| app/models/holding.rb | 5 | `# Accounts closed before 2020 are excluded` | prose |
+| app/models/holding.rb | 8 | `# rubocop:enable Metrics/ClassLength` | functional |
+| docs/runbook.md | 41 | `<!-- Reviewers: this section duplicates` | prose |
+| scripts/deploy.sh | 1 | `#!/usr/bin/env bash` | functional |
+
+Must NOT appear: `scripts/deploy.sh` line 3 (`"build#not-a-comment"`, `#` inside a string), `scripts/deploy.sh` line 4 (`#frag` inside a URL string), anything from `src/legacy_removed.py` (only a removed hunk).
+
+Every `end_line` equals `line` in this fixture (no item spans lines). In Scenario A, `src/api/client.ts` line 1 (licence block, `end_line` 4) and line 23 (JSDoc block, `end_line` 25) carry an `end_line` greater than `line`; the two `src/report.py` docstrings are single physical lines, so their `end_line` equals `line`.
+
+#### REFACTOR: the adjacent-directive merge bug
+
+The template committed in Task 5 grouped "a run of consecutive `#`/`--`/`//` lines with no blank or non-comment line between them" into one item regardless of content. Run against this fixture, that rule merged `app/models/holding.rb` line 1 (`# frozen_string_literal: true`) and line 2 (`# rubocop:disable Metrics/ClassLength`) into a single item, rationalised verbatim as "consecutive magic comments ... merged as one block" and "both are functional anyway, so no verdict conflict." Both lines happened to carry the same verdict here, but the same rule would have merged a directive with a following *explanatory* comment — the real-world shape it was tested against was `// eslint-disable-next-line ...` followed by `// because the dep array is intentional` — silently landing one verdict on both lines and pointing a downstream removal step at the wrong line whenever the merged verdict was `prose`.
+
+Fix: the one-item merge is now restricted to (a) delimited blocks opening with `/*`, `/**`, `"""`, `'''`, `<!--`, or `{/*`, spanning to their closing delimiter, and (b) runs of consecutive single-line comments where every line in the run is commented-out code. Every other single-line comment — including two adjacent directives, or a directive followed by an explanation — is its own item with its own line, `end_line`, and verdict. The template now states explicitly that a directive immediately followed by an explanatory comment is two items, not one, using the exact `frozen_string_literal`/`rubocop:disable` and `eslint-disable-next-line`/dep-array examples above. The same pass also added an `end_line` field to every output object, extended the language table (Lua, CSS/SCSS/Less, HCL/Terraform, Makefile, ERB, and filename-based detection for extension-less files like `Dockerfile`/`Makefile`), and trimmed duplicated wording (the form-vs-content point stated once instead of three times, `#pragma` and clippy attributes dropped from the comment list since they are not comments, and the self-check's docstring-hunting repetition removed).
+
+#### Results with the revised template
+
+Fixture A (`prose-audit.patch`): 19 of 19 correct on both runs — run 1 and a confirmation run 2, matching verdicts, lines, and `end_line` values throughout, including `end_line` 4 for the licence block and `end_line` 25 for the JSDoc block.
+
+Fixture B (`prose-audit-generalise.patch`): 15 of 15 correct on both runs — run 1 and a confirmation run 2. In both runs `app/models/holding.rb` lines 1 and 2 came back as two separate items, each `functional`, confirming the fix. Neither must-not-appear item showed up in any run.
+
+A live discrepancy was investigated and ruled out as a template defect: in every fixture-B run, the `docs/runbook.md` item's `text` field arrived HTML-escaped (`&lt;!-- ... --&gt;`) in the subagent's returned message. A dedicated diagnostic run had the same subagent write its JSON to a file with its own Write tool instead of only returning it in text; the file on disk held the literal, unescaped `<!-- ... -->` bytes. The escaping is introduced downstream of the subagent's own output — in how a subagent's final text is relayed back to the dispatching session — not by the template's instructions or the underlying classification, so no further template change was made for it.
+
 ## Scenario B: comment triage
 
 Runs against `<OWNER>/<REPO>` PR `<PR>` from `<REPO_DIR>` checked out at the PR head.

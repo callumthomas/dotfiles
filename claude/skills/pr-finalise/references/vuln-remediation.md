@@ -33,6 +33,22 @@ Prefer the lowest fixed version inside the range the manifest already allows. Wh
 
 Direct if the package appears in the repo's own manifest.
 
+## Dependencies reached through the Delio micro-framework
+
+If the reverse-dependency chain passes through any `@deliowales/micro-*` or `@deliowales/lib-*` package, the vulnerable version is pinned by the framework, which is released in lockstep from `deliowales/micro-framework`. Check for a framework release that already carries the fix before touching the transitive dependency directly.
+
+```bash
+gh release list -R deliowales/micro-framework --limit 10
+gh api -H "Accept: application/vnd.github.raw" "repos/deliowales/micro-framework/contents/package-lock.json?ref=<tag>" | jq -r '.packages | to_entries[] | select(.key | test("node_modules/<pkg>$")) | "\(.key) \(.value.version)"'
+```
+
+Start from the newest release and stop at the first one, newer than the version the repo installs, where every resolved entry for the package is at or above the fixed version. Bump every `@deliowales/micro-*` and `@deliowales/lib-*` entry in the manifest to `^<release>` together, run the manager's install, run the tests, and commit:
+```
+deps: bump micro-framework to <release> (<ID>)
+```
+
+If no release carries the fix, follow the transitive rules below, and list the framework package and the missing bump under "Left for you" in the report.
+
 ## Fix route
 
 Direct dependency: edit the manifest to the target version, then regenerate the lockfile with the manager's normal install command.

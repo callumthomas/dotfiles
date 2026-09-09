@@ -4,14 +4,16 @@ Whether the finding was introduced by this PR or already present on the base is 
 
 ## Extract findings
 
-From `gh pr checks --json`, take the OSV check's `link`, extract the run id, and read `gh run view <run_id> --log-failed`. osv-scanner prints one row per finding: OSV URL, CVSS, ecosystem, package, version, source path. Record id (the last path segment of the URL), package, version, and source.
+From `gh pr checks --json`, take the OSV check's `link`, extract the run id, and read `gh run view <run_id> --log-failed`. osv-scanner prints one row per finding: OSV URL, CVSS, ecosystem, package, version, source path. Record id (the last path segment of the URL), ecosystem, package, version, and source.
 
 ## Find the fixed version
 
 ```bash
-curl -s https://api.osv.dev/v1/vulns/<ID> | jq '[.affected[] | select(.package.name == "<pkg>") | .ranges[].events[] | .fixed // empty]'
+curl -sf https://api.osv.dev/v1/vulns/<ID> | jq '[.affected[] | select(.package.ecosystem == "<ecosystem>" and .package.name == "<pkg>") | .ranges[]?.events[]? | .fixed // empty]'
 ```
-Target the lowest fixed version greater than the current one. An empty array means no fix is published: go to the ignore route.
+Target the lowest fixed version greater than the current one. An empty array means no fix is published: go to the ignore route. A non-zero exit from curl or jq is an error, not an empty result: open the advisory page at `https://osv.dev/vulnerability/<ID>` and read the fixed versions from there before deciding.
+
+Prefer the lowest fixed version inside the range the manifest already allows. When the only fixed version crosses a major boundary: for a direct dependency, attempt the bump and let the tests decide; for a transitive dependency, do not override across a major version, take the ignore route and name the required major and what blocks it in the reason.
 
 ## Direct or transitive
 
@@ -20,11 +22,13 @@ Target the lowest fixed version greater than the current one. An empty array mea
 | npm | `npm explain <pkg>` |
 | pnpm | `pnpm why <pkg>` |
 | yarn | `yarn why <pkg>` |
-| uv | `uv tree --invert --package <pkg>` |
+| uv | `uv tree --frozen --invert --package <pkg>` |
 | pip | `pipdeptree -r -p <pkg>` |
 | poetry | `poetry show --tree \| grep -B5 <pkg>` |
 | go | `go mod why -m <module>` |
-| cargo | `cargo tree -i <pkg>` |
+| cargo | `cargo tree --frozen -i <pkg>` |
+| composer | `composer why <pkg>` |
+| bundler | `gem dependency -R <gem>` |
 
 Direct if the package appears in the repo's own manifest.
 
@@ -44,12 +48,18 @@ Transitive dependency:
 | poetry | add `<pkg> = ">=<ver>"` as a direct dependency, then `poetry lock` |
 | go | `go get <module>@<ver>` then `go mod tidy` |
 | cargo | `cargo update -p <pkg> --precise <ver>`; if the target is outside the semver range the manifest allows, stop and report |
+| composer | pin `<pkg>` at `>=<ver>` in `require` then `composer update <pkg>` |
+| bundler | add `gem '<gem>', '>= <ver>'` to the Gemfile then `bundle lock --update <gem>` |
 
 Run the repo's test suite. On pass, commit:
 ```
 deps: bump <pkg> to <ver> (<ID>)
 ```
-On failure that is not a quick fix, discard the change with `git checkout -- .` and `git clean -fd` limited to the files you touched, then take the ignore route.
+On failure that is not a quick fix, restore only the files you edited, naming them explicitly, then take the ignore route:
+
+```bash
+git restore --source=HEAD --worktree -- <manifest> <lockfile>
+```
 
 ## Ignore route
 
@@ -66,7 +76,7 @@ reason = "<why the fix route failed, and what would unblock it>"
 
 Rules:
 - Never omit `ignoreUntil`.
-- Never extend an existing entry silently. An expired entry causing the failure is a fresh finding: go back to the fix route. If still unfixable, write a new window and say so in the report.
+- Never extend an existing entry silently. An expired entry causing the failure is a fresh finding: go back to the fix route. If still unfixable, edit that entry in place with a new `ignoreUntil` and updated `reason`, never add a second entry for the same id, and say so in the report.
 - No TOML comments. The `reason` field carries the rationale.
 
 Commit:

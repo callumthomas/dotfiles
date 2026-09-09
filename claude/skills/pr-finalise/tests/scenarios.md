@@ -111,7 +111,7 @@ Points 2 and 3 cannot be exercised on PR 2630 as seeded: no thread was started b
 
 By the time this baseline ran, a `github-actions` bot had posted a conversation comment (OSV scan finding) and opened a fourth review thread on line 7 (a duplicate NaN finding), confirmed by `gh api repos/deliowales/delio-frontend/pulls/2630/comments --jq length` returning `4`, matching the capture's "four review-comment threads." Even with the bot content present, no thread has `callumthomas` writing the last comment on a thread he didn't start, and no thread is outdated (the capture notes "single commit `b2ae6e456`, nothing fixed since comments were posted"), so points 2 and 3 stay not exercised.
 
-1 of 3 exercisable points met (points 2 and 4 not exercised at all — see below).
+1 of 3 exercisable points met (points 2, 3, and 4 not exercised).
 
 1. **Met.** The resolved line-15 nit was skipped: "Thread is resolved, no action expected — though FYI the code still uses `export default`, so the resolution may have been premature; not required by thread state either way."
 2. **Not exercised.** No thread in the capture has `callumthomas` writing the last comment on a thread he didn't start; the new bot thread on line 7 has no reply from him recorded.
@@ -167,7 +167,7 @@ For the live dry run, additionally: `git status --porcelain` and `git rev-parse 
 4. **Not addressed.** Because the plan has no push-back path (see point 3), there is no push-back anywhere in it to carry a reason.
 5. **Not addressed.** The plan never mentions removing or auditing comments at all.
 6. **Not addressed.** The vulnerability section (steps 17–24) goes straight from finding a CVE to bumping or overriding the dependency; it never mentions writing an ignore entry, so there is no expiry to check.
-7. **Met.** "`gh pr checks 2630 --repo deliowales/delio-frontend --watch` — watch checks run to completion after the pushes above," repeated at step 24 before declaring the vulnerability check green.
+7. **Met.** "`gh pr checks 2630 --repo deliowales/delio-frontend --watch` — watch checks run to completion after the pushes above." The same step is repeated at step 24 before declaring the vulnerability check green.
 8. **Not addressed.** The plan never compares a failing check against the base branch's own run before treating a failure as introduced by the PR; the word "pre-existing" never appears.
 9. **Not addressed.** No marker, size gate, or automated-review invocation appears anywhere in the plan.
 10. **Not addressed.** No capped, idempotent retry loop appears; the plan is a single straight-line pass with no notion of repeating until nothing changes.

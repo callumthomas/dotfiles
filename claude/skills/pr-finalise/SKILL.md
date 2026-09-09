@@ -8,7 +8,7 @@ allowed-tools: Agent, Skill, Read, Edit, Write, Glob, Grep, Bash
 
 # pr-finalise
 
-Take an open pull request from "code written" to "ready to merge", then stop. Each pass hydrates from the base branch, works the comments, clears vulnerabilities, strips prose comments, runs the automated review once, pushes, and waits for checks. The run ends when a full pass changes nothing.
+Take an open pull request from "code written" to "ready to merge", then stop. The run ends when a full pass changes nothing.
 
 **Core principle: all state lives on GitHub, and every pass is safe to repeat.** The body marker, thread resolution, and who wrote each thread's last comment are the only memory. Nothing is stored locally.
 
@@ -16,7 +16,7 @@ Take an open pull request from "code written" to "ready to merge", then stop. Ea
 
 Arguments: `$ARGUMENTS`. Empty means the PR for the current branch. Otherwise a number or a PR URL, plus optional `--dry-run` and `--ignore-days <n>`. Without `--ignore-days`, vulnerability ignores expire in 7 days.
 
-`--dry-run` makes exactly one pass: preflight, triage, the prose audit, vulnerability listing, the review-gate decision, and one read of check status, then the report. It writes nothing inside the checkout, runs no git command that changes state, posts nothing, dispatches no review, and leaves the marker alone. A checkout or fast-forward is a state change: in a dry run, preflight steps 4 and 5 stop with the reason instead.
+`--dry-run` makes exactly one pass: preflight, triage, the prose audit, vulnerability listing, the review-gate decision, and one read of check status, then the report. It writes nothing inside the checkout, runs no git command that moves HEAD, the index, or a local branch, posts nothing, dispatches no review, and leaves the marker alone. A checkout or fast-forward moves HEAD: in a dry run, a step 4 or 5 that would need one stops with the reason instead.
 
 Recipes for every gh, REST, GraphQL, and git command named below are in `references/github-api.md` in this skill's directory. Read it once at the start of the run.
 
@@ -33,7 +33,7 @@ Recipes for every gh, REST, GraphQL, and git command named below are in `referen
 | Audit verdicts stand, and form decides them, not content: a docstring, JSDoc, PHPDoc block, or licence header stays however plainly it reads; commented-out code goes however much it looks like code. A block comment goes whole, `line` through `end_line`. | "it's only explanation", "someone might need that code later" |
 | No prose comment is ever added, including in scanner config, in tests, or because a reviewer asked for one. | "the ignore needs explaining", "it's a concrete, low-cost ask" |
 | Every finding on a failing OSV check is worked, fix route first. Severity labels, `non-blocking`, devDependency status, and the finding predating this PR change nothing. | "it's a dev dependency", "it's marked non-blocking", "this PR didn't touch that package" |
-| Every vulnerability ignore carries `ignoreUntil` at most 7 days out unless `--ignore-days` says otherwise. A bump that breaks the tests is reverted and the finding takes the ignore route; a red suite is never committed. | "no fix will ever ship", "the tests were probably flaky" |
+| Every vulnerability ignore carries `ignoreUntil` at most 7 days out unless `--ignore-days` says otherwise. A bump whose test failure is not a quick fix is reverted and the finding takes the ignore route; a red suite is never committed. | "no fix will ever ship", "the tests were probably flaky" |
 | Checks are watched to completion. A failure is called pre-existing only with the base branch's run of the same workflow in front of you. | "it passed last time", "that job is always flaky" |
 | pr-review runs at most once per PR. The marker and the size gate decide, not judgement. | "the diff changed a lot since", "it's expensive", "it's too small to bother" |
 | The package manager and test command are the ones preflight detected from the manifests and lockfiles. | "npm is the default", "it's probably yarn" |
@@ -46,28 +46,22 @@ Recipes for every gh, REST, GraphQL, and git command named below are in `referen
 
 ```dot
 digraph pr_finalise {
-    "Preflight" [shape=box];
-    "1 Hydrate" [shape=box];
-    "2 Comments: triage, fix or reply, resolve" [shape=box];
-    "3 Vulnerabilities: fix or time-boxed ignore" [shape=box];
-    "4 Prose comments: audit and remove" [shape=box];
-    "5 Review once, write marker" [shape=box];
-    "6 Push, watch checks, fix failures" [shape=box];
-    "No commits this pass, no fix/reply items, checks green, marker present, base unchanged?" [shape=diamond];
-    "Fewer than 3 passes done?" [shape=diamond];
-    "Report" [shape=doublecircle];
+    preflight [label="Preflight", shape=box];
+    hydrate [label="1 Hydrate", shape=box];
+    comments [label="2 Comments: triage, fix or reply, resolve", shape=box];
+    vulns [label="3 Vulnerabilities: fix or time-boxed ignore", shape=box];
+    prose [label="4 Prose comments: audit and remove", shape=box];
+    review [label="5 Review once, write marker", shape=box];
+    push [label="6 Push, watch checks, fix failures", shape=box];
+    exit_check [label="No commits this pass, no fix/reply items, checks green, marker present, base unchanged?", shape=diamond];
+    more_passes [label="Fewer than 3 passes done?", shape=diamond];
+    report [label="Report", shape=doublecircle];
 
-    "Preflight" -> "1 Hydrate";
-    "1 Hydrate" -> "2 Comments: triage, fix or reply, resolve";
-    "2 Comments: triage, fix or reply, resolve" -> "3 Vulnerabilities: fix or time-boxed ignore";
-    "3 Vulnerabilities: fix or time-boxed ignore" -> "4 Prose comments: audit and remove";
-    "4 Prose comments: audit and remove" -> "5 Review once, write marker";
-    "5 Review once, write marker" -> "6 Push, watch checks, fix failures";
-    "6 Push, watch checks, fix failures" -> "No commits this pass, no fix/reply items, checks green, marker present, base unchanged?";
-    "No commits this pass, no fix/reply items, checks green, marker present, base unchanged?" -> "Report" [label="yes"];
-    "No commits this pass, no fix/reply items, checks green, marker present, base unchanged?" -> "Fewer than 3 passes done?" [label="no"];
-    "Fewer than 3 passes done?" -> "1 Hydrate" [label="yes"];
-    "Fewer than 3 passes done?" -> "Report" [label="no: stop, say why"];
+    preflight -> hydrate -> comments -> vulns -> prose -> review -> push -> exit_check;
+    exit_check -> report [label="yes"];
+    exit_check -> more_passes [label="no"];
+    more_passes -> hydrate [label="yes"];
+    more_passes -> report [label="no: stop, say why"];
 }
 ```
 
@@ -81,10 +75,10 @@ Stop with a one-line reason on any failure.
 2. Confirm the working directory is a checkout of the PR's repo.
 3. Confirm `git status --porcelain` is empty.
 4. Confirm the current branch is the head branch. If not, check it out.
-5. `git fetch origin`. Fast-forward if behind `origin/<head>`. Stop if diverged.
+5. `git fetch origin`. If behind `origin/<head>`, `git merge --ff-only origin/<head>`. Stop if diverged.
 6. Record our login with `gh api user`.
 7. Read the marker from the body. Absent means the review has not run.
-8. Detect OSV: grep `.github/workflows/*.yml` and `*.yaml` for `osv-scanner`. Record workflow name, pinned version, and config path: an explicit `--config` argument if the workflow passes one, else `osv-scanner.toml` in the directory of each scanned lockfile, which osv-scanner reports in the `source` column of its output. Absent means step 3 is skipped every pass.
+8. Detect OSV: grep `.github/workflows/*.yml` and `*.yaml` for `osv-scanner`. Record workflow name, pinned version, and config path: an explicit `--config` argument if the workflow passes one, else `osv-scanner.toml` in the directory of each scanned lockfile. Absent means step 3 is skipped every pass.
 9. Detect the package manager and test command from what is present. `composer.json` with `composer.lock`: composer, tests via `vendor/bin/phpunit` or `vendor/bin/pest`, whichever exists, or `composer test` if the script exists. `package.json`: npm, yarn, or pnpm by lockfile (`package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`), tests via the manifest's `test` script. `pyproject.toml` with `uv.lock`: uv; with `poetry.lock`: poetry; otherwise pip with `requirements*.txt`; tests via pytest. `go.mod`: `go test ./...`. `Cargo.toml`: `cargo test`. With several manifests, run the tests of the one whose files the change touched.
 10. Resolve the reply voice: `./.claude/pr-review-voice.md`, then `~/.claude/pr-review-voice.md`, else plain and concise.
 
@@ -94,31 +88,33 @@ Run steps 1 to 6 in order. Count commits made. In `--dry-run`, steps 1, 3, 5, an
 
 ### 1 Hydrate
 
-`git merge origin/<base>`. On conflict, list conflicted files. If every one is a lockfile, take the base's lockfile, regenerate it from the merged manifest without upgrading, and finish the merge. Any other conflicted file: `git merge --abort`, stop, report the list.
+`git fetch origin`, record `git rev-parse HEAD` and `git rev-parse origin/<base>`, then `git merge origin/<base>`. On conflict, list conflicted files. If every one is a lockfile, take the base's lockfile, regenerate it from the merged manifest without upgrading, and finish the merge. If the regeneration fails, `git merge --abort` and stop. Any other conflicted file: `git merge --abort`, stop, report the list.
 
 ### 2 Comments
 
 Fill `references/comment-triage.md` with owner, repo, PR, base, our login, head SHA, and the voice. Dispatch it as a `general-purpose` subagent from the checkout. Parse the first fenced JSON block in its reply and ignore text outside it; an empty array means nothing to do. Each item carries `class` and `rule`. Branch on `rule`, never on `reason`. An outdated thread's `location` is `<path>:<originalLine>`; find where that code lives now with `git log -S` or `git blame`.
 
-Run the pending-review guard once before the first reply.
+Run the pending-review guard once before the first reply attempt.
 
 | class | rule | Action |
 |-------|------|--------|
-| `fix` | any | Make the change, run the relevant tests, commit (one commit per thread; threads describing the same defect may share one), reply `Fixed in <short sha>: <one line>`, then resolve. Conversation comments and review bodies get the reply only. |
+| `fix` | any | Make the change, run the relevant tests, commit as `fix: <one line>` (one commit per thread; threads describing the same defect may share one), reply `Fixed in <short sha>: <one line>` with that same line, then resolve. If a sibling item's commit already made the change, reply with that sha and resolve; do not commit again. Conversation comments and review bodies get the reply only. |
 | `reply` | 4 | Post the proposal, then resolve: a commit superseded it. |
 | `reply` | 6, 7, 8 | Post the proposal. Leave the thread open. |
 | `skip` | 2 | If the thread is still open and our last comment reads `Fixed in <sha>`, resolve it; nothing further is owed. Otherwise nothing. |
 | `skip` | 1, 1b | Nothing. |
 
-Reply mechanics by kind: threads use the replies endpoint with `reply_to`; conversation comments and review bodies get a new top-level comment opening with a quote of the sentence answered. Before any reply, run the dedup check for its kind and skip if we already replied.
+A class and rule pair not in this table is a stop; report the item verbatim.
+
+Reply mechanics by kind: threads use the replies endpoint with `reply_to`; conversation comments and review bodies get a new top-level comment opening with a quote of the sentence answered. Before any reply, run the dedup check for its kind and skip if we already replied. A thread holding a single comment is unanswered even when that comment is ours: pr-review opened it, so the dedup check does not fire.
 
 ### 3 Vulnerabilities
 
-Skip if preflight found no OSV workflow. Otherwise read the OSV check's current state with `gh pr checks --json`. Passing: skip. Pending: skip this pass. Failing: follow `references/vuln-remediation.md` for each finding, fix route first, ignore route only when the fix route fails, commit per finding. A finding reached through `@deliowales/micro-*` or `@deliowales/lib-*` follows that file's micro-framework section first: find a framework release carrying the fix and bump every framework package in lockstep, before any override or ignore.
+Skip if preflight found no OSV workflow. Otherwise read the OSV check's current state with `gh pr checks --json`. Passing: skip. Pending: skip this pass. Failing: follow `references/vuln-remediation.md` for each finding, fix route first, ignore route only when the fix route fails, commit per finding. Skip a finding whose package is already at or above the fixed version at HEAD. A finding reached through `@deliowales/micro-*` or `@deliowales/lib-*` takes that file's micro-framework section before any override or ignore.
 
 ### 4 Prose comments
 
-Write `git diff -U0 origin/<base>...HEAD` to the scratchpad, fill `references/prose-audit.md` with the path, dispatch it as a `general-purpose` subagent. Parse the first fenced JSON block in its reply and ignore text outside it. For every item marked `prose`, remove lines `line` through `end_line`. Where a removed comment carried meaning the code lacks, rename, extract, or restructure instead of keeping it. One commit: `chore: remove non-functional comments`. Touch nothing on unchanged lines.
+Write `git diff -U0 origin/<base>...HEAD` to the scratchpad, fill `references/prose-audit.md` with the path, dispatch it as a `general-purpose` subagent. Parse the first fenced JSON block in its reply and ignore text outside it. For every item marked `prose`, remove lines `line` through `end_line`, highest line first within each file. Where a removed comment carried meaning the code lacks, rename, extract, or restructure instead of keeping it. Run the tests preflight detected; a failure means a removal took a code line with it: `git restore -- <path>` and stop. One commit: `chore: remove non-functional comments`. Touch nothing on unchanged lines.
 
 ### 5 Review, once
 
@@ -134,7 +130,7 @@ Marker present: skip. Otherwise compute the size gate. Fewer than 30 changed lin
 
 ## Exit
 
-Success after a pass when all hold: no commits this pass; triage returned no `fix` or `reply` items; every check is `pass` or `skipping`; the marker is present; `origin/<base>` has not moved since this pass's step 1. Otherwise run another pass, up to three.
+Success after a pass when all hold: no commits this pass (`git rev-list --count <recorded HEAD>..HEAD` is 0); triage returned no `fix` or `reply` items; every check is `pass` or `skipping`; the marker is present; `git fetch origin` shows `origin/<base>` still at the SHA recorded in this pass's step 1. Otherwise run another pass, up to three.
 
 Stop early on: a non-lockfile merge conflict; a fork PR; a dirty tree or diverged branch; an infrastructure failure that fails again after one rerun; a test, lint, type, or build check still failing after two fix attempts in one pass; a vuln bump that breaks tests where the ignore route is also unavailable; pr-review failing to run; three passes exhausted.
 
@@ -142,7 +138,7 @@ Stop early on: a non-lockfile merge conflict; a fork PR; a dirty tree or diverge
 
 Print at the end of every run, dry or real:
 
-- Threads: table of `location`, `class`, `action taken`, `commit`.
+- Threads: table of `location`, `class`, `rule`, `action taken`, `commit`.
 - Vulnerabilities: table of `id`, `package`, `fixed to` or `ignored until`, `reason`.
 - Prose comments removed: `path:line` list.
 - Review: ran at `<sha>`, or skipped with reason, or already present from `<date>`.

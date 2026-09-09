@@ -56,9 +56,9 @@ Expected: `{"data":{"resolveReviewThread":{"thread":{"isResolved":true}}}}`
 
 Thread:
 ```bash
-gh api graphql -f id=<thread_id> -f query='query($id: ID!) { node(id: $id) { ... on PullRequestReviewThread { isResolved comments(last: 1) { nodes { author { login } body } } } } }'
+gh api graphql -f id=<thread_id> -f query='query($id: ID!) { node(id: $id) { ... on PullRequestReviewThread { isResolved comments(last: 1) { totalCount nodes { author { login } body } } } } }'
 ```
-Skip if the last author is `<us>`.
+Skip if the last author is `<us>` and `totalCount` is greater than 1. A single-comment thread under `<us>` was opened by pr-review and is unanswered.
 
 Conversation:
 ```bash

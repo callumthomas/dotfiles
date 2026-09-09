@@ -52,20 +52,93 @@ index 2b3c4d5..6e7f8a9 100644
 +      {loading && <Skeleton rows={3} />}
 +    </div>
 +  )
-diff --git a/app/models/holding.rb b/app/models/holding.rb
+diff --git a/app/Models/Holding.php b/app/Models/Holding.php
 new file mode 100644
 index 0000000..4f5a6b7
 --- /dev/null
-+++ b/app/models/holding.rb
-@@ -0,0 +1,8 @@
-+# frozen_string_literal: true
-+# rubocop:disable Metrics/ClassLength
++++ b/app/Models/Holding.php
+@@ -0,0 +1,29 @@
++<?php
 +
-+class Holding < ApplicationRecord
-+  # Accounts closed before 2020 are excluded from every report.
-+  scope :active, -> { where(closed_at: nil) }
-+end
-+# rubocop:enable Metrics/ClassLength
++declare(strict_types=1);
++
++namespace App\Models;
++
++use Illuminate\Database\Eloquent\Model;
++
++/**
++ * Holdings aggregated per account.
++ *
++ * @property int $account_id
++ */
++#[\AllowDynamicProperties]
++class Holding extends Model
++{
++    // phpcs:ignore Generic.Files.LineLength.TooLong
++    // The scope excludes accounts closed before the 2020 migration.
++    public function scopeActive($query)
++    {
++        return $query->whereNull('closed_at');
++    }
++
++    /** @var array<int, string> */
++    protected $fillable = ['account_id', 'amount'];
++
++    // protected $casts = ['closed_at' => 'datetime'];
++    // protected $dates = ['closed_at'];
++}
+diff --git a/resources/views/holdings/index.blade.php b/resources/views/holdings/index.blade.php
+new file mode 100644
+index 0000000..5a6b7c8
+--- /dev/null
++++ b/resources/views/holdings/index.blade.php
+@@ -0,0 +1,10 @@
++@extends('layouts.app')
++
++{{-- Reviewers: the table below mirrors the legacy report layout. --}}
++@section('content')
++    <table class="holdings">
++        @foreach ($holdings as $holding)
++            <tr><td>{{ $holding->account_id }}</td></tr>
++        @endforeach
++    </table>
++@endsection
+diff --git a/infra/terraform/holdings.tf b/infra/terraform/holdings.tf
+new file mode 100644
+index 0000000..6b7c8d9
+--- /dev/null
++++ b/infra/terraform/holdings.tf
+@@ -0,0 +1,9 @@
++# tflint-ignore: terraform_required_providers
++terraform {
++  required_version = ">= 1.6"
++}
++
++# Bucket keeps thirty days of report snapshots for audit.
++resource "aws_s3_bucket" "reports" {
++  bucket = "delio-holdings-reports"
++}
+diff --git a/helm/holdings/templates/_helpers.tpl b/helm/holdings/templates/_helpers.tpl
+new file mode 100644
+index 0000000..7c8d9e0
+--- /dev/null
++++ b/helm/holdings/templates/_helpers.tpl
+@@ -0,0 +1,4 @@
++{{/* Expand the chart name, truncated to the label length limit. */}}
++{{- define "holdings.name" -}}
++{{- .Chart.Name | trunc 63 | trimSuffix "-" -}}
++{{- end -}}
+diff --git a/web/src/styles/panel.less b/web/src/styles/panel.less
+new file mode 100644
+index 0000000..8d9e0f1
+--- /dev/null
++++ b/web/src/styles/panel.less
+@@ -0,0 +1,5 @@
++// stylelint-disable selector-max-id
++#holdings-panel {
++  /* Padding matches the card grid so the panel lines up. */
++  padding: @card-gap;
++}
 diff --git a/docs/runbook.md b/docs/runbook.md
 index 7c8d9e0..1f2a3b4 100644
 --- a/docs/runbook.md

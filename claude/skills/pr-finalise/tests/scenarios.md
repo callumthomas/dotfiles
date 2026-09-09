@@ -90,45 +90,54 @@ The three misclassifications share one error: the agent read "functional" as "no
 
 ### Generalisation fixture
 
-Fixture: `claude/skills/pr-finalise/tests/fixtures/prose-audit-generalise.patch`, a `git diff -U0` over 8 files (Go, Rust, Dockerfile, JSX, Ruby, Markdown, shell, and a removed-only Python hunk), 48 insertions, 3 deletions.
+Fixture: `claude/skills/pr-finalise/tests/fixtures/prose-audit-generalise.patch`, a `git diff -U0` over 12 files (Go, Rust, Dockerfile, JSX, PHP/Laravel model, Blade template, Terraform, Helm `.tpl`, Less, Markdown, shell, and a removed-only Python hunk), 97 insertions, 3 deletions.
+
+The fixture is calibrated to the Delio services stack under `~/dev/denv/services` (PHP/Laravel, TypeScript, Less, Python, Terraform, Go, Rust, Helm, Dockerfile, shell), not to this dotfiles repo: that stack is the audit's real deployment target, so its comment conventions — PHPDoc, Blade `{{-- --}}`, Helm `{{/* */}}`, phpcs/tflint/stylelint suppression directives — need direct fixture coverage rather than being inferred from a generic or dotfiles-flavoured language mix.
 
 #### Expected
 
-| path | line | text starts | verdict |
-|------|------|-------------|---------|
-| cmd/report/main.go | 13 | `// FetchHoldings returns the holdings` | functional (godoc) |
-| cmd/report/main.go | 15 | `// Retry once because the upstream API` | prose |
-| src/lib.rs | 1 | `//! Holdings aggregation helpers.` | functional |
-| src/lib.rs | 3 | `/// Sums the holdings for one account.` | functional |
-| src/lib.rs | 5 | `// TODO handle negative balances` | prose |
-| Dockerfile | 1 | `# syntax=docker/dockerfile:1` | functional |
-| Dockerfile | 3 | `# Install deps before copying source` | prose |
-| web/src/HoldingsPanel.jsx | 19 | `// eslint-disable-next-line react-hooks/exhaustive-deps` | functional |
-| web/src/HoldingsPanel.jsx | 24 | `{/* Skeleton keeps the layout from jumping` | prose |
-| app/models/holding.rb | 1 | `# frozen_string_literal: true` | functional |
-| app/models/holding.rb | 2 | `# rubocop:disable Metrics/ClassLength` | functional, own item |
-| app/models/holding.rb | 5 | `# Accounts closed before 2020 are excluded` | prose |
-| app/models/holding.rb | 8 | `# rubocop:enable Metrics/ClassLength` | functional |
-| docs/runbook.md | 41 | `<!-- Reviewers: this section duplicates` | prose |
-| scripts/deploy.sh | 1 | `#!/usr/bin/env bash` | functional |
+| path | line | end_line | text starts | verdict |
+|------|------|----------|-------------|---------|
+| cmd/report/main.go | 13 | 13 | `// FetchHoldings returns the holdings` | functional (godoc) |
+| cmd/report/main.go | 15 | 15 | `// Retry once because the upstream API` | prose |
+| src/lib.rs | 1 | 1 | `//! Holdings aggregation helpers.` | functional |
+| src/lib.rs | 3 | 3 | `/// Sums the holdings for one account.` | functional |
+| src/lib.rs | 5 | 5 | `// TODO handle negative balances` | prose |
+| Dockerfile | 1 | 1 | `# syntax=docker/dockerfile:1` | functional |
+| Dockerfile | 3 | 3 | `# Install deps before copying source` | prose |
+| web/src/HoldingsPanel.jsx | 19 | 19 | `// eslint-disable-next-line react-hooks/exhaustive-deps` | functional |
+| web/src/HoldingsPanel.jsx | 24 | 24 | `{/* Skeleton keeps the layout from jumping` | prose |
+| app/Models/Holding.php | 9 | 13 | `/**` PHPDoc block with `@property` | functional |
+| app/Models/Holding.php | 17 | 17 | `// phpcs:ignore Generic.Files.LineLength.TooLong` | functional, own item |
+| app/Models/Holding.php | 18 | 18 | `// The scope excludes accounts closed before` | prose, own item |
+| app/Models/Holding.php | 24 | 24 | `/** @var array<int, string> */` | functional |
+| app/Models/Holding.php | 27 | 28 | `// protected $casts = ` commented-out code | prose (one item with `end_line` 28, or two, either correct) |
+| resources/views/holdings/index.blade.php | 3 | 3 | `{{-- Reviewers: the table below mirrors` | prose |
+| infra/terraform/holdings.tf | 1 | 1 | `# tflint-ignore: terraform_required_providers` | functional |
+| infra/terraform/holdings.tf | 6 | 6 | `# Bucket keeps thirty days of report snapshots` | prose |
+| helm/holdings/templates/_helpers.tpl | 1 | 1 | `{{/* Expand the chart name, truncated` | prose |
+| web/src/styles/panel.less | 1 | 1 | `// stylelint-disable selector-max-id` | functional |
+| web/src/styles/panel.less | 3 | 3 | `/* Padding matches the card grid` | prose |
+| docs/runbook.md | 41 | 41 | `<!-- Reviewers: this section duplicates` | prose |
+| scripts/deploy.sh | 1 | 1 | `#!/usr/bin/env bash` | functional |
 
-Must NOT appear: `scripts/deploy.sh` line 3 (`"build#not-a-comment"`, `#` inside a string), `scripts/deploy.sh` line 4 (`#frag` inside a URL string), anything from `src/legacy_removed.py` (only a removed hunk).
+Must NOT appear: `app/Models/Holding.php` line 14 (`#[\AllowDynamicProperties]`, a PHP attribute), `resources/views/holdings/index.blade.php` line 7 (`{{ $holding->account_id }}`, a Blade echo), `scripts/deploy.sh` lines 3 and 4 (`#` inside strings), anything from `src/legacy_removed.py` (only a removed hunk).
 
-Every `end_line` equals `line` in this fixture (no item spans lines). In Scenario A, `src/api/client.ts` line 1 (licence block, `end_line` 4) and line 23 (JSDoc block, `end_line` 25) carry an `end_line` greater than `line`; the two `src/report.py` docstrings are single physical lines, so their `end_line` equals `line`.
+Every `end_line` equals `line` in this fixture except `app/Models/Holding.php` line 9 (PHPDoc block, `end_line` 13) and line 27 (commented-out run, `end_line` 28 if reported as one item). In Scenario A, `src/api/client.ts` line 1 (licence block, `end_line` 4) and line 23 (JSDoc block, `end_line` 25) carry an `end_line` greater than `line`; the two `src/report.py` docstrings are single physical lines, so their `end_line` equals `line`.
 
 #### REFACTOR: the adjacent-directive merge bug
 
-The template committed in Task 5 grouped "a run of consecutive `#`/`--`/`//` lines with no blank or non-comment line between them" into one item regardless of content. Run against this fixture, that rule merged `app/models/holding.rb` line 1 (`# frozen_string_literal: true`) and line 2 (`# rubocop:disable Metrics/ClassLength`) into a single item, rationalised verbatim as "consecutive magic comments ... merged as one block" and "both are functional anyway, so no verdict conflict." Both lines happened to carry the same verdict here, but the same rule would have merged a directive with a following *explanatory* comment — the real-world shape it was tested against was `// eslint-disable-next-line ...` followed by `// because the dep array is intentional` — silently landing one verdict on both lines and pointing a downstream removal step at the wrong line whenever the merged verdict was `prose`.
+The template committed in Task 5 grouped "a run of consecutive `#`/`--`/`//` lines with no blank or non-comment line between them" into one item regardless of content. Run against the reviewer's draft of this fixture — which at that point used a Ruby model rather than the PHP/Laravel one now committed — that rule merged the Ruby file's line 1 (`# frozen_string_literal: true`) and line 2 (`# rubocop:disable Metrics/ClassLength`) into a single item, rationalised verbatim as "consecutive magic comments ... merged as one block" and "both are functional anyway, so no verdict conflict." Both lines happened to carry the same verdict there, but the same rule would have merged a directive with a following *explanatory* comment — the real-world shape it was tested against was `// eslint-disable-next-line ...` followed by `// because the dep array is intentional` — silently landing one verdict on both lines and pointing a downstream removal step at the wrong line whenever the merged verdict was `prose`. Ruby was subsequently dropped from the audit's target languages (the real target is the Delio services stack, which carries no Ruby), and the committed fixture now guards the same adjacent-directive-then-explanation shape with a PHP case instead, at `app/Models/Holding.php` lines 17 (`// phpcs:ignore Generic.Files.LineLength.TooLong`) and 18 (`// The scope excludes accounts closed before the 2020 migration.`), which must land as two separate items with different verdicts.
 
-Fix: the one-item merge is now restricted to (a) delimited blocks opening with `/*`, `/**`, `"""`, `'''`, `<!--`, or `{/*`, spanning to their closing delimiter, and (b) runs of consecutive single-line comments where every line in the run is commented-out code. Every other single-line comment — including two adjacent directives, or a directive followed by an explanation — is its own item with its own line, `end_line`, and verdict. The template now states explicitly that a directive immediately followed by an explanatory comment is two items, not one, using the exact `frozen_string_literal`/`rubocop:disable` and `eslint-disable-next-line`/dep-array examples above. The same pass also added an `end_line` field to every output object, extended the language table (Lua, CSS/SCSS/Less, HCL/Terraform, Makefile, ERB, and filename-based detection for extension-less files like `Dockerfile`/`Makefile`), and trimmed duplicated wording (the form-vs-content point stated once instead of three times, `#pragma` and clippy attributes dropped from the comment list since they are not comments, and the self-check's docstring-hunting repetition removed).
+Fix: the one-item merge is now restricted to (a) delimited blocks opening with `/*`, `/**`, `"""`, `'''`, `<!--`, `{/*`, `{{--`, or `{{/*`, spanning to their closing delimiter, and (b) runs of consecutive single-line comments where every line in the run is commented-out code. Every other single-line comment — including two adjacent directives, or a directive followed by an explanation — is its own item with its own line, `end_line`, and verdict. The template states explicitly that a directive immediately followed by an explanatory comment is two items, not one, now using the `phpcs:ignore`/explanation and `eslint-disable-next-line`/dep-array examples above. The same pass added an `end_line` field to every output object, and a later pass recalibrated the language table from a generic/dotfiles mix to the Delio services stack — PHP (including `#[...]` attributes and Blade `{{-- --}}`/`{{ $x }}` as non-comment traps), TypeScript/JSX, Less/SCSS/CSS, HCL/Terraform, Go, Rust, Helm/Go `.tpl` templates, SQL, Jenkinsfile, Dockerfile, and shell, plus PHPDoc and the phpcs/phpstan/psalm/stylelint/tflint/checkov/tfsec/hadolint/go: directive families — while trimming duplicated wording elsewhere (the form-vs-content point stated once instead of three times, non-comment tokens like `#pragma` and clippy attributes dropped from the comment list, the self-check's docstring-hunting repetition removed, an untested "type comments" bullet dropped) to hold the body at 996 words.
 
 #### Results with the revised template
 
-Fixture A (`prose-audit.patch`): 19 of 19 correct on both runs — run 1 and a confirmation run 2, matching verdicts, lines, and `end_line` values throughout, including `end_line` 4 for the licence block and `end_line` 25 for the JSDoc block.
+Fixture A (`prose-audit.patch`, unchanged, still 19 expected items): 19 of 19 correct on both runs of the recalibrated template — run 1 and a confirmation run 2 — matching verdicts, lines, and `end_line` values throughout, including `end_line` 4 for the licence block and `end_line` 25 for the JSDoc block.
 
-Fixture B (`prose-audit-generalise.patch`): 15 of 15 correct on both runs — run 1 and a confirmation run 2. In both runs `app/models/holding.rb` lines 1 and 2 came back as two separate items, each `functional`, confirming the fix. Neither must-not-appear item showed up in any run.
+Fixture B (`prose-audit-generalise.patch`, the PHP/Laravel-calibrated version, 22 expected items): 22 of 22 correct on both runs — run 1 and a confirmation run 2. In both runs `app/Models/Holding.php` lines 17 and 18 came back as two separate items with the correct, different verdicts (`functional` then `prose`), confirming the merge fix on the case it was written to guard. The PHPDoc block (lines 9–13) and the inline `/** @var ... */` annotation (line 24) were both correctly `functional`; the Blade comment, Helm `.tpl` comment, and Terraform `tflint-ignore`/explanation pair all landed on their expected verdicts. Neither must-not-appear item (the PHP attribute, the Blade echo, the two in-string `#` occurrences, anything from `src/legacy_removed.py`) showed up in any run.
 
-A live discrepancy was investigated and ruled out as a template defect: in every fixture-B run, the `docs/runbook.md` item's `text` field arrived HTML-escaped (`&lt;!-- ... --&gt;`) in the subagent's returned message. A dedicated diagnostic run had the same subagent write its JSON to a file with its own Write tool instead of only returning it in text; the file on disk held the literal, unescaped `<!-- ... -->` bytes. The escaping is introduced downstream of the subagent's own output — in how a subagent's final text is relayed back to the dispatching session — not by the template's instructions or the underlying classification, so no further template change was made for it.
+A live discrepancy was investigated and ruled out as a template defect: across fixture-B runs, the `docs/runbook.md` item's `text` field, and later `app/Models/Holding.php` line 24's `<int, string>` and line 27's `=>`, arrived HTML-escaped (`&lt;`/`&gt;`) in the subagent's returned message. A dedicated diagnostic run had the same subagent write its JSON to a file with its own Write tool instead of only returning it in text; the file on disk held the literal, unescaped bytes (`<!-- ... -->`, confirmed by hex dump). The escaping is introduced downstream of the subagent's own output — in how a subagent's final text is relayed back to the dispatching session — not by the template's instructions or the underlying classification, so no template change was made for it.
 
 ## Scenario B: comment triage
 

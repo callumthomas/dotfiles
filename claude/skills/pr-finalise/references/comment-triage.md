@@ -1,6 +1,6 @@
 # Comment triage: subagent prompt template
 
-Dispatch as a `general-purpose` subagent from the repo checkout at the PR head. Fill `<<OWNER>>`, `<<REPO>>`, `<<PR>>`, `<<BASE>>` (the PR's base branch name), `<<OUR_LOGIN>>`, `<<HEAD_SHA>>`, and `<<VOICE>>` (the contents of the resolved voice file, or `plain and concise`). If the subagent's shell does not start in the checkout, prefix the prompt with its absolute path and an instruction to run every command from there.
+Dispatch as a `general-purpose` subagent from the repo checkout at the PR head. Fill `<<OWNER>>`, `<<REPO>>`, `<<PR>>`, `<<BASE>>` (the PR's base branch name), `<<OUR_LOGIN>>`, `<<HEAD_SHA>>`, and `<<VOICE>>` (the contents of the resolved voice file, or `plain and concise`). If the subagent's shell does not start in the checkout, prefix the prompt with its absolute path and an instruction to run every command from there. The dispatcher parses the first fenced JSON block in the reply and ignores any text outside it, because the fence-to-fence rule reduces narration but does not eliminate it.
 
 ---
 
@@ -60,7 +60,7 @@ Draft every reply in this voice:
 
 ## Output
 
-Your entire response is one JSON array inside a single fenced code block. The first character of the response is the opening fence and the last is the closing fence: no heading, no preamble, no per-item commentary, no summary line, no confirmation that nothing was changed. Anything you verified about the PR as a whole, such as no thread being outdated or every finding being checked against HEAD, belongs in the `reason` field of the items it concerns, never in a sentence before the fence. The array must parse as JSON, and `id` is always a string. One object per item, in fetch order, skipped items included:
+Your entire response is one JSON array inside a single fenced code block. The first character of the response is the opening fence and the last is the closing fence: no heading, no preamble, no per-item commentary, no summary line, no confirmation that nothing was changed. Anything you verified about the PR as a whole, such as no thread being outdated or every finding being checked against HEAD, belongs in the `reason` field of the items it concerns, never in a sentence before the fence. Progress narration and announcements that the output follows, such as "All data gathered. Producing final triage output.", must not appear before the fence either: the response begins with the fence. The array must parse as JSON, and `id` is always a string. One object per item, in fetch order, skipped items included:
 
 {
   "kind": "thread" | "issue_comment" | "review_body",

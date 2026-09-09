@@ -13,7 +13,7 @@ A scenario counts as evidence only if its baseline fails at least one expected p
 | `<REPO_DIR>` | `/home/cal/.config/superpowers/worktrees/delio-frontend/pr-finalise-test` |
 | `<LOGIN>` | `callumthomas` |
 
-The PR adds `src/utils/clampPercentage.ts` and its test. It has three review threads, all started by `callumthomas`: line 7 (a real defect, unresolved), line 5 (asks to expand a prose comment, unresolved), line 15 (a nit, resolved).
+The PR adds `src/utils/clampPercentage.ts` and its test. It originally had three review threads, all started by `callumthomas`: line 7 (a real defect, unresolved), line 5 (asks to expand a prose comment, unresolved), line 15 (a nit, resolved). It has since gained a `github-actions` bot conversation comment (an OSV scan finding) and a fourth review thread on line 7 (a duplicate NaN finding) opened by the bot, so one thread is not started by `callumthomas`.
 
 ## Scenario A: prose comment audit
 
@@ -76,7 +76,7 @@ Misclassified (3):
 
 Neither must-not-appear item showed up: no `src/api/client.ts` line 29, nothing from `src/legacy.py`.
 
-The three misclassifications share one error: the agent read "functional" as "not just explanation" and judged licence headers and JSDoc as explanation, so it called them prose — the opposite of the rule (documentation comments and licence headers are functional regardless of how explanatory they read). The commented-out-code row shows the mirror-image mistake: text that resembles real code (`# def old_group(rows):`) was called functional even though nothing executes or reads it. In all three cases the agent also split a multi-line comment into one row per physical line rather than keying it to the opening line as one item — permitted by the rule for the commented-out-code case, but for the two docstring-style blocks that's presentation only; the verdict, not the split, is what's wrong.
+The three misclassifications share one error: the agent read "functional" as "not just explanation" and judged licence headers and JSDoc as explanation, so it called them prose — the opposite of the rule (documentation comments and licence headers are functional regardless of how explanatory they read). The commented-out-code row shows the mirror-image mistake: text that resembles real code (`# def old_group(rows):`) was called functional even though nothing executes or reads it. In all three cases the agent also split a multi-line comment into one row per physical line rather than keying it to the opening line as one item. For the commented-out-code case that split is permitted by the Expected table's own note. For the licence-header and JSDoc blocks it is a second, independent failure, not presentation only: the rule at line 26 requires one item keyed to the opening line, and since the audit's output is what a removal step acts on, per-line items would tell that step to delete the `/*` line by itself and leave the copyright and licence text orphaned as a dangling comment body.
 
 ### Result with skill
 
@@ -111,12 +111,14 @@ Points 2 and 3 cannot be exercised on PR 2630 as seeded: no thread was started b
 
 By the time this baseline ran, a `github-actions` bot had posted a conversation comment (OSV scan finding) and opened a fourth review thread on line 7 (a duplicate NaN finding), confirmed by `gh api repos/deliowales/delio-frontend/pulls/2630/comments --jq length` returning `4`, matching the capture's "four review-comment threads." Even with the bot content present, no thread has `callumthomas` writing the last comment on a thread he didn't start, and no thread is outdated (the capture notes "single commit `b2ae6e456`, nothing fixed since comments were posted"), so points 2 and 3 stay not exercised.
 
-1 of 3 exercisable points met (points 2, 3, and 4 not exercised).
+The bot's OSV scan conversation comment was skipped, with a rationale resting on the finding's non-blocking status and the PR's disposability rather than its actual severity: "explicitly non-blocking devDependency advisory, unrelated to the PR's actual change, on a disposable test PR that 'will be closed when testing is done.'"
+
+1 of 4 exercisable points met (points 2 and 3 not exercised).
 
 1. **Met.** The resolved line-15 nit was skipped: "Thread is resolved, no action expected — though FYI the code still uses `export default`, so the resolution may have been premature; not required by thread state either way."
 2. **Not exercised.** No thread in the capture has `callumthomas` writing the last comment on a thread he didn't start; the new bot thread on line 7 has no reply from him recorded.
 3. **Not exercised.** No thread is outdated per the capture's own check against current code and commit history.
-4. **Not exercised.** The agent never produced a `reply` verdict at all — every thread was called `Fix` or `Skip`, so there is no reply to check for justification.
+4. **Not met.** Point 4 requires every `reply` to carry a justification, but the agent produced zero `reply` verdicts — every thread, including the line-5 explanatory-comment ask where `reply` was the correct outcome (see point 5), was called `Fix` or `Skip` instead. Collapsing the triage to two categories fails the point by never exercising it.
 5. **Not met.** The line-5 thread ("expand this comment to explain why bounds are fixed at 0/100") is exactly this case, and the agent chose neither of the two allowed outcomes. Verbatim: "**Fix.** Concrete, low-cost doc ask; the line-5 comment is still the original one-liner, so just expand it rather than replying." That proposes adding more prose, which is what the repo's no-prose-comments convention forbids — it neither replies citing the convention nor proposes a rename/extraction.
 6. **Not met.** Output is markdown headings and bullets ("**Conversation comment**", "**Review comment threads**", a closing "Net:" summary and a confirmation paragraph), not one JSON array in one fenced code block.
 
@@ -172,6 +174,8 @@ For the live dry run, additionally: `git status --porcelain` and `git rev-parse 
 9. **Not addressed.** No marker, size gate, or automated-review invocation appears anywhere in the plan.
 10. **Not addressed.** No capped, idempotent retry loop appears; the plan is a single straight-line pass with no notion of repeating until nothing changes.
 
+Beyond the ten checks, two more slips stand out. Step 27 doesn't stop at ready-to-merge, it merges the PR outright: "`gh pr merge 2630 --repo deliowales/delio-frontend --squash --delete-branch`" — even though the prompt asked only to make the PR ready to merge, and PR 2630 is a draft titled "test: pr-finalise skill road test (do not merge)." Step 10 also guesses at the package manager rather than checking the repo: "`npm install` (or `yarn install`, whichever lockfile the repo uses)" — the repo in fact uses yarn, per the `yarn.lock` reference in the Scenario B capture's OSV finding.
+
 ### Desk check result
 
 (filled in during Task 7)
@@ -186,13 +190,20 @@ Rationalisations seen across the three baselines, one line each:
 
 - Calls a licence header or JSDoc block "prose" because it reads as explanation, ignoring that it is in the language's documentation form — inverts the functional/prose rule instead of applying the tool-consumption test (Scenario A).
 - Calls commented-out legacy code "functional" because it resembles real code, rather than prose because nothing executes or reads it (Scenario A).
+- Splits a multi-line comment or docstring into one item per physical line instead of one item at its opening line (Scenario A).
 - Silently drops items from an enumeration (two docstrings never appeared) with no self-check that the count matches the input (Scenario A).
 - Given a request to expand an explanatory comment, proposes writing more prose rather than replying with the no-prose-comments convention or fixing via rename/extraction — takes the reviewer's literal ask at face value over repo convention (Scenario B).
 - Collapses a three-way triage into two: every thread becomes `fix` or `skip`, and `reply` — the option for a justified push-back — is never used (Scenario B).
 - Produces free-form prose instead of a structured, parseable output when nothing enforces a schema (Scenario B).
+- Treats a scanner finding as ignorable because it is non-blocking or a devDependency, rather than judging it on its actual severity (Scenario B).
+- Relaxes the rules because the PR is a test PR or will be closed, rather than treating it as a real PR (Scenario B).
 - Treats rebase as an equally valid alternative to merge, hedged as "whatever this repo's convention is" (Scenario C).
 - Pairs rebase with `--force-with-lease`, treating a qualified force-push as legitimate rather than ruling out force-pushing entirely (Scenario C).
 - Applies one fix-then-resolve step to every review comment with no branch for disagreement, so nothing is ever left open with a reason (Scenario C).
 - Jumps straight from "vulnerability found" to "bump the dependency," with no concept of a time-boxed ignore entry as a legitimate outcome (Scenario C).
 - Never checks a failing check against the base branch's own run before treating it as introduced by the PR (Scenario C).
-- Has no notion of an idempotent, capped review loop — a marker, a size gate, and a bounded retry count are absent from generic PR-merge knowledge (Scenario C).
+- Goes beyond the ask and merges the PR outright, or otherwise acts past ready-to-merge (Scenario C).
+- Guesses the package manager or test command instead of reading the repo's lockfile and scripts (Scenario C).
+- Has no notion of a marker recording that the automated review has already run, so nothing stops it re-running every pass (Scenario C).
+- Has no notion of a size gate that skips the automated review for a large diff (Scenario C).
+- Has no notion of a bounded retry count — repeating a pass until it changes nothing, capped at three passes (Scenario C).

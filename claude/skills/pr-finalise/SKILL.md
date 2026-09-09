@@ -110,11 +110,11 @@ Reply mechanics by kind: threads use the replies endpoint with `reply_to`; conve
 
 ### 3 Vulnerabilities
 
-Skip if preflight found no OSV workflow. Otherwise read the OSV check's current state with `gh pr checks --json`. Passing: skip. Pending: skip this pass. Failing: follow `references/vuln-remediation.md` for each finding, fix route first, ignore route only when the fix route fails, commit per finding. Skip a finding whose package is already at or above the fixed version at HEAD. A finding reached through `@deliowales/micro-*` or `@deliowales/lib-*` takes that file's micro-framework section before any override or ignore.
+Skip if preflight found no OSV workflow. Otherwise read the OSV check's current state with `gh pr checks --json`. Passing: skip. Pending: skip this pass. Failing: follow `references/vuln-remediation.md` for each finding, fix route first, ignore route only when the fix route fails, commit per finding. A finding whose package is already at or above the fixed version at HEAD is verified, not worked: report it as already fixed. A finding reached through `@deliowales/micro-*` or `@deliowales/lib-*` takes that file's micro-framework section before any override or ignore.
 
 ### 4 Prose comments
 
-Write `git diff -U0 origin/<base>...HEAD` to the scratchpad, fill `references/prose-audit.md` with the path, dispatch it as a `general-purpose` subagent. Parse the first fenced JSON block in its reply and ignore text outside it. For every item marked `prose`, remove lines `line` through `end_line`, highest line first within each file. Where a removed comment carried meaning the code lacks, rename, extract, or restructure instead of keeping it. Run the tests preflight detected; a failure means a removal took a code line with it: `git restore -- <path>` and stop. One commit: `chore: remove non-functional comments`. Touch nothing on unchanged lines.
+Write `git diff -U0 origin/<base>...HEAD` to the scratchpad, fill `references/prose-audit.md` with the path, dispatch it as a `general-purpose` subagent. Parse the first fenced JSON block in its reply and ignore text outside it. For every item marked `prose`, remove lines `line` through `end_line`, highest line first within each file. Where a removed comment carried meaning the code lacks, rename, extract, or restructure instead of keeping it. Run the tests preflight detected; a failure means the tree is not safe to commit: `git restore --source=HEAD --worktree --` every file this step touched, and stop. One commit: `chore: remove non-functional comments`. Touch nothing on unchanged lines.
 
 ### 5 Review, once
 
@@ -132,14 +132,14 @@ Marker present: skip. Otherwise compute the size gate. Fewer than 30 changed lin
 
 Success after a pass when all hold: no commits this pass (`git rev-list --count <recorded HEAD>..HEAD` is 0); triage returned no `fix` or `reply` items; every check is `pass` or `skipping`; the marker is present; `git fetch origin` shows `origin/<base>` still at the SHA recorded in this pass's step 1. Otherwise run another pass, up to three.
 
-Stop early on: a non-lockfile merge conflict; a fork PR; a dirty tree or diverged branch; an infrastructure failure that fails again after one rerun; a test, lint, type, or build check still failing after two fix attempts in one pass; a vuln bump that breaks tests where the ignore route is also unavailable; pr-review failing to run; three passes exhausted.
+Stop early on: a non-lockfile merge conflict; a lockfile regeneration that fails during hydration; a fork PR; a dirty tree or diverged branch; a triage class and rule pair outside the step 2 table; tests failing after a prose removal; an infrastructure failure that fails again after one rerun; a test, lint, type, or build check still failing after two fix attempts in one pass; a vuln bump that breaks tests where the ignore route is also unavailable; pr-review failing to run; three passes exhausted.
 
 ## Report
 
 Print at the end of every run, dry or real:
 
 - Threads: table of `location`, `class`, `rule`, `action taken`, `commit`.
-- Vulnerabilities: table of `id`, `package`, `fixed to` or `ignored until`, `reason`.
+- Vulnerabilities: table of `id`, `package`, `fixed to`, `already fixed`, or `ignored until`, `reason`.
 - Prose comments removed: `path:line` list.
 - Review: ran at `<sha>`, or skipped with reason, or already present from `<date>`.
 - Checks: name and final bucket for each.

@@ -9,9 +9,10 @@ From `gh pr checks --json`, take the OSV check's `link`, extract the run id, and
 ## Find the fixed version
 
 ```bash
-curl -sf https://api.osv.dev/v1/vulns/<ID> | jq '[.affected[] | select(.package.ecosystem == "<ecosystem>" and .package.name == "<pkg>") | .ranges[]?.events[]? | .fixed // empty]'
+advisory=$(curl -sf https://api.osv.dev/v1/vulns/<ID>)
+printf '%s' "$advisory" | jq '[.affected[] | select(.package.ecosystem == "<ecosystem>" and .package.name == "<pkg>") | .ranges[]?.events[]? | .fixed // empty]'
 ```
-Target the lowest fixed version greater than the current one. An empty array means no fix is published: go to the ignore route. A non-zero exit from curl or jq is an error, not an empty result: open the advisory page at `https://osv.dev/vulnerability/<ID>` and read the fixed versions from there before deciding.
+Target the lowest fixed version greater than the current one. An empty array means no fix is published: go to the ignore route. A non-zero exit from the curl line, or from jq, is an error, not an empty result: open the advisory page at `https://osv.dev/vulnerability/<ID>` and read the fixed versions from there before deciding.
 
 Prefer the lowest fixed version inside the range the manifest already allows. When the only fixed version crosses a major boundary: for a direct dependency, attempt the bump and let the tests decide; for a transitive dependency, do not override across a major version, take the ignore route and name the required major and what blocks it in the reason.
 

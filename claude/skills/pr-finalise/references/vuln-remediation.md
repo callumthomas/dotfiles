@@ -1,12 +1,14 @@
 # Vulnerability remediation with osv-scanner
 
-Whether the finding was introduced by this PR or already present on the base is irrelevant. A failing check blocks merge either way. Fix first; ignore only when fixing is impossible or breaks tests, and never without an expiry.
+Whether the finding was introduced by this PR or already present on the base is irrelevant, and so is whether the check is failing: a finding live at HEAD and uncovered by an ignore entry is worked. This file is reached from step 3, for a failing OSV check or a live finding in the scanner's PR comment, and from step 2, for a `fix` item whose ask is a dependency version or a vulnerability. Both take the same routes in the same order: fix route, then the micro-framework section where the chain passes through it, then override, then revert and ignore. Ignore only when fixing is impossible or breaks tests, and never without an expiry.
 
 ## Extract findings
 
-From `gh pr checks --json`, take the OSV check's `link`, extract the run id, and read `gh run view <run_id> --log-failed`. osv-scanner prints one row per finding: OSV URL, CVSS, ecosystem, package, version, source path. Record id (the last path segment of the URL), ecosystem, package, version, and source.
+The Delio scan is a reusable workflow that reports every finding, blocking or not, in a sticky PR comment headed `## 🔒 OSV Scan`, as a markdown table `Vulnerability | CVSS | Blocking | Package | Version | Fixed version | Ecosystem | Source`, with each id inside a markdown link `[ID](https://osv.dev/ID)`. That table is the primary source: read it with `gh api repos/<o>/<r>/issues/<n>/comments`, take the id from the link text, and take package, version, fixed version, ecosystem, and source from their columns. The job log, `gh run view <run_id> --log-failed` with the run id from the OSV check's `link`, carries the same facts as `::error` annotations for blocking findings only. A finding whose `Fixed version` column reads `none`, or a scan that prints raw osv-scanner rows without one, takes the api.osv.dev lookup below.
 
 ## Find the fixed version
+
+Skip when the comment's table already gives it. Otherwise:
 
 ```bash
 advisory=$(curl -sf https://api.osv.dev/v1/vulns/<ID>)
@@ -42,7 +44,7 @@ gh release list -R deliowales/micro-framework --limit 10
 gh api -H "Accept: application/vnd.github.raw" "repos/deliowales/micro-framework/contents/package-lock.json?ref=<tag>" | jq -r '.packages | to_entries[] | select(.key | test("node_modules/<pkg>$")) | "\(.key) \(.value.version)"'
 ```
 
-Start from the newest release and stop at the first one, newer than the version the repo installs, where every resolved entry for the package is at or above the fixed version. Bump every `@deliowales/micro-*` and `@deliowales/lib-*` entry in the manifest to `^<release>` together, run the manager's install, run the tests, and commit:
+Walk the releases newer than the version the repo installs from oldest to newest and stop at the first where every resolved entry for the package is at or above the fixed version: the lowest release that carries the fix, not the newest. Bump every `@deliowales/micro-*` and `@deliowales/lib-*` entry in the manifest to `^<release>` together, run the manager's install, run the tests, stage the manifest and lockfile with `git add -- <manifest> <lockfile>`, and commit:
 ```
 deps: bump micro-framework to <release> (<ID>)
 ```
@@ -68,7 +70,7 @@ Transitive dependency:
 | composer | pin `<pkg>` at `>=<ver>` in `require` then `composer update <pkg>` |
 | bundler | add `gem '<gem>', '>= <ver>'` to the Gemfile then `bundle lock --update <gem>` |
 
-Run the repo's test suite. On pass, commit:
+Run the repo's test suite. On pass, stage with `git add -- <manifest> <lockfile>` and commit:
 ```
 deps: bump <pkg> to <ver> (<ID>)
 ```
@@ -92,15 +94,16 @@ reason = "<why the fix route failed, and what would unblock it>"
 `ignoreUntil` is an unquoted TOML date. Compute it with `date -d "+<days> days" +%F`, where days is 7 unless the run was invoked with `--ignore-days`. Before writing, re-read the configuration page for the osv-scanner version the workflow pins and adjust if the field names differ.
 
 Rules:
-- Never omit `ignoreUntil`.
-- Never extend an existing entry silently. An expired entry causing the failure is a fresh finding: go back to the fix route. If still unfixable, edit that entry in place with a new `ignoreUntil` and updated `reason`, never add a second entry for the same id, and say so in the report.
+- Never omit `ignoreUntil` on an entry this run writes. The 7-day rule applies to those entries only.
+- Existing entries are never touched, with one exception: the single expired entry whose expiry caused this failure. An expired entry is a fresh finding: go back to the fix route. If still unfixable, edit that entry in place with a new `ignoreUntil` and updated `reason`, never add a second entry for the same id, and say so in the report.
+- An existing entry with no `ignoreUntil` is left exactly as it is: a human chose that, and it is not this run's to date.
 - No TOML comments. The `reason` field carries the rationale.
 
-Commit:
+Stage with `git add -- <config path>` and commit:
 ```
 deps: ignore <ID> until <YYYY-MM-DD>
 ```
 
 ## Report row
 
-`id`, `package`, `fixed to <ver>` or `ignored until <date>`, `reason`.
+`id`, `package`, one of `fixed to <ver>`, `already fixed`, or `ignored until <date>`, `reason`. `already fixed` is the row for a package already at or above the fixed version at HEAD, verified and not worked.

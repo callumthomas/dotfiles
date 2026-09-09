@@ -32,12 +32,12 @@ gh api --method DELETE repos/<o>/<r>/pulls/<n>/reviews/<review_id>
 `<reply_to>` is the `databaseId` of the thread's last comment.
 
 ```bash
-gh api repos/<o>/<r>/pulls/<n>/comments/<reply_to>/replies -f body="$(cat "$tmp/reply.md")"
+gh api repos/<o>/<r>/pulls/<n>/comments/<reply_to>/replies -F body=@"$tmp/reply.md"
 ```
 
 ## Reply to a conversation comment or review body
 
-No reply endpoint exists. Post a new top-level comment whose first line quotes the sentence being answered.
+No reply endpoint exists. Post a new top-level comment whose first line quotes the comment's first heading line, or its first line when it has no heading. For the scanner's sticky comment that quote is `## 🔒 OSV Scan`, without the status suffix: CI rewrites the suffix and the body in place on every run, so a quoted body sentence would stop matching.
 
 ```bash
 gh pr comment <n> --body-file "$tmp/reply.md"
@@ -64,7 +64,7 @@ Conversation:
 ```bash
 gh api repos/<o>/<r>/issues/<n>/comments --paginate --jq '.[] | select(.user.login == "<us>") | .body'
 ```
-Skip if any body's first line is the quote this reply would open with.
+Skip if any body's first line is the heading quote this reply would open with.
 
 ## Review marker
 
@@ -92,11 +92,27 @@ gh pr edit <n> --body-file "$tmp/body.md"
 
 ## Checks
 
+Never `--watch`: it refuses `--json`, has no budget, and outlives the 600-second cap on a foreground shell call. Poll instead, every 30 seconds, inside an explicit budget of 20 minutes per wait. One shell call, run with the shell tool's timeout raised to its 600-second maximum, covers at most 9 minutes of that budget, so a wait cut off by the budget or by the tool's timeout is re-read with the same command until the budget is spent, and is never re-pushed. `none_until` is the 60-second window after a push in which `no checks reported` is retried.
+
 ```bash
-gh pr checks <n> --watch
-gh pr checks <n> --json name,state,bucket,link,workflow
+tmp=$(mktemp -d)
+now=$(date +%s); end=$(( now + 540 )); none_until=$(( now + 60 ))
+while :; do
+  gh pr checks <n> --json name,state,bucket,link,workflow > "$tmp/checks.json" 2> "$tmp/checks.err"; rc=$?
+  if [ "$rc" -eq 0 ]; then
+    jq -e 'any(.[]; .bucket == "pending")' "$tmp/checks.json" > /dev/null || break
+  elif grep -q 'no checks reported' "$tmp/checks.err"; then
+    [ "$(date +%s)" -ge "$none_until" ] && break
+  else
+    break
+  fi
+  [ "$(date +%s)" -ge "$end" ] && break
+  sleep 30
+done
+echo "rc=$rc"; cat "$tmp/checks.err" "$tmp/checks.json"
 ```
-`--watch` returns when nothing is pending. Exit 0 means every check passed. Exit 8 means checks are still pending, which only occurs without `--watch`. Exit 1 means a failure, no checks found, or an API error. Classify from the `bucket` field, never from the exit code alone. `bucket` is one of `pass`, `fail`, `pending`, `skipping`, `cancel`. Treat `fail` and `cancel` as failing.
+
+Without `--json`, exit 0 means every check passed, 8 means pending, and 1 means a failure, no checks, or an API error. With `--json`, gh writes the array and exits 0 whenever checks exist, whatever their state, so classify from the `bucket` field, never from the exit code. `bucket` is one of `pass`, `fail`, `pending`, `skipping`, `cancel`. Treat `fail` and `cancel` as failing. Exit 1 with `no checks reported` on stderr is what gh returns instead of an empty array, including for a few seconds after a push: keep retrying it for 60 seconds after a push; if it persists, print it as its own report line and count zero checks as green. Any other non-zero exit is an API error: print stderr and stop.
 
 Run id from a check's `link` (`.../actions/runs/<run_id>/job/<job_id>`):
 ```bash
@@ -118,6 +134,20 @@ git diff --name-only origin/<base>...HEAD
 ```
 The awk sum is the changed-line count; binary files report `-` and are skipped. An empty diff prints 0. Manifest and lockfile names: `package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `pyproject.toml`, `poetry.lock`, `uv.lock`, `requirements*.txt`, `Cargo.toml`, `Cargo.lock`, `go.mod`, `go.sum`, `Gemfile`, `Gemfile.lock`, `composer.json`, `composer.lock`.
 
+## Push
+
+```bash
+git push origin <head>
+```
+
+A rejected push means the remote branch moved. Merge it in, never force, then push again; a second rejection stops the run:
+
+```bash
+git fetch origin
+git merge origin/<head>
+git push origin <head>
+```
+
 ## Hydration
 
 ```bash
@@ -136,9 +166,11 @@ Lockfile-only conflict: take the base branch's lockfile, regenerate it from the 
 ```bash
 git checkout origin/<base> -- <lockfile>
 <regenerate>
-git add <lockfile>
+git add -- <lockfile>
 git commit --no-edit
 ```
+
+Every other commit in the run stages the same way, `git add -- <paths>` with the paths named; never `git add -A`, `git add .`, or `git commit -a`.
 
 | Manager | Regenerate without upgrading |
 |---------|------------------------------|

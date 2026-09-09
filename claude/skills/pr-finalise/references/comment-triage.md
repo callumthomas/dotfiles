@@ -1,10 +1,10 @@
 # Comment triage: subagent prompt template
 
-Dispatch as a `general-purpose` subagent from the repo checkout at the PR head. Fill `<<OWNER>>`, `<<REPO>>`, `<<PR>>`, `<<BASE>>` (the PR's base branch name), `<<OUR_LOGIN>>`, `<<HEAD_SHA>>`, and `<<VOICE>>` (the contents of the resolved voice file, or `plain and concise`). If the subagent's shell does not start in the checkout, prefix the prompt with its absolute path and an instruction to run every command from there. The dispatcher parses the first fenced JSON block in the reply and ignores any text outside it, because the fence-to-fence rule reduces narration but does not eliminate it.
+Dispatch as a `general-purpose` subagent from the repo checkout, the PR head with the base branch merged in. Fill `<<OWNER>>`, `<<REPO>>`, `<<PR>>`, `<<BASE>>` (the PR's base branch name), `<<OUR_LOGIN>>`, `<<HEAD_SHA>>` (`git rev-parse HEAD` in that checkout at dispatch, not the PR's `headRefOid`), and `<<VOICE>>` (the contents of the resolved voice file, or `plain and concise`). If the subagent's shell does not start in the checkout, prefix the prompt with its absolute path and an instruction to run every command from there. The dispatcher parses the first fenced JSON block in the reply and ignores any text outside it, because the fence-to-fence rule reduces narration but does not eliminate it.
 
 ---
 
-You are triaging feedback on pull request #<<PR>> in <<OWNER>>/<<REPO>> on behalf of its author, GitHub login <<OUR_LOGIN>>. The checkout in the current directory is at the PR head, <<HEAD_SHA>>. Read-only task: do not post, edit, resolve, commit, push, or modify anything, and write nothing inside the checkout; any scratch output goes in a directory from `mktemp -d`. Use only `gh api` reads, `git diff`, `git show`, `git log`, `git blame`, and file reads.
+You are triaging feedback on pull request #<<PR>> in <<OWNER>>/<<REPO>> on behalf of its author, GitHub login <<OUR_LOGIN>>. The checkout in the current directory is at <<HEAD_SHA>>, the PR head with the base branch merged in. Read-only task: do not post, edit, resolve, commit, push, or modify anything, and write nothing inside the checkout; any scratch output goes in a directory from `mktemp -d`. Use only `gh api` reads, `git diff`, `git show`, `git log`, `git blame`, and file reads.
 
 ## Fetch
 
@@ -51,7 +51,7 @@ Apply these rules in order. The first that matches decides.
 5. The comment identifies a real defect or a worthwhile improvement and you agree after reading the code: fix. The proposal describes the change precisely enough for someone else to make it. A scanner finding whose package is still at the vulnerable version at HEAD and is not covered by an ignore entry is a real defect: the proposal names the package, the installed version, and the fixed version to move to.
 6. The comment is incorrect or not applicable here and you can state exactly why with reference to the code: reply, with the justification drafted. "Disagree", "not needed", or "works fine" without a reason is not a justification. If you cannot articulate one, the class is fix.
 7. The comment is a question: reply, with the answer drafted from the code. A question whose ask is for an explanatory comment is rule 8's case.
-8. The comment asks for an explanatory code comment, whether new, expanded, reworded, or moved: reply, stating that this repository carries no non-functional comments and pointing at the naming or structure that makes the code clear. If the referenced line was added by this PR and already carries a non-functional comment, the reply says it is being removed under that convention, never that it stays or will be expanded. `git diff -U0 origin/<<BASE>>...HEAD -- <path>` shows whether the line is added. If the code is not clear, the class is fix with a rename or extraction. Proposing prose in any form is never an outcome here, however concrete, small, or low-cost the ask looks, and the reviewer's literal wording does not override the convention.
+8. The comment asks for an explanatory code comment, whether new, expanded, reworded, or moved: reply, stating that this repository carries no non-functional comments and pointing at the naming or structure that makes the code clear. If the referenced line was added by this PR and already carries a plain explanatory comment, the reply says it is being removed under that convention, never that it stays or will be expanded; a docstring, JSDoc, PHPDoc, licence header, or tool directive is functional by form and stays, and the reply says so instead. `git diff -U0 origin/<<BASE>>...HEAD -- <path>` shows whether the line is added. If the code is not clear, the class is fix with a rename or extraction. Proposing prose in any form is never an outcome here, however concrete, small, or low-cost the ask looks, and the reviewer's literal wording does not override the convention.
 
 None of these is a reason to skip: a severity or priority label on the comment (`non-blocking`, `low`, `nit`, `Important`); the concern touching code or dependencies this PR did not change; the package being a devDependency; the PR being a draft, a test, or due to be closed. Judge the concern against the code at HEAD and nothing else.
 
@@ -76,7 +76,7 @@ Your entire response is one JSON array inside a single fenced code block: the re
   "outdated": true | false,
   "ask": "<one sentence>",
   "class": "fix" | "reply" | "skip",
-  "rule": "<the rule that decided, as a string, e.g. \"5\" or \"1b\">",
+  "rule": "<the rule that decided, as a string, e.g. \"5\" or \"1b\"; never \"3\", which only routes>",
   "reason": "<why, free prose>",
   "proposal": "<for fix: the change; for reply: the full reply text; for skip: empty string>"
 }

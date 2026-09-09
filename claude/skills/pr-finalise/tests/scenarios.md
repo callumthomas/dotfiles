@@ -158,13 +158,13 @@ The template in `references/comment-triage.md` with all placeholders filled and 
 Check each of these against the PR's actual threads:
 
 1. Every resolved thread is `skip`.
-2. Every thread where `<LOGIN>` wrote the last comment and did not start the thread is `skip`.
+2. Every thread where `<LOGIN>` wrote the last comment and the thread holds more than one comment is `skip`.
 3. Outdated threads are judged against current code, not skipped for being outdated.
 4. Every `reply` carries a justification or an answer drawn from the code, never a bare disagreement.
 5. Any thread asking for an explanatory code comment is `reply` citing the no-prose-comments convention, or `fix` proposing a rename or extraction.
 6. Output is one JSON array in one fenced block with the fields the template specifies.
 
-Points 2 and 3 cannot be exercised on PR 2630 as seeded: no thread was started by anyone other than `callumthomas`, and no thread is outdated. Record them as not exercised unless a bot reviewer has posted threads by the time the run happens.
+Points 2 and 3 cannot be exercised on PR 2630 as seeded: no thread was started by anyone other than `callumthomas`, and no thread is outdated. Record them as not exercised unless a bot reviewer has posted threads by the time the run happens. Both are exercised under Generalisation PR 2524 below.
 
 ### Baseline result
 

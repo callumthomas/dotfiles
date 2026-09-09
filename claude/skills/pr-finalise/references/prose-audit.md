@@ -12,7 +12,7 @@ Consider ONLY added lines. Ignore removed lines and the `---`/`+++` file headers
 
 Compute each added line's number in the new file from its hunk header `@@ -a,b +c,d @@`: the first added line in the hunk is line `c`, and each following added line adds one. Removed lines do not advance the count.
 
-Identify every comment on an added line using the comment syntax of the file's language, inferred from its extension or filename (Dockerfile, Makefile, `.bashrc`): `#` for Python, shell, YAML, TOML, Ruby, Dockerfile, HCL/Terraform, Makefile; `//` and `/* */` for JavaScript, TypeScript, Go, Rust, Java, C-family, CSS/SCSS/Less; `--` for SQL and Lua; `<!-- -->` for HTML, XML, Markdown, Vue templates; `{/* */}` inside JSX and TSX; `<%# %>` in ERB. A `#` or `//` inside a string literal is not a comment.
+Identify every comment on an added line using the comment syntax of the file's language, inferred from its extension or filename (Dockerfile, Makefile, `.bashrc`): `#` for Python, shell, YAML, TOML, Ruby, Dockerfile, HCL/Terraform, Makefile; `//` and `/* */` for JavaScript, TypeScript, Go, Rust, Java, C-family, CSS/SCSS/Less; `--` for SQL; `<!-- -->` for HTML, XML, Markdown, Vue templates; `{/* */}` inside JSX and TSX; `<%# %>` in ERB. A `#` or `//` inside a string literal is not a comment.
 
 In Python files, a docstring — a string literal (`"""..."""` or `'''...'''`) that is the first statement of a module, class, or function body — counts as a comment for this audit even though it carries no `#`. Docstrings are easy to miss because they look like ordinary string literals: for every added `def` or `class` line, and for the first added line of the file, deliberately check whether the next statement is a bare string literal, and if so, treat it as a comment.
 

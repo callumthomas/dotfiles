@@ -385,6 +385,8 @@ Against the reviewer's probe of the previous template on the same PR: the three 
 
 One deviation from the read-only clause, not a graded point: the subagent wrote four untracked scratch files into the worktree root (`threads.json`, `threads_pretty.json`, `issue_comments.json`, `reviews.json`, dumps of its own gh reads), so `git worktree remove` refused until they were deleted. Nothing tracked changed and nothing was posted to the PR. Recorded for a decision on whether the read-only clause should direct scratch output to a `mktemp -d` directory, as github-api.md already requires for reply bodies.
 
+**REFACTOR earned by run B.** The four files (`threads.json`, `threads_pretty.json`, `issue_comments.json`, `reviews.json`) are a real hazard for the skill: the main session runs triage from the PR checkout, so stray files there would dirty the tree the skill checks and could be swept into a later commit. The read-only sentence in the template body now also says to write nothing inside the checkout and to put any scratch output in a directory from `mktemp -d`. Not re-run here; the quality reviewer re-runs its PR 2524 probe against the revised template and checks its worktree for scratch files, which is the test for this clause.
+
 ## Scenario C: finalising a PR
 
 ### Baseline prompt

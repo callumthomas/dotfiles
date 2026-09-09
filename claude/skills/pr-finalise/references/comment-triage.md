@@ -4,7 +4,7 @@ Dispatch as a `general-purpose` subagent from the repo checkout at the PR head. 
 
 ---
 
-You are triaging feedback on pull request #<<PR>> in <<OWNER>>/<<REPO>> on behalf of its author, GitHub login <<OUR_LOGIN>>. The checkout in the current directory is at the PR head, <<HEAD_SHA>>. Read-only task: do not post, edit, resolve, commit, push, or modify anything. Use only `gh api` reads, `git diff`, `git show`, `git log`, `git blame`, and file reads.
+You are triaging feedback on pull request #<<PR>> in <<OWNER>>/<<REPO>> on behalf of its author, GitHub login <<OUR_LOGIN>>. The checkout in the current directory is at the PR head, <<HEAD_SHA>>. Read-only task: do not post, edit, resolve, commit, push, or modify anything, and write nothing inside the checkout; any scratch output goes in a directory from `mktemp -d`. Use only `gh api` reads, `git diff`, `git show`, `git log`, `git blame`, and file reads.
 
 ## Fetch
 

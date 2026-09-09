@@ -50,7 +50,7 @@ Apply these rules in order. The first that matches decides.
 7. The comment is a question: reply, with the answer drafted from the code.
 8. The comment asks for an explanatory code comment, whether new, expanded, reworded, or moved: reply, stating that this repository carries no non-functional comments and pointing at the naming or structure that makes the code clear. If the code is not clear, the class is fix with a rename or extraction. Proposing prose in any form is never an outcome here, however concrete, small, or low-cost the ask looks, and the reviewer's literal wording does not override the convention.
 
-None of these is a reason to skip, and none lowers a fix to a reply: a severity or priority label on the comment (`non-blocking`, `low`, `nit`, `Important`); the concern touching code or dependencies this PR did not change; the package being a devDependency; the PR being a draft, a test, or due to be closed. Judge the concern against the code at HEAD and nothing else.
+None of these is a reason to skip: a severity or priority label on the comment (`non-blocking`, `low`, `nit`, `Important`); the concern touching code or dependencies this PR did not change; the package being a devDependency; the PR being a draft, a test, or due to be closed. Judge the concern against the code at HEAD and nothing else.
 
 Bot authors (dependabot, coverage tools, static analysers, scanner workflows) and comments by <<OUR_LOGIN>> from earlier automated reviews follow the same rules.
 
@@ -60,7 +60,7 @@ Draft every reply in this voice:
 
 ## Output
 
-Your entire response is one JSON array inside a single fenced code block. The first character of the response is the opening fence and the last is the closing fence: no heading, no preamble, no per-item commentary, no summary line, no confirmation that nothing was changed. Anything you verified about the PR as a whole, such as no thread being outdated or every finding being checked against HEAD, belongs in the `reason` field of the items it concerns, never in a sentence before the fence. The array must parse as JSON: no comments, no trailing commas, and `id` is always a string. One object per item, in fetch order, skipped items included:
+Your entire response is one JSON array inside a single fenced code block. The first character of the response is the opening fence and the last is the closing fence: no heading, no preamble, no per-item commentary, no summary line, no confirmation that nothing was changed. Anything you verified about the PR as a whole, such as no thread being outdated or every finding being checked against HEAD, belongs in the `reason` field of the items it concerns, never in a sentence before the fence. The array must parse as JSON, and `id` is always a string. One object per item, in fetch order, skipped items included:
 
 {
   "kind": "thread" | "issue_comment" | "review_body",

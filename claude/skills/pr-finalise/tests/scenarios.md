@@ -205,5 +205,5 @@ Rationalisations seen across the three baselines, one line each:
 - Goes beyond the ask and merges the PR outright, or otherwise acts past ready-to-merge (Scenario C).
 - Guesses the package manager or test command instead of reading the repo's lockfile and scripts (Scenario C).
 - Has no notion of a marker recording that the automated review has already run, so nothing stops it re-running every pass (Scenario C).
-- Has no notion of a size gate that skips the automated review for a large diff (Scenario C).
+- Has no notion of a size gate that skips the automated review for a small or dependency-only diff (Scenario C).
 - Has no notion of a bounded retry count — repeating a pass until it changes nothing, capped at three passes (Scenario C).

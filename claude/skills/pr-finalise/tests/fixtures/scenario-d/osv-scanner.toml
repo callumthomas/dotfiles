@@ -1,0 +1,18 @@
+[[IgnoredVulns]]
+id = "GHSA-848j-6mx2-7j84"
+reason = "elliptic private-key extraction advisory has no patched version published; pulled in transitively via create-ecdh/crypto-browserify (browser polyfill chain), revisit when upstream ships a fix"
+
+[[IgnoredVulns]]
+id = "GHSA-qwww-vcr4-c8h2"
+reason = "CSRF in react-router unstable RSC APIs only; this app is a client-only SPA (BrowserRouter/Routes, no SSR, no RSC APIs used). Fix requires react-router 8.x, which mandates React >=19.2.7. Will revisit with React 19 upgrade."
+ignoreUntil = 2027-01-31
+
+[[IgnoredVulns]]
+id = "GHSA-jrc7-96c5-q579"
+reason = "maplibre-gl XSS is in the map attribution control's DOM.sanitize(); maplibre-gl is pulled in transitively via @ant-design/charts -> @ant-design/maps -> @antv/l7-maps and no map component is used in this app (only Line/Column/Pie/DualAxes are imported from @ant-design/charts), so the vulnerable code is never rendered and is not in the production bundle at all. No upstream fix path: the latest @antv/l7-maps (2.29.1) still pins maplibre-gl ^3.5.2 and @ant-design/charts 2.x drops maps entirely. Revisit with the @ant-design/charts 2 upgrade."
+ignoreUntil = 2027-03-31
+
+[[IgnoredVulns]]
+id = "GHSA-7w2x-9c3m-4q8r"
+reason = "tar path traversal has no patched 6.x release; reached only through node-gyp in the devDependency chain and never shipped to the browser bundle"
+ignoreUntil = 2026-08-15

@@ -33,7 +33,7 @@ Recipes for every gh, REST, GraphQL, and git command named below are in `referen
 | Audit verdicts stand, and form decides them, not content: a docstring, JSDoc, PHPDoc block, or licence header stays however plainly it reads; commented-out code goes however much it looks like code. A block comment goes whole, `line` through `end_line`. | "it's only explanation", "someone might need that code later" |
 | No prose comment is ever added, including in scanner config, in tests, or because a reviewer asked for one. | "the ignore needs explaining", "it's a concrete, low-cost ask" |
 | Every live scanner finding is worked through `references/vuln-remediation.md`, fix route first, whether it arrives as a failing OSV check, as the scanner's comment on a passing one, or as a triage `fix` item. Severity labels, `non-blocking`, devDependency status, and the finding predating this PR change nothing. | "it's a dev dependency", "it's marked non-blocking", "this PR didn't touch that package", "the check is green" |
-| Every vulnerability ignore this run writes carries `ignoreUntil` at most 7 days out unless `--ignore-days` says otherwise. An ignore entry this run did not write is never edited, except the single expired entry whose expiry caused this failure. A bump whose test failure is not a quick fix is reverted and the finding takes the ignore route; a red suite is never committed. | "no fix will ever ship", "the tests were probably flaky", "the old entry just needs a date" |
+| Every vulnerability ignore this run writes carries `ignoreUntil` at most 7 days out unless `--ignore-days` says otherwise. An ignore entry this run did not write is never edited, except the single expired entry whose expiry caused this failure. A bump whose test failure is not a quick fix is reverted and the finding takes the ignore route; a red suite is never committed. | "no fix will ever ship", "the tests were probably flaky", "the old entry just needs a date", "a fix exists so no ignore is needed", "the migration belongs in a separate PR", "90 days matches the review cadence" |
 | Checks are polled to completion. A failure is called pre-existing only with the base branch's run of the same workflow in front of you. | "it passed last time", "that job is always flaky" |
 | pr-review runs at most once per PR. The marker and the size gate decide, not judgement. | "the diff changed a lot since", "it's expensive", "it's too small to bother" |
 | The package manager and test command are the ones preflight detected from the manifests and lockfiles. | "npm is the default", "it's probably yarn" |
@@ -166,8 +166,9 @@ Stop and re-read the rules table if you notice yourself:
 - Editing a comment on a line the PR did not add, or deleting one physical line of a block comment.
 - Calling a docstring or licence header prose, or commented-out code functional.
 - Adding a comment to explain code you just changed, or because a reviewer asked for one.
-- Skipping a finding because it is `non-blocking`, a devDependency, older than the PR, on a test PR, or under a passing check.
+- Skipping a finding because it is `non-blocking`, a devDependency, older than the PR, on a test PR, or under a passing check, or because the check would pass with it still listed.
 - Writing an ignore entry with no `ignoreUntil`, editing an ignore entry this run did not write, or committing a bump with failing tests.
+- Leaving a finding to a ticket or a separate PR instead of a commit or an ignore, or dating an ignore past the 7-day rule because a review cadence says so.
 - Typing `git add -A`, `git add .`, or `git commit -a`.
 - Printing a report, or replying `Fixed in`, while a commit made this run is not on the remote.
 - Reading check status once instead of polling to completion, or pushing again because a wait timed out.

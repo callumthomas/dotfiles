@@ -80,7 +80,13 @@ The three misclassifications share one error: the agent read "functional" as "no
 
 ### Result with skill
 
-(filled in during Task 5)
+19 of 19 correct on the first run of the template written in Task 5, and 19 of 19 again on a second, independent run of the same template. No refinement (Step 3) was needed.
+
+**Run 1.** Every row in the Expected table appeared, keyed to the correct line, with the correct verdict, as a single item — including both Python docstrings the baseline omitted entirely (`src/report.py` line 2, `"""Build the monthly holdings report...`, and line 13, `"""Return rows keyed by account id."""`, both `functional`), the commented-out block at line 21 (`prose`, reported as one item covering both physical lines, not split), and the licence header (`src/api/client.ts` line 1, reason given: "licence/copyright header block") and the JSDoc block (line 23, reason given: "JSDoc documentation comment"), both correctly `functional` and each a single item keyed to its bare opening delimiter (`/*`, `/**`) rather than split across the block's physical lines. Neither must-not-appear item (`src/api/client.ts` line 29, anything from `src/legacy.py`) was present. Output was a single well-formed JSON array in one fenced block, nothing else.
+
+**Run 2 (confirmation).** Identical outcome: the same 19 items, same lines, same verdicts, still one item per multi-line block. The commented-out block's reason was explicit about the merge: "commented-out code block (two lines, one item)." The licence and JSDoc blocks again stayed single items at their opening `/*` and `/**` lines.
+
+**Baseline-to-skill comparison (RED to GREEN).** The baseline scored 14 of 19, missing exactly the five things the template's Task-5 additions targeted: both docstrings omitted entirely; the commented-out block called `functional` instead of `prose`; the licence header and JSDoc block called `prose` instead of `functional`; and all three multi-line items (the commented-out block, the licence header, the JSDoc block) split into one row per physical line instead of one item at the opening line. All five failure modes are corrected in both skill runs, with no new misses introduced — the explicit "documentation form, not content" clause for docstrings/JSDoc/licence headers, the worked four-line licence-block example showing one item at a bare `/*`, the docstring-hunting instruction for `def`/`class` lines, and the pre-output completeness self-check (count opening lines found vs. items output) together closed the gap on the first attempt, so Step 3 (REFACTOR) was not exercised.
 
 ## Scenario B: comment triage
 

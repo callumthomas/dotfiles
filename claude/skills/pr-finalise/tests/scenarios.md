@@ -17,13 +17,15 @@ The PR adds `src/utils/clampPercentage.ts` and its test. It originally had three
 
 ### Untested at time of writing
 
-Forward references in this record that have not closed:
+The live dry run of 2026-09-10 (Scenario C, Live dry run result) closed the read-only surface: preflight, the hydration preview, triage, the prose audit, the vulnerability listing, the review-gate decision, and one read of check status all ran on SKILL.md at dfb54a4 and left the checkout and the PR untouched. It also closed b803a07's `mktemp -d` clause for the triage subagent: it ran from the checkout and `git status --porcelain` was empty afterwards, so no untracked scratch file was left behind. What remains has no run behind it and is tested by the first real run, on a small PR:
 
-- b803a07's clause in comment-triage.md sending scratch output to a `mktemp -d` directory. Its named test is the quality reviewer's re-run of the PR 2524 probe with a check of the worktree for scratch files; no result of that probe is recorded here.
-- ada785d's five edits to SKILL.md (the step 4 restore scope, the already-fixed vulnerability row, and three stop-early additions, one of which, the out-of-table class and rule pair, Task 9 turned into an unactioned report line). Their test is the Task 8 live dry run.
-- The Live dry run result under Scenario C is empty; Task 8 fills it.
-- Task 9's edits (the vulnerability path reached from a passing check and from a triage `fix` item, pushing before replies and before every report, the check poll, explicit staging, the reusable-workflow detection, and the ignore-entry rules). Their tests are Task 8 and, for the ignore-entry rules and the routes in vuln-remediation.md, Scenario D below; the desk check and cold-read probe recorded under Scenario C cover the wording only.
-- This batch's SKILL.md edits (step 2 three-phase push, phase one's test-failure discard path, step 3 trigger, step 6 pointer, stop list) and the vuln-remediation.md edits M5 to M7 postdate every recorded run: Scenario D runs 4 and 5 were on the text before M5 to M7, and the live dry run under Scenario C is the test for the SKILL.md side.
+- Every write path: the merge, the `fix`, `deps`, and `chore` commits, the pushes, the replies and resolves, the marker, and the report's commit rows with their push state.
+- Step 2's three phases as mechanics (commit every `fix` item, push once, then reply and resolve), phase one's test-failure discard path, and the step 4 restore scope from ada785d.
+- The check poll (30-second cadence, 20-minute budget, `deadline`, `none_until`, and `checks_tmp` carried across re-reads, `BUDGET_SPENT` and `CHECKS_PARSE_ERROR`), which a dry run skips by design.
+- Every stop-early path, including the already-fixed vulnerability row, the out-of-table unactioned line, and the twice-rejected-push exception.
+- Passes 2 and 3, and the exit conditions holding.
+- vuln-remediation.md's routes on a live finding: the dry run planned the vitest bump and named the ignore fallback; Scenario D covers the routes on a fixture; no run has yet written a bump or an ignore entry to a repository.
+- The Report sentence added after the dry run (the stop reason states the poll and the pass cap in a dry run), which the next dry run tests.
 
 ## Scenario A: prose comment audit
 
@@ -566,7 +568,42 @@ This is the case the whole-branch review's second critical finding named. Before
 
 ### Live dry run result
 
-(filled in during Task 8)
+Performed by the user on 2026-09-10 in a fresh Claude Code session in the worktree at `/home/cal/.config/superpowers/worktrees/delio-frontend/pr-finalise-test` (branch `test/pr-finalise-road-test`, HEAD b2ae6e4) with `/pr-finalise 2630 --dry-run`, on SKILL.md at dfb54a4. The report was pasted back into this session. The pasted text carries one duplicated block (the OSV row's action line and the first vitest row appear twice) and a truncated repeat of the checks table at its end; the sections between are in order and printed once, so both are taken as terminal paste artefacts rather than the report printing twice. That reading is unverified from here.
+
+**State check.** The same capture ran before the dry run (2026-09-09T18:58:12+01:00) and after it (2026-09-10T11:19:23+01:00). Every value is identical, which satisfies the additional live-run condition under Expected.
+
+| value | before | after |
+|-------|--------|-------|
+| `git status --porcelain` lines | 0 | 0 |
+| `git rev-parse HEAD` | b2ae6e45610bc23b9c4a762fddb7b6c6505cdda7 | same |
+| branch | test/pr-finalise-road-test | same |
+| PR body md5 | cb5e0c670c9fa778fa96209065b32d02 | same |
+| issue comments | 1 | 1 |
+| review comments | 4 | 4 |
+| state | OPEN draft=true head=b2ae6e456 | same |
+
+`origin/test/pr-finalise-road-test` is still at b2ae6e456 and the PR has no pending review of ours, matching the report's "the guard would have nothing to submit".
+
+**What the report showed.** Preflight: open, same-repo, draft; branch level with origin; marker absent; OSV workflow `Dependency Scan` calling the reusable scanner pinned at v2.4.0 with config at `osv-scanner.toml`; yarn classic 1.22.22 and `vitest run` (the manager table e2c8237 moved into github-api.md was read correctly); no voice file; no pending review. Hydrate: master one commit ahead (cbe5ff1, HCP-1068), merge previewed in memory as conflict-free. Threads: five rows. Our thread at `clampPercentage.ts:7`, `fix` rule 5 (NaN guard returning 0 plus a test, `fix:` commit, `Fixed in <sha>`, resolve); our thread at `:5`, `reply` rule 8 (push-back left open: the comment is being removed, not expanded, and the JSDoc and the min/max expression carry the meaning); our thread at `:15`, `skip` rule 1 (already resolved); the github-actions thread at `:7`, `fix` rule 5 sharing the first row's commit; the OSV sticky comment, `fix` rule 5, worked through vuln-remediation.md with a top-level reply quoting `## 🔒 OSV Scan` and no resolve. Vulnerabilities: GHSA-82fw-gwwq-j7x9 on vitest 3.2.7, planned outcome `fixed to 4.1.11`, reason: direct devDependency at `^3.2.6`, not in the ignore file, the fix crosses a major so the run bumps it and lets the 311 test files decide, Vite 6.4.3 and Node 24 satisfy vitest 4.1.11's peer and engine ranges; `@vitest/mocker` 3.2.7 carried by the same bump and commit. The fallback is named: if the bump breaks tests and the failure is not quick, revert and write an ignore entry expiring 2026-09-17 with commit `deps: ignore GHSA-82fw-gwwq-j7x9 until 2026-09-17`. The check is green, so the finding arrives only through the sticky comment; CI has no test job, so local `yarn test` is the only gate on the bump. Prose: removes `clampPercentage.test.ts:5, :7, :9` and `clampPercentage.ts:5, :7, :12, :13`; the JSDoc block at lines 1 to 3 stays as functional by form; one `chore: remove non-functional comments` commit after `yarn test` passes. Review: would run; marker absent, 34 changed lines across two non-manifest files, above the 30-line gate; push, write `review=<post-hydration sha>`, invoke pr-review; its comments are triaged next pass, so a real run needs at least two passes. Checks: nothing pushed, all complete, wait skipped; five checks all `pass` (osv-scan / OSV Scan, linting / lint, package-build, Claude Code Review, Claude Security Review). Mergeability `MERGEABLE`, `BLOCKED`; base unchanged at cbe5ff1 across the pass. Left for you: the stop reason is the single dry-run pass, and the exit conditions would not have held anyway (three `fix` items, one `reply`, marker absent); the rule 8 push-back awaits a reviewer; the vitest 3 to 4 bump is the riskiest step, with the 2026-09-17 ignore as fallback; re-requesting review happens in Slack.
+
+**Grading.** 8 of 10 met on the letter; 10 of 10 if the wait step and the pass loop the report shows are read as the stated real-run rules.
+
+1. Met. "An in-memory merge preview showed no conflicts, so the merge would land cleanly." No rebase anywhere in the plan.
+2. Met. No planned push is a force push.
+3. Met. Fix rows: "reply Fixed in <sha>, resolve". Rule 8 row: "Leave open".
+4. Met. "comment is being removed, not expanded; JSDoc and the min/max expression carry the meaning."
+5. Met. Both files are new in the PR, so every line is an added line; the seven lines listed are the fixture's prose comments and the JSDoc stays.
+6. Met. "ignore entry expiring 2026-09-17", seven days from the run date, and only as the fallback after the fix route.
+7. Not met on the letter. The report shows the wait as a step and its skip condition, "Nothing pushed, all complete, wait skipped", but never states the poll cadence or budget, and Expected 7 counts the stated real-run rule in a dry run.
+8. Met vacuously. All five checks pass, so no failure was called pre-existing.
+9. Met. "Would run. Marker absent, diff is 34 changed lines across two non-manifest files, above the 30-line gate." The body md5 is unchanged.
+10. Not met on the letter. The report states which exit conditions would fail and that a real run needs at least two passes, but not the cap of three.
+
+Cross-step coherence held: the rule 8 push-back on `:5` and step 4's removal of `:5` describe the same comment the same way; step 2's OSV row and step 3's table name one fix and one commit; step 3's "arrives only through the sticky comment" is the Task 9 routing in the run's own words.
+
+**REFACTOR (after the live dry run).** One sentence added to SKILL.md's Report section: in a dry run the stop reason also states the two real-run rules a single pass cannot exercise, checks polled every 30 seconds inside a 20-minute budget, and passes repeating until one changes nothing, at most three. Earned by points 7 and 10: the report's "wait skipped" and "makes exactly one pass" lines are where those rules belong, and neither carried its numbers. No other text changed. The sentence has no run behind it; the next dry run tests it.
+
+**Exercised beyond the ten.** The sibling-commit rule (two threads, one commit); the OSV sticky comment reaching step 2 as a `fix` item and step 3 as the same finding, with one commit between them; the manager table; the reusable-workflow detection (`Dependency Scan`, v2.4.0, `osv-scanner.toml`); the `mergeable` and `mergeStateStatus` read; the ignore fallback's date and commit message form; the Left-for-you list. Not exercised by design: every write path, step 4's restore, the poll, the stop-early paths, passes 2 and 3.
 
 ## Scenario D: vulnerability remediation
 

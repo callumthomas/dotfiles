@@ -164,6 +164,8 @@ Print at the end of every run, dry or real:
 - Mergeability: `mergeable` and `mergeStateStatus` from `gh pr view --json mergeable,mergeStateStatus`, read at report time.
 - Left for you: push-backs awaiting a reviewer, unactioned items, a `fix` item whose tests failed with the failing test's name, any stop reason, ignores with their expiry dates, and the reminder that re-requesting review happens in Slack.
 
+In a dry run the stop reason also states the two real-run rules a single pass cannot exercise: checks are polled every 30 seconds inside a 20-minute budget, and passes repeat until one changes nothing, at most three.
+
 ## Red flags
 
 Stop and re-read the rules table if you notice yourself:

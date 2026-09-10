@@ -42,7 +42,7 @@ Recipes for every gh, REST, GraphQL, and git command named below are in `referen
 | Passes repeat until one changes nothing, capped at three. Never a fourth pass; never finished after a single straight-line pass without the exit conditions checked. | "one more pass would finish it", "the first pass looked complete" |
 | Nothing is committed to the base branch. All commits land on the PR's head branch. | never |
 | Stage explicitly with `git add -- <paths>`. Never `git add -A`, `git add .`, or `git commit -a`. | "the tree was clean a moment ago", "everything in there is mine" |
-| Every commit made this run is pushed (`git push origin <head>`, never force) before a reply cites it and before any report prints; any pass that ends with an unpushed commit pushes it before the report. A `Fixed in <sha>` reply and a resolved thread never refer to a commit that is not on the remote. | "step 6 pushes anyway", "the run is stopping, nothing more to do" |
+| Every commit made this run is pushed (`git push origin <head>`, never force) before a reply cites it and before any report prints; any pass that ends with an unpushed commit pushes it before the report, unless that push is itself rejected twice, which the report then names. A `Fixed in <sha>` reply and a resolved thread never refer to a commit that is not on the remote. | "step 6 pushes anyway", "the run is stopping, nothing more to do" |
 
 ## Flow
 
@@ -112,7 +112,7 @@ Work this step in three phases: commit every `fix` item, push once, then reply a
 
 | class | rule | Action |
 |-------|------|--------|
-| `fix` | any | Reply `Fixed in <short sha>: <one line>` with the commit's line, then resolve. If a sibling item's commit already made the change, reply with that sha and resolve. Conversation comments and review bodies get the reply only. |
+| `fix` | any | Reply `Fixed in <short sha>: <one line>` with the commit's line, then resolve. If a sibling item's commit already made the change, reply with that sha and resolve. An item phase one discarded gets no reply and its thread stays open. Conversation comments and review bodies get the reply only. |
 | `reply` | 4 | Post the proposal, then resolve: a commit superseded it. |
 | `reply` | 6, 7, 8 | Post the proposal. Leave the thread open. |
 | `skip` | 2 | If the thread is still open and our last comment reads `Fixed in <sha>`, resolve it; nothing further is owed. Otherwise nothing. |
@@ -149,7 +149,7 @@ Marker present: skip. Otherwise compute the size gate. Fewer than 30 changed lin
 
 Success after a pass when all hold: no commits this pass (`git rev-list --count <recorded HEAD>..HEAD` is 0); triage returned no `fix` or `reply` items; every check is `pass` or `skipping`, or zero checks are reported after the 120-second retry with no OSV workflow recorded at preflight, and the report says so; the marker is present; `git fetch origin` shows `origin/<base>` still at the SHA recorded in this pass's step 1. Otherwise run another pass, up to three.
 
-Stop early on: a non-lockfile merge conflict; a lockfile regeneration that fails during hydration; a fork PR; a dirty tree or diverged branch; a push rejected twice; tests failing after a prose removal; an infrastructure failure that fails again after one rerun; a test, lint, type, or build check still failing after two fix attempts in one pass; any other failing check; a vuln bump that breaks tests where the ignore route is also unavailable; pr-review failing to run; a wait still pending when its 20-minute budget is spent, with the pending check names in the report; a `gh pr checks` call failing with anything other than "no checks reported"; a `CHECKS_PARSE_ERROR` from the check poll; zero checks reported after the 120-second retry when preflight recorded an OSV workflow; three passes exhausted.
+Stop early on: a non-lockfile merge conflict; a lockfile regeneration that fails during hydration; a fork PR; a dirty tree or diverged branch; a push rejected twice; tests failing after a prose removal; an infrastructure failure that fails again after one rerun; a test, lint, type, or build check still failing after two fix attempts in one pass; any other failing check; a vuln bump that breaks tests where the ignore route is also unavailable; pr-review failing to run; a wait still pending when its 20-minute budget is spent (`BUDGET_SPENT` from the poll), with the pending check names in the report; a `gh pr checks` call failing with anything other than "no checks reported"; a `CHECKS_PARSE_ERROR` from the check poll; zero checks reported after the 120-second retry when preflight recorded an OSV workflow; three passes exhausted.
 
 ## Report
 
@@ -182,7 +182,7 @@ Stop and re-read the rules table if you notice yourself:
 - Writing an ignore entry with no `ignoreUntil`, editing an ignore entry this run did not write, or committing a bump with failing tests.
 - Leaving a finding to a ticket or a separate PR instead of a commit or an ignore, or dating an ignore past the 7-day rule because a review cadence says so.
 - Typing `git add -A`, `git add .`, or `git commit -a`.
-- Printing a report, or replying `Fixed in`, while a commit made this run is not on the remote.
+- Printing a report, or replying `Fixed in`, while a commit made this run is not on the remote, other than after a push rejected twice.
 - Reading check status once instead of polling to completion, or pushing again because a wait timed out.
 - Calling a failure pre-existing without the base branch's run open.
 - Deciding the review "isn't needed this time" when the marker is absent and the gate is clear.

@@ -23,7 +23,7 @@ Forward references in this record that have not closed:
 - ada785d's five edits to SKILL.md (the step 4 restore scope, the already-fixed vulnerability row, and three stop-early additions, one of which, the out-of-table class and rule pair, Task 9 turned into an unactioned report line). Their test is the Task 8 live dry run.
 - The Live dry run result under Scenario C is empty; Task 8 fills it.
 - Task 9's edits (the vulnerability path reached from a passing check and from a triage `fix` item, pushing before replies and before every report, the check poll, explicit staging, the reusable-workflow detection, and the ignore-entry rules). Their tests are Task 8 and, for the ignore-entry rules and the routes in vuln-remediation.md, Scenario D below; the desk check and cold-read probe recorded under Scenario C cover the wording only.
-- This batch's SKILL.md edits (step 2 three-phase push, step 3 trigger, step 6 pointer, stop list) and the vuln-remediation.md edits M5 to M7 postdate every recorded run: Scenario D runs 4 and 5 were on the text before M5 to M7, and the live dry run under Scenario C is the test for the SKILL.md side.
+- This batch's SKILL.md edits (step 2 three-phase push, phase one's test-failure discard path, step 3 trigger, step 6 pointer, stop list) and the vuln-remediation.md edits M5 to M7 postdate every recorded run: Scenario D runs 4 and 5 were on the text before M5 to M7, and the live dry run under Scenario C is the test for the SKILL.md side.
 
 ## Scenario A: prose comment audit
 

@@ -42,7 +42,7 @@ Recipes for every gh, REST, GraphQL, and git command named below are in `referen
 | Passes repeat until one changes nothing, capped at three. Never a fourth pass; never finished after a single straight-line pass without the exit conditions checked. | "one more pass would finish it", "the first pass looked complete" |
 | Nothing is committed to the base branch. All commits land on the PR's head branch. | never |
 | Stage explicitly with `git add -- <paths>`. Never `git add -A`, `git add .`, or `git commit -a`. | "the tree was clean a moment ago", "everything in there is mine" |
-| Every commit made this run is pushed (`git push origin <head>`, never force) before a reply cites it and before any report prints: step 2 commits every `fix` item first, pushes once, then replies and resolves; any pass that ends with an unpushed commit pushes it before the report. A `Fixed in <sha>` reply and a resolved thread never refer to a commit that is not on the remote. | "step 6 pushes anyway", "the run is stopping, nothing more to do" |
+| Every commit made this run is pushed (`git push origin <head>`, never force) before a reply cites it and before any report prints; any pass that ends with an unpushed commit pushes it before the report. A `Fixed in <sha>` reply and a resolved thread never refer to a commit that is not on the remote. | "step 6 pushes anyway", "the run is stopping, nothing more to do" |
 
 ## Flow
 
@@ -67,7 +67,7 @@ digraph pr_finalise {
 }
 ```
 
-Any stop condition anywhere pushes committed work, then goes straight to Report with the reason.
+Any stop condition anywhere pushes committed work, then goes straight to Report with the reason, unless the stop is itself a rejected push; the report then names the commits not on the remote.
 
 ## Preflight
 
@@ -80,7 +80,7 @@ Stop with a one-line reason on any failure.
 5. `git fetch origin`. If behind `origin/<head>`, `git merge --ff-only origin/<head>`. Stop if diverged.
 6. Record our login with `gh api user`.
 7. Read the marker from the body. Absent means the review has not run.
-8. Detect OSV: grep `.github/workflows/*.yml` and `*.yaml` for `osv-scanner`. If the match is a `uses:` reference to another repository's workflow, resolve it with the recipe in `references/github-api.md` and take the pinned version and any `--config` from there. Record the workflow name as the calling workflow's `name:` value, which is what `gh pr checks --json workflow` returns, not the filename; the pinned version; and the config path: an explicit `--config` argument if the scan passes one, else `osv-scanner.toml` in the directory of each scanned lockfile. Independently, check whether a PR comment whose body starts with `## 🔒 OSV Scan` exists at HEAD: its presence fires step 3 regardless of the grep above. Absent, this grep skips only the check-bucket read in step 3, never the comment read.
+8. Detect OSV: grep `.github/workflows/*.yml` and `*.yaml` for `osv-scanner`. If the match is a `uses:` reference to another repository's workflow, resolve it with the recipe in `references/github-api.md` and take the pinned version and any `--config` from there. Record the workflow name as the calling workflow's `name:` value, which is what `gh pr checks --json workflow` returns, not the filename; the pinned version; and the config path: an explicit `--config` argument if the scan passes one, else `osv-scanner.toml` in the directory of each scanned lockfile. Absent, this grep skips only the check-bucket read in step 3.
 9. Detect the package manager and test command from the manifests and lockfiles present, per the table in `references/github-api.md`; with several manifests, run the tests of the one whose files the change touched.
 10. Resolve the reply voice: `./.claude/pr-review-voice.md`, then `~/.claude/pr-review-voice.md`, else plain and concise.
 
@@ -104,9 +104,9 @@ Work this step in three phases: commit every `fix` item, push once, then reply a
 
 | class | rule | Action |
 |-------|------|--------|
-| `fix` | any | Make the change, run the relevant tests, stage with `git add -- <paths>`, commit as `fix: <one line>` (one commit per thread; threads describing the same defect may share one). When the ask is a dependency version or a vulnerability, work the change through `references/vuln-remediation.md` instead, in its order: fix route, then its micro-framework section, then override, then revert and ignore, and commit with the message form vuln-remediation.md's route gives. If a sibling item's commit already made the change, note that commit's sha; do not commit again. |
+| `fix` | any | Make the change, run the relevant tests, stage with `git add -- <paths>`, commit as `fix: <one line>` (one commit per thread; threads describing the same defect may share one). If the tests fail, discard the change with `git restore --source=HEAD --worktree -- <paths>`, report the item under Left for you with the failing test's name, post nothing on its thread, and continue with the next item. When the ask is a dependency version or a vulnerability, work the change through `references/vuln-remediation.md` instead, in its order: fix route, then its micro-framework section, then override, then revert and ignore, and commit with the message form vuln-remediation.md's route gives. If a sibling item's commit already made the change, note that commit's sha; do not commit again. |
 
-**Phase two, push.** If phase one made any commit, `git push origin <head>` once, never force. A rejected push: `git fetch origin`, `git merge origin/<head>`, push again; a second rejection stops the run. No reply is posted for a commit that is not on the remote.
+**Phase two, push.** If phase one made any commit, push once per the Push recipe in `references/github-api.md`; a second rejection stops the run, and no reply is posted for a commit that is not on the remote.
 
 **Phase three, reply and resolve.**
 
@@ -126,7 +126,7 @@ Any commit from this step still unpushed when the step ends is pushed before lea
 
 ### 3 Vulnerabilities
 
-Skip only if preflight found neither an OSV workflow nor a sticky OSV comment on the PR. Read the OSV check's bucket with `gh pr checks --json` when preflight recorded a workflow, and read the scanner's PR comment when preflight found one. Work `references/vuln-remediation.md` when the OSV check is failing, or when the scanner's PR comment reports a finding live at HEAD and uncovered by an ignore entry. A passing check with no live finding: skip. A pending check with no live finding: skip this pass. For each finding, commit per finding. A finding whose package is already at or above the fixed version at HEAD is verified, not worked: report it as already fixed. A finding step 2 already worked this pass is reported with its commit, not worked again.
+Read the scanner's sticky `## 🔒 OSV Scan` comment on the PR at the start of every pass; skip the step only when preflight recorded no OSV workflow and no such comment is present. Read the OSV check's bucket with `gh pr checks --json` when preflight recorded a workflow, and read the scanner's PR comment when it is present. Work `references/vuln-remediation.md` when the OSV check is failing, or when the scanner's PR comment reports a finding live at HEAD and uncovered by an ignore entry. A passing check with no live finding: skip. A pending check with no live finding: skip this pass. One commit per finding. A finding whose package is already at or above the fixed version at HEAD is verified, not worked: report it as already fixed. A finding step 2 already worked this pass is reported with its commit, not worked again.
 
 ### 4 Prose comments
 
@@ -138,7 +138,7 @@ Marker present: skip. Otherwise compute the size gate. Fewer than 30 changed lin
 
 ### 6 Push and wait
 
-`git push origin <head>`. A rejected push means `git fetch origin`, then `git merge origin/<head>`, never force, then push again; a second rejection stops the run. If nothing was pushed this pass and every check has already completed, skip the wait. Otherwise poll checks to completion per `references/github-api.md`, passing `deadline` and `none_until` through on re-reads; never re-push a timed-out wait. Then classify by bucket:
+`git push origin <head>`. A rejected push means `git fetch origin`, then `git merge origin/<head>`, never force, then push again; a second rejection stops the run. If nothing was pushed this pass and every check has already completed, skip the wait. Otherwise poll checks to completion per `references/github-api.md`, passing `deadline`, `none_until`, and `checks_tmp` through on re-reads; never re-push a timed-out wait. Then classify by bucket:
 
 - OSV workflow failing: step 3 handles it next pass.
 - Test, lint, type, or build failure: read the log, fix, stage with `git add -- <paths>`, commit, push, poll again. At most two fix attempts per check per pass; a third failure stops the run with the log excerpt.
@@ -149,20 +149,20 @@ Marker present: skip. Otherwise compute the size gate. Fewer than 30 changed lin
 
 Success after a pass when all hold: no commits this pass (`git rev-list --count <recorded HEAD>..HEAD` is 0); triage returned no `fix` or `reply` items; every check is `pass` or `skipping`, or zero checks are reported after the 120-second retry with no OSV workflow recorded at preflight, and the report says so; the marker is present; `git fetch origin` shows `origin/<base>` still at the SHA recorded in this pass's step 1. Otherwise run another pass, up to three.
 
-Stop early on: a non-lockfile merge conflict; a lockfile regeneration that fails during hydration; a fork PR; a dirty tree or diverged branch; a push rejected twice; tests failing after a prose removal; an infrastructure failure that fails again after one rerun; a test, lint, type, or build check still failing after two fix attempts in one pass; any other failing check; a vuln bump that breaks tests where the ignore route is also unavailable; pr-review failing to run; a wait still pending when its 20-minute budget is spent, with the pending check names in the report; a `gh pr checks` call failing with anything other than "no checks reported"; zero checks reported after the 120-second retry when preflight recorded an OSV workflow; three passes exhausted.
+Stop early on: a non-lockfile merge conflict; a lockfile regeneration that fails during hydration; a fork PR; a dirty tree or diverged branch; a push rejected twice; tests failing after a prose removal; an infrastructure failure that fails again after one rerun; a test, lint, type, or build check still failing after two fix attempts in one pass; any other failing check; a vuln bump that breaks tests where the ignore route is also unavailable; pr-review failing to run; a wait still pending when its 20-minute budget is spent, with the pending check names in the report; a `gh pr checks` call failing with anything other than "no checks reported"; a `CHECKS_PARSE_ERROR` from the check poll; zero checks reported after the 120-second retry when preflight recorded an OSV workflow; three passes exhausted.
 
 ## Report
 
 Print at the end of every run, dry or real:
 
-- Threads: table of `location`, `class`, `rule`, `action taken`, `commit`; an item outside the step 2 table appears with `unactioned`.
+- Threads: table of `location`, `class`, `rule`, `action taken`, `commit`; an item outside either table appears with `unactioned`.
 - Vulnerabilities: table of `id`, `package`, outcome (exactly one of `fixed to <ver>`, `already fixed`, `ignored until <date>`), `reason`.
 - Prose comments removed: `path:line` list.
 - Review: ran at `<sha>`, or skipped with reason, or already present from `<date>`.
 - Commits: every commit made this run and its push state, on the remote or not.
 - Checks: name and final bucket for each, or the "no checks reported" line.
 - Mergeability: `mergeable` and `mergeStateStatus` from `gh pr view --json mergeable,mergeStateStatus`, read at report time.
-- Left for you: push-backs awaiting a reviewer, unactioned items, any stop reason, ignores with their expiry dates, and the reminder that re-requesting review happens in Slack.
+- Left for you: push-backs awaiting a reviewer, unactioned items, a `fix` item whose tests failed with the failing test's name, any stop reason, ignores with their expiry dates, and the reminder that re-requesting review happens in Slack.
 
 ## Red flags
 

@@ -14,10 +14,10 @@ Scratch files such as reply bodies go under a `mktemp -d` directory, never in th
 
 ## OSV workflow behind a `uses:` reference
 
-A workflow file whose `osv-scanner` match is a `uses:` reference to another repository's reusable workflow carries no pinned version or `--config` of its own. Read the referenced workflow directly:
+A workflow file whose `osv-scanner` match is a `uses:` reference to another repository's reusable workflow carries no pinned version or `--config` of its own. `<o>/<r>`, `<path>` and `<ref>` come from the `uses: <o>/<r>/<path>@<ref>` value, not from the PR's repo. Read the referenced workflow directly:
 
 ```bash
-gh api -H "Accept: application/vnd.github.raw" repos/<o>/<r>/contents/<path>?ref=<ref>
+gh api -H "Accept: application/vnd.github.raw" "repos/<o>/<r>/contents/<path>?ref=<ref>"
 ```
 
 Take the pinned scanner version and any `--config` argument from its contents.
@@ -102,7 +102,7 @@ gh pr edit <n> --body-file "$tmp/body.md"
 
 ## Checks
 
-Never `--watch`: it refuses `--json`, has no budget, and outlives the 600-second cap on a foreground shell call. Poll instead, every 30 seconds, inside an explicit budget of 20 minutes per wait. The first call computes `deadline` (now plus 1200 seconds) and `none_until` (now plus 120 seconds) and prints both, along with `checks_tmp`; every re-read of the same wait takes those as inputs instead of recomputing them, so the budget is tracked across calls rather than restarted. Per-call `end` is the earlier of `deadline` and `now + 480`, keeping each call safely under the shell tool's 600-second maximum; a wait cut off by that per-call `end` or by the tool's timeout is re-read with the same `deadline`, `none_until`, and `checks_tmp`, never re-pushed. `none_until` is the 120-second window after a push in which `no checks reported` is retried. `checks_tmp` is printed before the loop starts so a killed call still leaves its data findable.
+Never `--watch`: it refuses `--json`, has no budget, and outlives the 600-second cap on a foreground shell call. Poll instead, every 30 seconds, inside an explicit budget of 20 minutes per wait. The first call computes `deadline` (now plus 1200 seconds) and `none_until` (now plus 120 seconds) and prints both, along with `checks_tmp`; every re-read of the same wait takes those as inputs instead of recomputing them, so the budget is tracked across calls rather than restarted. Per-call `end` is the earlier of `deadline` and `now + 480`, keeping each call safely under the shell tool's 600-second maximum; a wait cut off by that per-call `end` or by the tool's timeout is re-read with the same `deadline`, `none_until`, and `checks_tmp`, never re-pushed. `none_until` is the 120-second window after a push in which `no checks reported` is retried. `checks_tmp` is printed before the loop starts so a killed call still leaves its data findable. Reaching `deadline` itself prints `BUDGET_SPENT` before breaking, so the budget stop is mechanically detectable; a per-call cutoff short of `deadline` prints nothing extra and is re-read.
 
 ```bash
 tmp=$(mktemp -d); checks_tmp=$tmp
@@ -110,9 +110,9 @@ echo "checks_tmp=$checks_tmp"
 deadline=$(( $(date +%s) + 1200 ))
 none_until=$(( $(date +%s) + 120 ))
 echo "deadline=$deadline none_until=$none_until"
+now=$(date +%s)
+end=$(( deadline < now + 480 ? deadline : now + 480 ))
 while :; do
-  now=$(date +%s)
-  end=$(( deadline < now + 480 ? deadline : now + 480 ))
   gh pr checks <n> --json name,state,bucket,link,workflow > "$tmp/checks.json" 2> "$tmp/checks.err"
   rc=$?
   if [ "$rc" -eq 0 ]; then
@@ -128,12 +128,20 @@ while :; do
   else
     break
   fi
-  [ "$(date +%s)" -ge "$end" ] && break
+  if [ "$(date +%s)" -ge "$end" ]; then
+    [ "$(date +%s)" -ge "$deadline" ] && echo BUDGET_SPENT
+    break
+  fi
   sleep 30
-  [ "$(date +%s)" -ge "$end" ] && break
+  if [ "$(date +%s)" -ge "$end" ]; then
+    [ "$(date +%s)" -ge "$deadline" ] && echo BUDGET_SPENT
+    break
+  fi
 done
 echo "rc=$rc"; cat "$tmp/checks.err" "$tmp/checks.json"
 ```
+
+On a re-read, replace the first lines with `tmp=<checks_tmp>`, `deadline=<deadline>`, `none_until=<none_until>` taken from the first call's output; everything from `now=` down is unchanged.
 
 Without `--json`, exit 0 means every check passed, 8 means pending, and 1 means a failure, no checks, or an API error. With `--json`, gh writes the array and exits 0 whenever checks exist, whatever their state, so classify from the `bucket` field, never from the exit code. `bucket` is one of `pass`, `fail`, `pending`, `skipping`, `cancel`. Treat `fail` and `cancel` as failing. Exit 1 with `no checks reported` on stderr is what gh returns instead of an empty array, including for a few seconds after a push: keep retrying it for 120 seconds after a push (`none_until`); if it persists, print it as its own report line and count zero checks as green, unless preflight recorded an OSV workflow, in which case it is a stop. Any other non-zero exit is an API error: print stderr and stop. `jq -e`'s exit code on the pending test distinguishes the two failure shapes: exit 1 means nothing is pending, and the loop breaks normally; exit 2 or more is a parse error, never read as "all checks complete" — print `CHECKS_PARSE_ERROR` and stop.
 
@@ -221,7 +229,7 @@ These refresh entries for dependencies already in the lockfile. A dependency the
 | `pyproject.toml` | `uv.lock` | uv | pytest |
 | `pyproject.toml` | `poetry.lock` | poetry | pytest |
 | `pyproject.toml` | `requirements*.txt` | pip | pytest |
-| `go.mod` | `go.sum` | go | `go test ./...` |
-| `Cargo.toml` | `Cargo.lock` | cargo | `cargo test` |
+| `go.mod` | `go.sum` (if present) | go | `go test ./...` |
+| `Cargo.toml` | `Cargo.lock` (if present) | cargo | `cargo test` |
 
 With several manifests present, run the tests of the one whose files the change touched.

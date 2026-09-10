@@ -18,7 +18,7 @@ printf '%s' "$advisory" | jq '[.affected[] | select(.package.ecosystem == "<ecos
 ```
 Target the lowest fixed version greater than the current one. An empty array means no fix is published: go to the ignore route. A non-zero exit from the curl line, or from jq, is an error, not an empty result: open the advisory page at `https://osv.dev/vulnerability/<ID>` and read the fixed versions from there before deciding.
 
-Prefer the lowest fixed version inside the range the manifest already allows. When no fixed version falls inside the range the manifest allows, take the lowest stable release; a pre-release is never the target: for a direct dependency, attempt the bump on this branch and let the tests decide, however large the migration looks and however clearly it seems to belong in a separate PR, and a bump that fails the tests and is not a quick fix is reverted and ignored in this run, never deferred to a ticket; for a transitive dependency, do not override across a major version, take the ignore route and name the required major and what blocks it in the reason.
+Prefer the lowest fixed version inside the range the manifest already allows; when none falls inside it, take the lowest stable release, never a pre-release. When the only fixed version crosses a major boundary: for a direct dependency, attempt the bump on this branch and let the tests decide, however large the migration looks and however clearly it seems to belong in a separate PR, and a bump that fails the tests and is not a quick fix is reverted and ignored in this run, never deferred to a ticket; for a transitive dependency, do not override across a major version, take the ignore route and name the required major and what blocks it in the reason.
 
 ## Direct or transitive
 

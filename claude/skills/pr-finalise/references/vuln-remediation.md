@@ -6,7 +6,7 @@ Every row in the comment's table is a finding, and each is worked on its own to 
 
 ## Extract findings
 
-The Delio scan is a reusable workflow that reports every finding, blocking or not, in a sticky PR comment headed `## 🔒 OSV Scan`, as a markdown table `Vulnerability | CVSS | Blocking | Package | Version | Fixed version | Ecosystem | Source`, with each id inside a markdown link `[ID](https://osv.dev/ID)`. That table is the primary source: read it with `gh api repos/<o>/<r>/issues/<n>/comments`, take the id from the link text, and take package, version, fixed version, ecosystem, and source from their columns. The job log, `gh run view <run_id> --log-failed` with the run id from the OSV check's `link`, carries the same facts as `::error` annotations for blocking findings only. A finding whose `Fixed version` column reads `none`, or a scan that prints raw osv-scanner rows without one, takes the api.osv.dev lookup below.
+The Delio scan is a reusable workflow that reports every finding, blocking or not, in a sticky PR comment headed `## 🔒 OSV Scan`, as a markdown table `Vulnerability | CVSS | Blocking | Package | Version | Fixed version | Ecosystem | Source`, with each id inside a markdown link `[ID](https://osv.dev/ID)`. That table is the primary source: read it with `gh api repos/<o>/<r>/issues/<n>/comments`, take the id from the link text, and take package, version, fixed version, ecosystem, and source from their columns. The job log, `gh run view <run_id> --log-failed` with the run id from the OSV check's `link`, carries the same facts as `::error` annotations for blocking findings only. A finding whose `Fixed version` column reads `none`, is empty, or is a dash, or a scan that prints raw osv-scanner rows without one, takes the api.osv.dev lookup below.
 
 ## Find the fixed version
 
@@ -18,7 +18,7 @@ printf '%s' "$advisory" | jq '[.affected[] | select(.package.ecosystem == "<ecos
 ```
 Target the lowest fixed version greater than the current one. An empty array means no fix is published: go to the ignore route. A non-zero exit from the curl line, or from jq, is an error, not an empty result: open the advisory page at `https://osv.dev/vulnerability/<ID>` and read the fixed versions from there before deciding.
 
-Prefer the lowest fixed version inside the range the manifest already allows. When the only fixed version crosses a major boundary: for a direct dependency, attempt the bump on this branch and let the tests decide, however large the migration looks and however clearly it seems to belong in a separate PR, and a bump that fails the tests and is not a quick fix is reverted and ignored in this run, never deferred to a ticket; for a transitive dependency, do not override across a major version, take the ignore route and name the required major and what blocks it in the reason.
+Prefer the lowest fixed version inside the range the manifest already allows. When no fixed version falls inside the range the manifest allows, take the lowest stable release; a pre-release is never the target: for a direct dependency, attempt the bump on this branch and let the tests decide, however large the migration looks and however clearly it seems to belong in a separate PR, and a bump that fails the tests and is not a quick fix is reverted and ignored in this run, never deferred to a ticket; for a transitive dependency, do not override across a major version, take the ignore route and name the required major and what blocks it in the reason.
 
 ## Direct or transitive
 
@@ -95,7 +95,7 @@ ignoreUntil = <YYYY-MM-DD>
 reason = "<why the fix route failed, and what would unblock it>"
 ```
 
-`ignoreUntil` is an unquoted TOML date. Compute it with `date -d "+<days> days" +%F`, where days is 7 unless the run was invoked with `--ignore-days`, and that computation is the only source of the date: a review cadence, a release plan, the size of the pending migration, or the age of the entry being renewed never lengthens it. Before writing, re-read the configuration page for the osv-scanner version the workflow pins and adjust if the field names differ.
+`ignoreUntil` is an unquoted TOML date. Compute it with `date -d "+<days> days" +%F`, where days is 7 unless the run was invoked with `--ignore-days`, and that computation is the only source of the date: a review cadence or a release plan never lengthens it. Before writing, re-read the configuration page for the osv-scanner version the workflow pins and adjust if the field names differ.
 
 Rules:
 - Never omit `ignoreUntil` on an entry this run writes. The 7-day rule applies to those entries only.

@@ -7,8 +7,12 @@ claude/*
 !claude/statusline.sh
 !claude/hooks
 !claude/hooks/**
+!claude/skills
+!claude/skills/**
 !systemd
 !systemd/**
 !scripts/install-systemd-units.sh
 .superpowers/*
 docs/*
+__pycache__/
+claude/skills/synced/

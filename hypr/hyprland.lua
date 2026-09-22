@@ -123,7 +123,7 @@ hl.on("hyprland.start", function()
 
     -- Monitoring tools on special workspace
     hl.exec_cmd(terminal .. " --class=com.special.btop -e btop")
-    hl.exec_cmd(terminal .. " --class=com.special.dm -e dm")
+    hl.exec_cmd(terminal .. " --class=com.special.dm -e dm dashboard")
 end)
 
 hl.window_rule({
